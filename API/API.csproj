@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
+=======
+    <Folder Include="DTOs\" />
+>>>>>>> parent of 0eac147 (delete file)
     <Folder Include="Helper\" />
     <Folder Include="Interface\" />
   </ItemGroup>

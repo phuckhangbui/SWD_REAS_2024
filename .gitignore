@@ -475,7 +475,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+<<<<<<< HEAD
 
 
 #Jetbrain 
 .idea
+=======
+>>>>>>> parent of 0eac147 (delete file)

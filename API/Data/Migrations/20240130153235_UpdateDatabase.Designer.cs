@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240130153235_UpdateDatabase")]
+    partial class UpdateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,13 +33,6 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountId"));
 
-<<<<<<< HEAD
-                    b.Property<string>("AccountEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-=======
->>>>>>> parent of 0eac147 (delete file)
                     b.Property<string>("AccountName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -76,13 +72,6 @@ namespace API.Data.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-<<<<<<< HEAD
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-=======
->>>>>>> parent of 0eac147 (delete file)
                     b.HasKey("AccountId");
 
                     b.HasIndex("MajorId")
