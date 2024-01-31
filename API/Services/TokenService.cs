@@ -24,13 +24,14 @@ namespace API.Services
         {
             new Claim(JwtRegisteredClaimNames.NameId, account.AccountId.ToString()),
             new Claim(JwtRegisteredClaimNames.UniqueName, account.Username),
+            new Claim("RoleId", account.RoleId.ToString())
         };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
             var tokenDiscriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claim),
-                Expires = DateTime.Now.AddDays(7),
+                Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = creds
             };
 

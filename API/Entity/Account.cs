@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace API.Entity;
 
-public class Account : IdentityUser<int>
+public class Account
 {
     public int AccountId { get; set; }
     public string Username { get; set; }

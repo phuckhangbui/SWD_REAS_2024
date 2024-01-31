@@ -19,7 +19,9 @@ namespace API.Extensions
             });
 
             services.AddScoped<ITokenService, TokenService>();
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); //the current position of the mapping profile
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>
