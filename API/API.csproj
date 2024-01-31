@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
     <Folder Include="Helper\" />
     <Folder Include="Interface\" />
   </ItemGroup>
