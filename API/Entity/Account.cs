@@ -3,17 +3,12 @@ namespace API.Entity;
 public class Account
 {
     public int AccountId { get; set; }
-<<<<<<< HEAD
+
     public string Username { get; set; }
     public string AccountName { get; set; }
     public byte[] PasswordHash { get; set; }
     public byte[] PasswordSalt { get; set; }
     public string AccountEmail { get; set; }
-=======
-    public string AccountName { get; set; }
-    public byte[] PasswordHash { get; set; }
-    public byte[] PasswordSalt { get; set; }
->>>>>>> parent of 0eac147 (delete file)
     public string PhoneNumber { get; set; }
     public string Citizen_identification { get; set; }
     public string Address { get; set; }
