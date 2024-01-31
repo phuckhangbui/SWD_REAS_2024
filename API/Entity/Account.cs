@@ -8,18 +8,18 @@ public class Account
     public byte[] PasswordHash { get; set; }
     public byte[] PasswordSalt { get; set; }
     public string AccountEmail { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Citizen_identification { get; set; }
-    public string Address { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? Citizen_identification { get; set; }
+    public string? Address { get; set; }
     public Major Major { get; set; }
-    public int MajorId { get; set; }
+    public int? MajorId { get; set; }
     public Role Role { get; set; }
     public int RoleId { get; set; }
     public int Account_Status { get; set; }
     public DateTime Date_Created { get; set; } = DateTime.UtcNow;
     public DateTime Date_End { get; set; }
 
-    
+
     public List<RealEstate> RealEstate { get; set; }
     public List<Task> TasksCreated { get; set; }
     public List<Task> TasksAssigned { get; set; }
