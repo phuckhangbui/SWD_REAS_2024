@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace API.Entity;
 
-public class Account
+public class Account : IdentityUser<int>
 {
     public int AccountId { get; set; }
     public string Username { get; set; }
@@ -11,9 +13,9 @@ public class Account
     public string? PhoneNumber { get; set; }
     public string? Citizen_identification { get; set; }
     public string? Address { get; set; }
-    public Major Major { get; set; }
+    public Major? Major { get; set; }
     public int? MajorId { get; set; }
-    public Role Role { get; set; }
+    public Role? Role { get; set; }
     public int RoleId { get; set; }
     public int Account_Status { get; set; }
     public DateTime Date_Created { get; set; } = DateTime.UtcNow;

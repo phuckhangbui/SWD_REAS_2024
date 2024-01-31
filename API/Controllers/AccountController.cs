@@ -4,6 +4,7 @@ using API.Entity;
 using API.Errors;
 using API.Interfaces;
 using AutoMapper;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -23,6 +24,38 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
+        [HttpPost("login-google")]
+        public async Task<ActionResult<UserDto>> LoginGoogle(string idTokenString)
+        {
+            try
+            {
+                // validate token
+                GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(idTokenString);
+
+                string userEmail = payload.Email;
+
+                if (await UserEmailExists(userEmail))
+                {
+                    // login
+
+                }
+                else
+                {
+                    // register 
+
+                }
+
+                return new UserDto();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400));
+
+            }
+
+        }
+
+
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
@@ -35,7 +68,6 @@ namespace API.Controllers
             var account = _mapper.Map<Account>(registerDto);
 
             using var hmac = new HMACSHA512();
-
 
             account.AccountEmail = registerDto.AccountEmail.ToLower();
             account.Username = registerDto.Username.ToLower();
@@ -60,7 +92,7 @@ namespace API.Controllers
         }
 
         [HttpPost("login-admin")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> LoginAdmin(LoginDto loginDto)
         {
             var account = await _context.Account
                 .SingleOrDefaultAsync(x => x.Username == loginDto.Username);
