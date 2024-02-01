@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240131150744_UpdateDatabaseStatus")]
+    partial class UpdateDatabaseStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,12 +82,6 @@ namespace API.Data.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.HasIndex("MajorId")
-                        .IsUnique();
-
-                    b.HasIndex("RoleId")
-                        .IsUnique();
-
                     b.ToTable("Account");
                 });
 
@@ -118,9 +115,6 @@ namespace API.Data.Migrations
                     b.HasKey("AuctionId");
 
                     b.HasIndex("AccountCreateId");
-
-                    b.HasIndex("ReasId")
-                        .IsUnique();
 
                     b.ToTable("Auction");
                 });
@@ -178,12 +172,6 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountWinId");
 
-                    b.HasIndex("AuctionId")
-                        .IsUnique();
-
-                    b.HasIndex("ReasId")
-                        .IsUnique();
-
                     b.ToTable("AuctionsAccounting");
                 });
 
@@ -217,12 +205,6 @@ namespace API.Data.Migrations
                     b.HasKey("DepositId");
 
                     b.HasIndex("AccountSignId");
-
-                    b.HasIndex("ReasId")
-                        .IsUnique();
-
-                    b.HasIndex("RuleId")
-                        .IsUnique();
 
                     b.ToTable("DepositAmount");
                 });
@@ -338,9 +320,6 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountSendId");
 
-                    b.HasIndex("TypeId")
-                        .IsUnique();
-
                     b.ToTable("MoneyTransaction");
                 });
 
@@ -382,12 +361,6 @@ namespace API.Data.Migrations
                     b.HasKey("MoneyTransactionDetailId");
 
                     b.HasIndex("AccountReceiveId");
-
-                    b.HasIndex("AuctionId")
-                        .IsUnique();
-
-                    b.HasIndex("ReasId")
-                        .IsUnique();
 
                     b.ToTable("MoneyTransactionDetail");
                 });

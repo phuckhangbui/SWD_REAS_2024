@@ -1,4 +1,6 @@
 using API.Data;
+using API.Interfaces;
+using API.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IRealEstateRepository, RealEstateRepository>();
+builder.Services.AddScoped<IRealEstateDetailRepository, RealEstateDetailRepository>();
+builder.Services.AddScoped<IRealEstatePhotoRepository, RealEstatePhotoRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
