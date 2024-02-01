@@ -3,6 +3,7 @@ namespace API.Entity;
 public class Account
 {
     public int AccountId { get; set; }
+
     public string Username { get; set; }
     public string AccountName { get; set; }
     public byte[] PasswordHash { get; set; }

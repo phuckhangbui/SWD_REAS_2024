@@ -329,5 +329,16 @@ public class DataContext : DbContext
             .WithMany(a => a.RealEstate)
             .HasForeignKey(re => re.AccountOwnerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<RealEstateDetail>()
+            .HasOne(d => d.RealEstate)
+            .WithOne(e => e.Detail)
+            .HasForeignKey<RealEstateDetail>(d => d.ReasId);
+
+        modelBuilder.Entity<RealEstatePhoto>()
+            .HasOne(ac => ac.RealEstate)
+            .WithMany(a => a.Photos)
+            .HasForeignKey(ac => ac.ReasId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -26,7 +26,7 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("TestAuth")]
+        [HttpGet("testAuth")]
         [Authorize]
         public async Task<ActionResult<String>> TestAuth()
         {
@@ -34,28 +34,28 @@ namespace API.Controllers
 
         }
 
-        [HttpGet("TestAuthMember")]
+        [HttpGet("testAuthMember")]
         [Authorize(policy: "Member")]
         public async Task<ActionResult<String>> TestAuthMem()
         {
             return "You are good member";
         }
 
-        [HttpGet("TestAuthAdmin")]
+        [HttpGet("testAuthAdmin")]
         [Authorize(policy: "Admin")]
         public async Task<ActionResult<String>> TestAuthAd()
         {
             return "You are good admin";
         }
 
-        [HttpGet("TestAuthStaff")]
+        [HttpGet("testAuthStaff")]
         [Authorize(policy: "Staff")]
         public async Task<ActionResult<String>> TestAuthStaff()
         {
             return "You are good staff";
         }
 
-        [HttpGet("TestAuthAdminStaff")]
+        [HttpGet("testAuthAdminStaff")]
         [Authorize(policy: "AdminAndStaff")]
         public async Task<ActionResult<String>> TestAuthAdStaff()
         {

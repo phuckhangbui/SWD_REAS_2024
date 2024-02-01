@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-
 builder.Services.ApplicationServices(builder.Configuration);
 builder.Services.IdentityServices(builder.Configuration);
 
