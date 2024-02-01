@@ -1,0 +1,34 @@
+﻿using API.Data;
+using API.Entity;
+using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace API.Repository
+{
+    public class AccountRepository : BaseRepository<Account>, IAccountRepository
+    {
+
+        private readonly DataContext _context;
+
+        public AccountRepository(DataContext context) : base(context)
+        {
+            _context = context;
+        }
+
+        public async Task<bool> isEmailExisted(string email)
+        {
+            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == email.ToLower());
+        }
+
+        public async Task<bool> isUserNameExisted(string userName)
+        {
+            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == userName.ToLower());
+        }
+
+        public async Task<Account> GetAccountByUsernameAsync(string username)
+        {
+            return await _context.Account
+                .SingleOrDefaultAsync(x => x.Username == username);
+        }
+    }
+}

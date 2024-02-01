@@ -42,9 +42,11 @@ namespace API.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Citizen_identification")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date_Created")
@@ -53,8 +55,7 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("Date_End")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("MajorId")
-                        .IsRequired()
+                    b.Property<int>("MajorId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("PasswordHash")
@@ -66,6 +67,7 @@ namespace API.Data.Migrations
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RoleId")
@@ -77,13 +79,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.HasIndex("MajorId")
-                        .IsUnique();
-
-                    b.HasIndex("RoleId")
-                        .IsUnique();
-
-                    b.ToTable("Account");
+                    b.ToTable("Account", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Auction", b =>
@@ -117,10 +113,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountCreateId");
 
-                    b.HasIndex("ReasId")
-                        .IsUnique();
-
-                    b.ToTable("Auction");
+                    b.ToTable("Auction", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.AuctionAccounting", b =>
@@ -176,13 +169,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountWinId");
 
-                    b.HasIndex("AuctionId")
-                        .IsUnique();
-
-                    b.HasIndex("ReasId")
-                        .IsUnique();
-
-                    b.ToTable("AuctionsAccounting");
+                    b.ToTable("AuctionsAccounting", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.DepositAmount", b =>
@@ -216,13 +203,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountSignId");
 
-                    b.HasIndex("ReasId")
-                        .IsUnique();
-
-                    b.HasIndex("RuleId")
-                        .IsUnique();
-
-                    b.ToTable("DepositAmount");
+                    b.ToTable("DepositAmount", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Log", b =>
@@ -254,7 +235,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountWriterId");
 
-                    b.ToTable("Logs");
+                    b.ToTable("Logs", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Major", b =>
@@ -271,7 +252,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("MajorId");
 
-                    b.ToTable("Major");
+                    b.ToTable("Major", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Message", b =>
@@ -305,7 +286,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountSerderId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Message", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.MoneyTransaction", b =>
@@ -336,10 +317,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountSendId");
 
-                    b.HasIndex("TypeId")
-                        .IsUnique();
-
-                    b.ToTable("MoneyTransaction");
+                    b.ToTable("MoneyTransaction", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.MoneyTransactionDetail", b =>
@@ -381,13 +359,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountReceiveId");
 
-                    b.HasIndex("AuctionId")
-                        .IsUnique();
-
-                    b.HasIndex("ReasId")
-                        .IsUnique();
-
-                    b.ToTable("MoneyTransactionDetail");
+                    b.ToTable("MoneyTransactionDetail", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.MoneyTransactionType", b =>
@@ -404,7 +376,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("TypeId");
 
-                    b.ToTable("MoneyTransactionType");
+                    b.ToTable("MoneyTransactionType", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.News", b =>
@@ -437,7 +409,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountCreateId");
 
-                    b.ToTable("News");
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.RealEstate", b =>
@@ -491,7 +463,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountOwnerId");
 
-                    b.ToTable("RealEstate");
+                    b.ToTable("RealEstate", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.RealEstateDetail", b =>
@@ -512,7 +484,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("RealEstateReasId");
 
-                    b.ToTable("RealEstateDetail");
+                    b.ToTable("RealEstateDetail", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.RealEstatePhoto", b =>
@@ -537,7 +509,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("RealEstateReasId");
 
-                    b.ToTable("RealEstatePhoto");
+                    b.ToTable("RealEstatePhoto", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Role", b =>
@@ -554,7 +526,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Role");
+                    b.ToTable("Role", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Rule", b =>
@@ -577,7 +549,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("RuleId");
 
-                    b.ToTable("Rule");
+                    b.ToTable("Rule", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Task", b =>
@@ -629,7 +601,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountCreateId");
 
-                    b.ToTable("Task");
+                    b.ToTable("Task", (string)null);
                 });
 
             modelBuilder.Entity("API.Entity.Account", b =>

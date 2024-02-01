@@ -1,14 +1,10 @@
-﻿using API.Data;
-using API.DTOs;
+﻿using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Errors;
 using API.Interfaces;
 using AutoMapper;
 using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -16,54 +12,17 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private DataContext _context;
+        private IAccountRepository _accountRepository;
         private ITokenService _tokenService;
         private IMapper _mapper;
-        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
+        public AccountController(ITokenService tokenService, IMapper mapper, IAccountRepository accountRepository)
         {
-            _context = context;
             _tokenService = tokenService;
             _mapper = mapper;
+            _accountRepository = accountRepository;
         }
 
-        [HttpGet("testAuth")]
-        [Authorize]
-        public async Task<ActionResult<String>> TestAuth()
-        {
-            return ((int)RoleEnum.Member).ToString();
-
-        }
-
-        [HttpGet("testAuthMember")]
-        [Authorize(policy: "Member")]
-        public async Task<ActionResult<String>> TestAuthMem()
-        {
-            return "You are good member";
-        }
-
-        [HttpGet("testAuthAdmin")]
-        [Authorize(policy: "Admin")]
-        public async Task<ActionResult<String>> TestAuthAd()
-        {
-            return "You are good admin";
-        }
-
-        [HttpGet("testAuthStaff")]
-        [Authorize(policy: "Staff")]
-        public async Task<ActionResult<String>> TestAuthStaff()
-        {
-            return "You are good staff";
-        }
-
-        [HttpGet("testAuthAdminStaff")]
-        [Authorize(policy: "AdminAndStaff")]
-        public async Task<ActionResult<String>> TestAuthAdStaff()
-        {
-            return "You are good admin and staff";
-        }
-
-
-        [HttpPost("login-google")]
+        [HttpPost("login/google")]
         public async Task<ActionResult<UserDto>> LoginGoogle(string idTokenString)
         {
             try
@@ -73,7 +32,7 @@ namespace API.Controllers
 
                 string userEmail = payload.Email;
 
-                if (await UserEmailExists(userEmail))
+                if (await _accountRepository.isEmailExisted(userEmail))
                 {
                     // login
 
@@ -99,11 +58,11 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
 
-            if (await UserExists(registerDto.Username))
+            if (await _accountRepository.isUserNameExisted(registerDto.Username))
             {
                 return BadRequest(new ApiResponse(400, "Username already exist"));
             }
-            if (await UserEmailExists(registerDto.AccountEmail))
+            if (await _accountRepository.isEmailExisted(registerDto.AccountEmail))
             {
                 return BadRequest(new ApiResponse(400, "Email already exist"));
             }
@@ -122,8 +81,7 @@ namespace API.Controllers
             account.Date_Created = DateTime.UtcNow;
             account.Date_End = DateTime.MaxValue;
 
-            _context.Account.Add(account);
-            await _context.SaveChangesAsync();
+            await _accountRepository.CreateAsync(account);
 
             return new UserDto
             {
@@ -134,11 +92,10 @@ namespace API.Controllers
             };
         }
 
-        [HttpPost("login-admin")]
+        [HttpPost("login/admin")]
         public async Task<ActionResult<UserDto>> LoginAdmin(LoginDto loginDto)
         {
-            var account = await _context.Account
-                .SingleOrDefaultAsync(x => x.Username == loginDto.Username);
+            Account account = await _accountRepository.GetAccountByUsernameAsync(loginDto.Username);
             if (account == null) return Unauthorized(new ApiResponse(401));
 
             using var hmac = new HMACSHA512(account.PasswordSalt);
@@ -151,7 +108,6 @@ namespace API.Controllers
                 }
             }
 
-
             return new UserDto
             {
                 Email = account.AccountEmail,
@@ -159,16 +115,6 @@ namespace API.Controllers
                 AccountName = account.AccountName,
                 Username = account.Username
             };
-        }
-
-        private async Task<bool> UserEmailExists(string email)
-        {
-            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == email.ToLower());
-        }
-
-        private async Task<bool> UserExists(string email)
-        {
-            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == email.ToLower());
         }
     }
 }
