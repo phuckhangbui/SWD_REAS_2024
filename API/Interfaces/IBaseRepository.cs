@@ -2,9 +2,9 @@
 {
     public interface IBaseRepository<T> where T : class
     {
-        ICollection<T> GetAll();
-        void Create(T entity);
-        void Update(T entity);
-        void Delete(ICollection<T> entity);
+        Task<IAsyncEnumerable<T>> GetAllAsync();
+        Task CreateAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(ICollection<T> entity);
     }
 }

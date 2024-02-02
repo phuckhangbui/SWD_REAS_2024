@@ -1,8 +1,8 @@
 ﻿using API.Data;
 using API.Errors;
 using API.Interfaces;
-using API.Services;
 using API.Repository;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,6 @@ namespace API.Extensions
         public static IServiceCollection ApplicationServices(this IServiceCollection services
             , IConfiguration config)
         {
-            //register services here
             services.AddScoped<IRealEstateRepository, RealEstateRepository>();
             services.AddScoped<IRealEstateDetailRepository, RealEstateDetailRepository>();
             services.AddScoped<IRealEstatePhotoRepository, RealEstatePhotoRepository>();

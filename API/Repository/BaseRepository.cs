@@ -13,18 +13,18 @@ namespace API.Repository
             _context = context;
         }
 
-        public ICollection<T> GetAll()
+        public async Task<IAsyncEnumerable<T>> GetAllAsync()
         {
-            return _context.Set<T>().ToList();
+            return (IAsyncEnumerable<T>)await _context.Set<T>().ToListAsync();
         }
 
-        public void Create(T entity)
+        public async Task CreateAsync(T entity)
         {
             _context.Set<T>().Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(ICollection<T> entity)
+        public async Task DeleteAsync(ICollection<T> entity)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace API.Repository
                 {
                     _context.Set<T>().Remove(t);
                 }
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -41,11 +41,11 @@ namespace API.Repository
 
         }
 
-        public void Update(T entity)
+        public async Task UpdateAsync(T entity)
         {
             var tracker = _context.Attach(entity);
             tracker.State = EntityState.Modified;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,16 +1,12 @@
-﻿using API.Data;
-using API.DTOs;
+﻿using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Errors;
 using API.Interfaces;
 using API.MessageResponse;
 using API.Repository;
 using AutoMapper;
 using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using API.Services;
@@ -19,7 +15,7 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private DataContext _context;
+        private IAccountRepository _accountRepository;
         private ITokenService _tokenService;
         private IMapper _mapper;
         private IAccountRepository _accountRepository;
@@ -27,7 +23,6 @@ namespace API.Controllers
         private IRoleRepository _roleRepository;
         public AccountController(DataContext context, ITokenService tokenService, IMapper mapper, IAccountRepository accountRepository, IMajorRepository majorRepository, IRoleRepository roleRepository)
         {
-            _context = context;
             _tokenService = tokenService;
             _mapper = mapper;
             _accountRepository = accountRepository;
@@ -35,44 +30,7 @@ namespace API.Controllers
             _roleRepository = roleRepository;
         }
 
-        [HttpGet("testAuth")]
-        [Authorize]
-        public async Task<ActionResult<String>> TestAuth()
-        {
-            return ((int)RoleEnum.Member).ToString();
-
-        }
-
-        [HttpGet("testAuthMember")]
-        [Authorize(policy: "Member")]
-        public async Task<ActionResult<String>> TestAuthMem()
-        {
-            return "You are good member";
-        }
-
-        [HttpGet("testAuthAdmin")]
-        [Authorize(policy: "Admin")]
-        public async Task<ActionResult<String>> TestAuthAd()
-        {
-            return "You are good admin";
-        }
-
-        [HttpGet("testAuthStaff")]
-        [Authorize(policy: "Staff")]
-        public async Task<ActionResult<String>> TestAuthStaff()
-        {
-            return "You are good staff";
-        }
-
-        [HttpGet("testAuthAdminStaff")]
-        [Authorize(policy: "AdminAndStaff")]
-        public async Task<ActionResult<String>> TestAuthAdStaff()
-        {
-            return "You are good admin and staff";
-        }
-
-
-        [HttpPost("login-google")]
+        [HttpPost("login/google")]
         public async Task<ActionResult<UserDto>> LoginGoogle(string idTokenString)
         {
             try
@@ -82,10 +40,17 @@ namespace API.Controllers
 
                 string userEmail = payload.Email;
 
-                if (await UserEmailExists(userEmail))
+                if (await _accountRepository.isEmailExisted(userEmail))
                 {
                     // login
-
+                    Account account = await _accountRepository.GetAccountByEmailAsync(userEmail);
+                    return new UserDto
+                    {
+                        Email = account.AccountEmail,
+                        Token = _tokenService.CreateToken(account),
+                        AccountName = account.AccountName,
+                        Username = account.Username
+                    };
                 }
                 else
                 {
@@ -97,7 +62,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400));
+                return BadRequest(new ApiException(400));
 
             }
 
@@ -108,13 +73,13 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
 
-            if (await UserExists(registerDto.Username))
+            if (await _accountRepository.isUserNameExisted(registerDto.Username))
             {
-                return BadRequest(new ApiResponse(400, "Username already exist"));
+                return BadRequest(new ApiException(400, "Username already exist"));
             }
-            if (await UserEmailExists(registerDto.AccountEmail))
+            if (await _accountRepository.isEmailExisted(registerDto.AccountEmail))
             {
-                return BadRequest(new ApiResponse(400, "Email already exist"));
+                return BadRequest(new ApiException(400, "Email already exist"));
             }
 
             var account = _mapper.Map<Account>(registerDto);
@@ -131,8 +96,7 @@ namespace API.Controllers
             account.Date_Created = DateTime.UtcNow;
             account.Date_End = DateTime.MaxValue;
 
-            _context.Account.Add(account);
-            await _context.SaveChangesAsync();
+            await _accountRepository.CreateAsync(account);
 
             return new UserDto
             {
@@ -143,11 +107,10 @@ namespace API.Controllers
             };
         }
 
-        [HttpPost("login-admin")]
+        [HttpPost("login/admin")]
         public async Task<ActionResult<UserDto>> LoginAdmin(LoginDto loginDto)
         {
-            var account = await _context.Account
-                .SingleOrDefaultAsync(x => x.Username == loginDto.Username);
+            Account account = await _accountRepository.GetAccountByUsernameAsync(loginDto.Username);
             if (account == null) return Unauthorized(new ApiResponse(401));
 
             using var hmac = new HMACSHA512(account.PasswordSalt);
@@ -156,10 +119,9 @@ namespace API.Controllers
             {
                 if (computedHash[i] != account.PasswordHash[i])
                 {
-                    Unauthorized(new ApiResponse(401));
+                    Unauthorized(new ApiException(401));
                 }
             }
-
 
             return new UserDto
             {
@@ -309,6 +271,6 @@ namespace API.Controllers
             SendMailNewStaff.SendEmailWhenCreateNewStaff(account.AccountEmail, account.Username, account.PasswordHash, account.AccountName);
             return new ApiResponseMessage("MSG04");
         }
-        
+      
     }
 }
