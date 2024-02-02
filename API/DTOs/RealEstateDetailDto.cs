@@ -16,7 +16,7 @@ namespace API.DTOs
         public string AccountOwnerName { get; set; }
         public DateTime DateCreated { get; set; }
 
-        public List<RealEstatePhoto> Photos { get; set; }
-        public RealEstateDetail Detail { get; set; }
+        public List<ListPhotoRealEstateDto> Photos { get; set; }
+        public RealEstatePaper Detail { get; set; }
     }
 }

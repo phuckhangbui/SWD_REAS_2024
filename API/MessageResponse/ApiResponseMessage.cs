@@ -18,6 +18,7 @@
         public const string MSG14 = "MSG14";
         public const string MSG15 = "MSG15";
         public const string MSG16 = "MSG16";
+        public const string MSG17 = "MSG17";
 
 
         public string MessageCode { get; set; }
@@ -46,6 +47,7 @@
             MSG14 => "The system has recorded that you have registered to participate in the auction.",
             MSG15 => "The system has recorded your successful registration to participate in the auction.",
             MSG16 => "Your real estate has been recorded in the system, please wait for admin to confirm.",
+            MSG17 => "Change status account successfully. ",
             _ => null
         };
     }

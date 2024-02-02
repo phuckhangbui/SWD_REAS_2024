@@ -6,5 +6,6 @@
         public string Username { get; set; }
         public string AccountName { get; set; }
         public string Token { get; set; }
+        public int AccountId { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace API.Helpers
         public AutoMapperProfiles()
         {
             CreateMap<RegisterDto, Account>();
+            CreateMap<NewAccountDto, Account>();
         }
     }
 }
