@@ -15,7 +15,8 @@ namespace API.Controllers
         private IAccountRepository _accountRepository;
         private ITokenService _tokenService;
         private IMapper _mapper;
-        public AccountController(ITokenService tokenService, IMapper mapper, IAccountRepository accountRepository)
+        public AccountController(
+            ITokenService tokenService, IMapper mapper, IAccountRepository accountRepository) : base(accountRepository)
         {
             _tokenService = tokenService;
             _mapper = mapper;
@@ -60,11 +61,11 @@ namespace API.Controllers
 
             if (await _accountRepository.isUserNameExisted(registerDto.Username))
             {
-                return BadRequest(new ApiResponse(400, "Username already exist"));
+                return BadRequest(new ApiException(400, "Username already exist"));
             }
             if (await _accountRepository.isEmailExisted(registerDto.AccountEmail))
             {
-                return BadRequest(new ApiResponse(400, "Email already exist"));
+                return BadRequest(new ApiException(400, "Email already exist"));
             }
 
             var account = _mapper.Map<Account>(registerDto);
@@ -104,7 +105,7 @@ namespace API.Controllers
             {
                 if (computedHash[i] != account.PasswordHash[i])
                 {
-                    Unauthorized(new ApiResponse(401));
+                    Unauthorized(new ApiException(401));
                 }
             }
 

@@ -30,5 +30,11 @@ namespace API.Repository
             return await _context.Account
                 .SingleOrDefaultAsync(x => x.Username == username);
         }
+
+        public async Task<Account> GetAccountByAccountIdAsync(int accountId)
+        {
+            return await _context.Account
+                .SingleOrDefaultAsync(x => x.AccountId == accountId);
+        }
     }
 }
