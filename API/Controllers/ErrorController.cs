@@ -8,7 +8,7 @@ namespace API.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : BaseApiController
     {
-        public ErrorController(IAccountRepository accountRepository) : base(accountRepository)
+        public ErrorController(IAccountRepository accountRepository)
         {
         }
 

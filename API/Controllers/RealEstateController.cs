@@ -1,13 +1,9 @@
-﻿using API.Data;
-using API.DTOs;
-using API.Entity;
+﻿using API.DTOs;
 using API.Enums;
 using API.Errors;
 using API.Interfaces;
 using API.MessageResponse;
-using API.Repository;
 using API.Validate;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -16,9 +12,9 @@ namespace API.Controllers
     {
         private readonly IRealEstateRepository _real_estate_repository;
 
-        public RealEstateController(IRealEstateRepository real_estate_repository) : base(real_estate_repository)
+        public RealEstateController()
         {
-            _real_estate_repository = real_estate_repository;
+
         }
 
         [HttpGet("/home/real_estate")]
@@ -50,13 +46,13 @@ namespace API.Controllers
                 parseValidate.ParseStringToInt(x.ReasPrice) <= parseValidate.ParseStringToInt(searchRealEstateForMemerDto.ReasPriceTo))))
                 .Select(x => new ListRealEstateDto
                 {
-                ReasId = x.ReasId,
-                ReasName = x.ReasName,
-                ReasPrice = x.ReasPrice,
-                ReasStatus = x.ReasStatus,
-                DateStart = x.DateStart,
-                DateEnd = x.DateEnd,
-            });
+                    ReasId = x.ReasId,
+                    ReasName = x.ReasName,
+                    ReasPrice = x.ReasPrice,
+                    ReasStatus = x.ReasStatus,
+                    DateStart = x.DateStart,
+                    DateEnd = x.DateEnd,
+                });
             if (!_real_estate_list.Any())
             {
                 var apiResponseMessage = new ApiResponseMessage("MSG01");
@@ -72,7 +68,7 @@ namespace API.Controllers
         [HttpGet("/home/my_real_estate")]
         public async Task<ActionResult<List<ListRealEstateDto>>> GetOnwerRealEstate(UserDto userDto)
         {
-            if(userDto != null)
+            if (userDto != null)
             {
                 var list_owner_real_estate = _real_estate_repository.GetAllAsync().Result.Where(x => x.AccountOwnerId == userDto.AccountId).Select(x => new ListRealEstateDto
                 {
@@ -91,6 +87,6 @@ namespace API.Controllers
             }
         }
 
-           
+
     }
 }

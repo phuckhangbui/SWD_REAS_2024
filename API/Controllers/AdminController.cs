@@ -1,11 +1,10 @@
-using System.Security.Claims;
 using API.DTOs;
-using API.Entity;
 using API.Extension;
 using API.Helper;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
@@ -14,7 +13,7 @@ public class AdminController : BaseApiController
     private readonly IAdminRepository _adminRepository;
     private readonly IMapper _mapper;
 
-    public AdminController(IAdminRepository adminRepository, IMapper mapper) : base(adminRepository)
+    public AdminController(IAdminRepository adminRepository, IMapper mapper)
     {
         this._mapper = mapper;
         this._adminRepository = adminRepository;

@@ -1,5 +1,4 @@
-﻿using API.Entity;
-using API.Interfaces;
+﻿using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,14 +7,14 @@ namespace API.Controllers
     [ApiController]
     public class TestController : BaseApiController
     {
-        public TestController(IAccountRepository accountRepository) : base(accountRepository)
+        public TestController(IAccountRepository accountRepository)
         {
         }
 
         [HttpGet("auth")]
-        public async Task<ActionResult<Account>> TestAuth()
+        public async Task<ActionResult<string>> TestAuth()
         {
-            return await GetLoginAccountAsync();
+            return "check ok";
         }
 
         [HttpGet("auth/member")]

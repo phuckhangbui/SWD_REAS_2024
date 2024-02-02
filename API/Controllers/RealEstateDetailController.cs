@@ -1,6 +1,4 @@
-﻿using API.Data;
-using API.DTOs;
-using API.Entity;
+﻿using API.DTOs;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +10,7 @@ namespace API.Controllers
         private readonly IRealEstateDetailRepository _real_estate_detail_repository;
         private readonly IRealEstatePhotoRepository _real_estate_photo_repository;
 
-        public RealEstateDetailController(IRealEstateRepository real_estate_repository, IRealEstateDetailRepository realEstateDetailRepository, IRealEstatePhotoRepository realEstatePhotoRepository) : base(realEstateDetailRepository)
+        public RealEstateDetailController(IRealEstateRepository real_estate_repository, IRealEstateDetailRepository realEstateDetailRepository, IRealEstatePhotoRepository realEstatePhotoRepository)
         {
             _real_estate_repository = real_estate_repository;
             _real_estate_detail_repository = realEstateDetailRepository;
