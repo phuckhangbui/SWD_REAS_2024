@@ -29,12 +29,13 @@ namespace API.Controllers
         }
 
         [HttpPost("login/google")]
-        public async Task<ActionResult<UserDto>> LoginGoogle(string idTokenString)
+        public async Task<ActionResult<UserDto>> LoginGoogle([FromBody] LoginGoogleDto loginGoogleDto)
         {
+            var test = 1;
             try
             {
                 // validate token
-                GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(idTokenString);
+                GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(loginGoogleDto.idTokenString);
 
                 string userEmail = payload.Email;
 
@@ -52,18 +53,36 @@ namespace API.Controllers
                 }
                 else
                 {
-                    // register 
+                    // register
+                    using var hmac = new HMACSHA512();
 
+                    Account account = new Account();
+                    account.AccountEmail = userEmail;
+                    account.Username = payload.Name;
+                    account.AccountName = payload.Name;
+                    account.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("FixThislater123@"));
+                    account.PasswordSalt = hmac.Key;
+                    account.RoleId = 1;
+                    account.MajorId = 1;
+                    account.Date_Created = DateTime.UtcNow;
+                    account.Date_End = DateTime.MaxValue;
+
+                    await _accountRepository.CreateAsync(account);
+
+                    return new UserDto
+                    {
+                        Email = account.AccountEmail,
+                        Token = _tokenService.CreateToken(account),
+                        AccountName = account.AccountName,
+                        Username = account.Username
+                    };
                 }
-
-                return new UserDto();
             }
             catch (Exception ex)
             {
                 return BadRequest(new ApiException(400));
 
             }
-
         }
 
 
@@ -89,7 +108,6 @@ namespace API.Controllers
             account.AccountName = registerDto.AccountName;
             account.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
             account.PasswordSalt = hmac.Key;
-            account.RoleId = 1;
             account.MajorId = 1;
             account.Date_Created = DateTime.UtcNow;
             account.Date_End = DateTime.MaxValue;

@@ -14,7 +14,11 @@ namespace API.Controllers
         [HttpGet("auth")]
         public async Task<ActionResult<string>> TestAuth()
         {
+<<<<<<< HEAD
             return "check ok";
+=======
+            return "Get in good";
+>>>>>>> dev_khang
         }
 
         [HttpGet("auth/member")]
