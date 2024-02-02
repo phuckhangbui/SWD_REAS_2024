@@ -1,5 +1,4 @@
-﻿using API.Entity;
-using API.Interfaces;
+﻿using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +12,9 @@ namespace API.Controllers
         }
 
         [HttpGet("auth")]
-        public async Task<ActionResult<Account>> TestAuth()
+        public async Task<ActionResult<string>> TestAuth()
         {
-            return await GetLoginAccountAsync();
+            return "Get in good";
         }
 
         [HttpGet("auth/member")]
