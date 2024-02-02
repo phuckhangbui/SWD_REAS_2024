@@ -22,19 +22,16 @@ namespace API.Repository
 
         public async Task<bool> isUserNameExisted(string userName)
         {
-            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == userName.ToLower());
+            return await _context.Account.AnyAsync(x => x.Username.ToLower() == userName.ToLower());
         }
 
-        public async Task<Account> GetAccountByUsernameAsync(string username)
-        {
-            return await _context.Account
+        public async Task<Account> GetAccountByUsernameAsync(string username) => await _context.Account
                 .SingleOrDefaultAsync(x => x.Username == username);
-        }
 
-        public async Task<Account> GetAccountByAccountIdAsync(int accountId)
-        {
-            return await _context.Account
+        public async Task<Account> GetAccountByAccountIdAsync(int accountId) => await _context.Account
                 .SingleOrDefaultAsync(x => x.AccountId == accountId);
-        }
+
+        public async Task<Account> GetAccountByEmailAsync(string email) => await _context.Account
+                .SingleOrDefaultAsync(x => x.AccountEmail == email);
     }
 }

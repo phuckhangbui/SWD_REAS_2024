@@ -36,7 +36,14 @@ namespace API.Controllers
                 if (await _accountRepository.isEmailExisted(userEmail))
                 {
                     // login
-
+                    Account account = await _accountRepository.GetAccountByEmailAsync(userEmail);
+                    return new UserDto
+                    {
+                        Email = account.AccountEmail,
+                        Token = _tokenService.CreateToken(account),
+                        AccountName = account.AccountName,
+                        Username = account.Username
+                    };
                 }
                 else
                 {
@@ -48,7 +55,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400));
+                return BadRequest(new ApiException(400));
 
             }
 

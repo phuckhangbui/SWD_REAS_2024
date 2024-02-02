@@ -8,5 +8,6 @@ namespace API.Interfaces
         Task<bool> isUserNameExisted(string userName);
         Task<Account> GetAccountByUsernameAsync(string username);
         Task<Account> GetAccountByAccountIdAsync(int accountId);
+        Task<Account> GetAccountByEmailAsync(string email);
     }
 }
