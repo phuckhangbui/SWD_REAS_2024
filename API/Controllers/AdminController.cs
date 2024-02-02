@@ -14,7 +14,7 @@ public class AdminController : BaseApiController
     private readonly IAdminRepository _adminRepository;
     private readonly IMapper _mapper;
 
-    public AdminController(IAdminRepository adminRepository, IMapper mapper)
+    public AdminController(IAdminRepository adminRepository, IMapper mapper) : base(adminRepository)
     {
         this._mapper = mapper;
         this._adminRepository = adminRepository;

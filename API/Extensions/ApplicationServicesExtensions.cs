@@ -17,9 +17,8 @@ namespace API.Extensions
             services.AddScoped<IRealEstateDetailRepository, RealEstateDetailRepository>();
             services.AddScoped<IRealEstatePhotoRepository, RealEstatePhotoRepository>();
             services.AddScoped<IRuleRepository, RuleRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IMajorRepository, MajorRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IAuctionRepository, AuctionRepository>();
 
 
             services.AddDbContext<DataContext>(opt =>

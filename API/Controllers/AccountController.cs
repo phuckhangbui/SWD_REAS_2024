@@ -10,24 +10,23 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 using API.Services;
+using API.Data;
+using API.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private IAccountRepository _accountRepository;
         private ITokenService _tokenService;
         private IMapper _mapper;
         private IAccountRepository _accountRepository;
-        private IMajorRepository _majorRepository;
-        private IRoleRepository _roleRepository;
-        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper, IAccountRepository accountRepository, IMajorRepository majorRepository, IRoleRepository roleRepository)
+        private DataContext _context;
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper, IAccountRepository accountRepository) : base(accountRepository)
         {
             _tokenService = tokenService;
             _mapper = mapper;
-            _accountRepository = accountRepository;
-            _majorRepository = majorRepository;
-            _roleRepository = roleRepository;
+            _context = context;
         }
 
         [HttpPost("login/google")]
@@ -132,27 +131,18 @@ namespace API.Controllers
             };
         }
 
-        private async Task<bool> UserEmailExists(string email)
-        {
-            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == email.ToLower());
-        }
-
-        private async Task<bool> UserExists(string email)
-        {
-            return await _context.Account.AnyAsync(x => x.Username.ToLower() == email.ToLower());
-        }
 
         [HttpGet("/admin/accounts")]
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccounts()
         {
-            var list_account = _accountRepository.GetAll().Where(x => new[] {(int)RoleEnum.Member, (int)RoleEnum.Staff}.Contains(x.RoleId)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
+            var list_account = _accountRepository.GetAllAsync().Result.Where(x => new[] {(int)RoleEnum.Member, (int)RoleEnum.Staff}.Contains(x.RoleId)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
             {
                 AccountId = x.AccountId,
                 Username = x.Username,
                 AccountName = x.AccountName,
                 AccountEmail = x.AccountEmail,
                 PhoneNumber = x.PhoneNumber,
-                Role = _roleRepository.GetAll().Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
+                Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
                 Account_Status = x.Account_Status,
                 Date_Created = x.Date_Created
             }).ToList();
@@ -164,7 +154,7 @@ namespace API.Controllers
         [HttpGet("/admin/accounts/detail/{id}")]
         public async Task<ActionResult<UserInformationDto>> GetAccountDetail(int id)
         {
-            var account = _accountRepository.GetAll().Where(x => x.AccountId == id).Select(x => new UserInformationDto
+            var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == id).Select(x => new UserInformationDto
             {
                 AccountId = x.AccountId,
                 AccountName = x.AccountName,
@@ -175,8 +165,8 @@ namespace API.Controllers
                 Username = x.Username,
                 Date_Created= x.Date_Created,
                 Date_End = x.Date_End,
-                Major = _majorRepository.GetAll().Where(y => y.MajorId == x.MajorId).Select(x => x.MajorName).FirstOrDefault(),
-                Role = _roleRepository.GetAll().Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
+                Major = _context.Major.Where(y => y.MajorId == x.MajorId).Select(x => x.MajorName).FirstOrDefault(),
+                Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
                 Account_Status = x.Account_Status
             }).FirstOrDefault();
             if (!ModelState.IsValid)
@@ -187,7 +177,7 @@ namespace API.Controllers
         [HttpPost("searchAccount")]
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccountsBýearch(SearchAccountDto searchAccountDto)
         {
-            var list_account = _accountRepository.GetAll().Where(x => ((new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId) && searchAccountDto.RoleId == 0) || x.RoleId == searchAccountDto.RoleId)
+            var list_account = _accountRepository.GetAllAsync().Result.Where(x => ((new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId) && searchAccountDto.RoleId == 0) || x.RoleId == searchAccountDto.RoleId)
             && (searchAccountDto.AccountName == null || x.AccountName.Contains(searchAccountDto.AccountName)) 
             && (searchAccountDto.AccountEmail == null || x.AccountEmail.Contains(searchAccountDto.AccountEmail))
             && (searchAccountDto.Username == null || x.Username.Contains(searchAccountDto.Username))
@@ -199,7 +189,7 @@ namespace API.Controllers
                 AccountName = x.AccountName,
                 AccountEmail = x.AccountEmail,
                 PhoneNumber = x.PhoneNumber,
-                Role = _roleRepository.GetAll().Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
+                Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
                 Account_Status = x.Account_Status,
                 Date_Created = x.Date_Created
             }).ToList();
@@ -212,7 +202,7 @@ namespace API.Controllers
         public async Task<ActionResult<ApiResponseMessage>> ChangeStatusAccount(ChangeStatusAccountDto changeStatusAccountDto)
         {
             var newaccount = new Account();
-            var account = _accountRepository.GetAll().Where(x => x.AccountId == changeStatusAccountDto.AccountId).FirstOrDefault();
+            var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == changeStatusAccountDto.AccountId).FirstOrDefault();
             if (account != null)
             {
                 _context.Entry(account).State = EntityState.Detached;
@@ -238,18 +228,19 @@ namespace API.Controllers
             {
                 newaccount.Date_End = DateTime.MaxValue;
             }
-            _accountRepository.Update(newaccount);
+            _accountRepository.UpdateAsync(newaccount);
             return new ApiResponseMessage("MSG17");
         }
 
         [HttpPost("AddAccount")] 
         public async Task<ActionResult<ApiResponseMessage>> CreateNewAccountForStaff(NewAccountDto account)
         {
-            if (await UserExists(account.Username))
+            
+            if (await _accountRepository.isUserNameExisted(account.Username))
             {
                 return BadRequest(new ApiResponse(400, "Username already exist"));
             }
-            if (await UserEmailExists(account.AccountEmail))
+            if (await _accountRepository.isEmailExisted(account.AccountEmail))
             {
                 return BadRequest(new ApiResponse(400, "Email already exist"));
             }
@@ -267,7 +258,7 @@ namespace API.Controllers
             newaccount.Date_Created = DateTime.UtcNow;
             newaccount.Date_End = DateTime.MaxValue;
             newaccount.Account_Status = 1;
-            _accountRepository.Create(newaccount);
+            _accountRepository.CreateAsync(newaccount);
             SendMailNewStaff.SendEmailWhenCreateNewStaff(account.AccountEmail, account.Username, account.PasswordHash, account.AccountName);
             return new ApiResponseMessage("MSG04");
         }

@@ -13,9 +13,9 @@ namespace API.Repository
             _context = context;
         }
 
-        public async Task<IAsyncEnumerable<T>> GetAllAsync()
+        public async Task<List<T>> GetAllAsync()
         {
-            return (IAsyncEnumerable<T>)await _context.Set<T>().ToListAsync();
+            return await _context.Set<T>().ToListAsync();
         }
 
         public async Task CreateAsync(T entity)

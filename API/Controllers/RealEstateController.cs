@@ -14,19 +14,17 @@ namespace API.Controllers
 {
     public class RealEstateController : BaseApiController
     {
-        private readonly DataContext _context;
         private readonly IRealEstateRepository _real_estate_repository;
 
-        public RealEstateController(IRealEstateRepository real_estate_repository, DataContext context)
+        public RealEstateController(IRealEstateRepository real_estate_repository) : base(real_estate_repository)
         {
             _real_estate_repository = real_estate_repository;
-            _context = context;
         }
 
         [HttpGet("/home/real_estate")]
         public async Task<ActionResult<List<ListRealEstateDto>>> ManageRealEstate()
         {
-            var _real_estate_list = _real_estate_repository.GetAll().Where(x => new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Re_up, (int)RealEstateEnum.Auctioning }.Contains(x.ReasStatus)).Select(x => new ListRealEstateDto
+            var _real_estate_list = _real_estate_repository.GetAllAsync().Result.Where(x => new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Re_up, (int)RealEstateEnum.Auctioning }.Contains(x.ReasStatus)).Select(x => new ListRealEstateDto
             {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
@@ -44,7 +42,7 @@ namespace API.Controllers
         public async Task<ActionResult<List<ListRealEstateDto>>> SearchRealEstateForMember(SearchRealEstateForMemerDto searchRealEstateForMemerDto)
         {
             ParseValidate parseValidate = new ParseValidate();
-            var _real_estate_list = _real_estate_repository.GetAll().Where(x =>
+            var _real_estate_list = _real_estate_repository.GetAllAsync().Result.Where(x =>
                 ((new[] { 2, 4, 7 }.Contains(x.ReasStatus) && searchRealEstateForMemerDto.ReasStatus == -1) || searchRealEstateForMemerDto.ReasStatus == x.ReasStatus) &&
                 (searchRealEstateForMemerDto.ReasName == null || x.ReasName.Contains(searchRealEstateForMemerDto.ReasName)) &&
                 ((string.IsNullOrEmpty(searchRealEstateForMemerDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateForMemerDto.ReasPriceTo)) ||
@@ -76,7 +74,7 @@ namespace API.Controllers
         {
             if(userDto != null)
             {
-                var list_owner_real_estate = _real_estate_repository.GetAll().Where(x => x.AccountOwnerId == userDto.AccountId).Select(x => new ListRealEstateDto
+                var list_owner_real_estate = _real_estate_repository.GetAllAsync().Result.Where(x => x.AccountOwnerId == userDto.AccountId).Select(x => new ListRealEstateDto
                 {
                     ReasId = x.ReasId,
                     ReasName = x.ReasName,

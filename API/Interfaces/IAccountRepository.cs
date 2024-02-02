@@ -9,5 +9,7 @@ namespace API.Interfaces
         Task<Account> GetAccountByUsernameAsync(string username);
         Task<Account> GetAccountByAccountIdAsync(int accountId);
         Task<Account> GetAccountByEmailAsync(string email);
+
+
     }
 }

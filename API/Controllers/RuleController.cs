@@ -7,18 +7,16 @@ namespace API.Controllers
 {
     public class RuleController : BaseApiController
     {
-        private readonly DataContext _dataContext;
         private readonly RuleRepository _rule_repository;
-        public RuleController(DataContext dataContext, RuleRepository ruleRepository)
+        public RuleController(RuleRepository ruleRepository) : base(ruleRepository)
         {
-            _dataContext = dataContext;
             _rule_repository = ruleRepository;
         }
 
         [HttpGet("/home/real_estate/rule")]
         public async Task<ActionResult<Rule>> GetRule()
         {
-            var rule = _rule_repository.GetAll().Where(x => x.Title == "Rule").Select(x => new Rule
+            var rule = _rule_repository.GetAllAsync().Result.Where(x => x.Title == "Rule").Select(x => new Rule
             {
                 Title = x.Title,
                 Content = x.Content,

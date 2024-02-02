@@ -4,10 +4,10 @@ using API.Interfaces;
 
 namespace API.Repository
 {
-    public class RealEstateRepository : BaseRepository<RealEstate>, IRealEstateRepository
+    public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
     {
         private readonly DataContext _dataContext;
-        public RealEstateRepository(DataContext context) : base(context)
+        public AuctionRepository(DataContext context) : base(context)
         {
             _dataContext = context;
         }
