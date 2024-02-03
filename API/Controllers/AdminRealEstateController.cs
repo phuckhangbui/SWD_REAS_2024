@@ -1,9 +1,8 @@
-﻿using API.DTOs;
-using API.Entity;
-using API.Enums;
+﻿using API.Enums;
 using API.Errors;
+using API.Extension;
+using API.Helper;
 using API.Interfaces;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -12,7 +11,6 @@ namespace API.Controllers
 	{
 		private readonly IRealEstateRepository _realEstateRepository;
 		private readonly IRealEstateDetailRepository _realEstateDetailRepository;
-		private readonly IMapper _mapper;
 
 		private const string BaseUri = "/admin/realestate";
 		private const string DetailUri = "/admin/realestate/{reasId}";
@@ -21,34 +19,33 @@ namespace API.Controllers
 
 		public AdminRealEstateController(
 			IRealEstateRepository realEstateRepository,
-			IRealEstateDetailRepository realEstateDetailRepository,
-			IMapper mapper)
+			IRealEstateDetailRepository realEstateDetailRepository)
 		{
 			_realEstateRepository = realEstateRepository;
 			_realEstateDetailRepository = realEstateDetailRepository;
-			_mapper = mapper;
 		}
 
 		[HttpGet(BaseUri)]
-		public async Task<IActionResult> GetRealEstates()
+		public async Task<IActionResult> GetRealEstates([FromQuery] RealEstateParam realEstateParam)
 		{
-			var realEstates = await _realEstateRepository.GetRealEstatesAsync();
+			var realEstates = await _realEstateRepository.GetRealEstatesAsync(realEstateParam);
 
-			var realEstateDtos = _mapper.Map<List<RealEstate>, List<RealEstateDto>>(realEstates);
+			Response.AddPaginationHeader(new PaginationHeader(realEstates.CurrentPage, realEstates.PageSize,
+			realEstates.TotalCount, realEstates.TotalPages));
 
-			return Ok(realEstateDtos);
+			return Ok(realEstates);
 		}
 
 		[HttpGet(DetailUri)]
 		public async Task<IActionResult> GetRealEstateDetail(int reasId)
 		{
-			var realEstateDetail = await _realEstateDetailRepository.GetRealEstateDetailAsync(reasId);
-			if (realEstateDetail == null)
+			bool isExist = await _realEstateRepository.CheckRealEstateExist(reasId);
+			if (!isExist)
 			{
 				return BadRequest(new ApiException(404));
 			}
 
-			var realEstateDetailDto = _mapper.Map<RealEstateInfoDto>(realEstateDetail);
+			var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetailAsync(reasId);
 
 			return Ok(realEstateDetailDto);
 		}
@@ -56,36 +53,30 @@ namespace API.Controllers
 		[HttpPost(BlockUri)]
 		public async Task<IActionResult> BlockRealEstate(int reasId)
 		{
-			var realEstate = await _realEstateRepository.GetRealEstateWithStatusAsync(
+			var realEstateDto = await _realEstateRepository.GetRealEstateWithStatusAsync(
 				reasId, (int)RealEstateStatus.Selling);
-			if (realEstate == null)
+			if (realEstateDto == null)
 			{
 				return BadRequest(new ApiException(404));
 			}
 
-			realEstate.ReasStatus = (int)RealEstateStatus.Block;
-			//realEstate.DateEnd = DateTime.UtcNow;
-			realEstate = await _realEstateRepository.UpdateRealEstateAsync(realEstate);
+			realEstateDto = await _realEstateRepository.UpdateRealEstateStatusAsync(reasId, (int)RealEstateStatus.Block);
 
-			var realEstateDto = _mapper.Map<RealEstateDto>(realEstate);
 			return Ok(realEstateDto);
 		}
 
 		[HttpPost(UnblockUri)]
 		public async Task<IActionResult> UnblockRealEstate(int reasId)
 		{
-			var realEstate = await _realEstateRepository.GetRealEstateWithStatusAsync(
+			var realEstateDto = await _realEstateRepository.GetRealEstateWithStatusAsync(
 				reasId, (int)RealEstateStatus.Block);
-			if (realEstate == null)
+			if (realEstateDto == null)
 			{
 				return BadRequest(new ApiException(404));
 			}
 
-			realEstate.ReasStatus = (int)RealEstateStatus.Selling;
-			//realEstate.DateEnd = DateTime.UtcNow;
-			realEstate = await _realEstateRepository.UpdateRealEstateAsync(realEstate);
+			realEstateDto = await _realEstateRepository.UpdateRealEstateStatusAsync(reasId, (int)RealEstateStatus.Selling);
 
-			var realEstateDto = _mapper.Map<RealEstateDto>(realEstate);
 			return Ok(realEstateDto);
 		}
 	}

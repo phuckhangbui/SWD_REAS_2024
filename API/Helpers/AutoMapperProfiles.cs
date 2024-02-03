@@ -11,6 +11,7 @@ namespace API.Helpers
             CreateMap<RegisterDto, Account>();
             CreateMap<RealEstate, RealEstateDto>();
             CreateMap<RealEstateDetail, RealEstateInfoDto>();
+            CreateMap<RealEstatePhoto, RealEstatePhotoDto>();
         }
     }
 }

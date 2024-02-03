@@ -1,9 +1,10 @@
-﻿using API.Entity;
+﻿using API.DTOs;
+using API.Entity;
 
 namespace API.Interfaces
 {
     public interface IRealEstateDetailRepository : IBaseRepository<RealEstateDetail>
     {
-        Task<RealEstateDetail> GetRealEstateDetailAsync(int reasId);
+        Task<RealEstateInfoDto> GetRealEstateDetailAsync(int reasId);
     }
 }

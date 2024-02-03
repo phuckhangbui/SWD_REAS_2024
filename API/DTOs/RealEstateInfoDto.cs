@@ -10,5 +10,6 @@
 		public string Reas_Registration_Book { get; set; }
 		public string Documents_Proving_Marital_Relationship { get; set; }
 		public string Sales_Authorization_Contract { get; set; }
+		public List<RealEstatePhotoDto> Photos { get; set; }
 	}
 }
