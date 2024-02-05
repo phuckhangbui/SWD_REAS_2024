@@ -7,7 +7,7 @@ public class RealEstate
     public string ReasAddress {get; set;}
     public string ReasPrice {get; set;}
     public string ReasDescription {get; set;}
-    public string ReasStatus {get; set;}
+    public int ReasStatus {get; set;}
     public DateTime DateStart {get; set;}
     public DateTime DateEnd {get; set;}
     public string Message {get; set;}
@@ -17,4 +17,6 @@ public class RealEstate
     public DateTime DateCreated {get; set;}
     
     public List<RealEstatePhoto> Photos {get; set;}
+
+    public RealEstateDetail Detail { get; set;}
 }

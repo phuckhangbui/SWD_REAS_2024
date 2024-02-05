@@ -1,4 +1,4 @@
-﻿using API.Entity.Identity;
+﻿using API.Entity;
 using API.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,19 +18,20 @@ namespace API.Services
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"]));
         }
 
-        public string CreateToken(AppUser appUser)
+        public string CreateToken(Account account)
         {
             var claim = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.NameId, appUser.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, appUser.UserName),
+            new Claim(JwtRegisteredClaimNames.NameId, account.AccountId.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, account.Username),
+            new Claim("RoleId", account.RoleId.ToString())
         };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
             var tokenDiscriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claim),
-                Expires = DateTime.Now.AddDays(7),
+                Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = creds
             };
 
