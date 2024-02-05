@@ -9,11 +9,11 @@ namespace API.Services
         {
             var mailContext = new MailContent();
             MailSetting mailSetting = new MailSetting();
-            mailSetting.Mail = "nguyencanqn123@gmail.com";
+            mailSetting.Mail = "reasspring2024@gmail.com";
             mailSetting.Host = "smtp.gmail.com";
             mailSetting.Port = 587;
-            mailSetting.Passwork = "repc pitz qspn meiy";
-            mailSetting.DisplayName = "MinhNguyen";
+            mailSetting.Passwork = "zgtj veex szof becd";
+            mailSetting.DisplayName = "REAS";
             mailContext.To = toEmail;
             mailContext.Subject = "Cấp Tài Khoản UserName, Password Cho Nhân Viên Của Công Ty REAS (Công ty Bất Động Sản)"; ;
             mailContext.Body = "<h3>Lời nói đầu tiên xin cảm ơn đến bạn " + "<strong>" + accountName + "</strong>" + " đã tham gia vào công ty. Sau đây là thông tin tài khoản nhân viên của bạn.</h3>" +
