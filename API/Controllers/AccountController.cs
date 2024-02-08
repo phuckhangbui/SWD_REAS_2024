@@ -26,6 +26,7 @@ namespace API.Controllers
             _tokenService = tokenService;
             _mapper = mapper;
             _context = context;
+            _accountRepository = accountRepository;
         }
 
         [HttpPost("login/google")]
@@ -152,49 +153,68 @@ namespace API.Controllers
         [HttpGet("/admin/accounts")]
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccounts()
         {
-            var list_account = _accountRepository.GetAllAsync().Result.Where(x => new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
+            var adminAccount = GetIdAdmin();
+            if(adminAccount != null)
             {
-                AccountId = x.AccountId,
-                Username = x.Username,
-                AccountName = x.AccountName,
-                AccountEmail = x.AccountEmail,
-                PhoneNumber = x.PhoneNumber,
-                Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
-                Account_Status = x.Account_Status,
-                Date_Created = x.Date_Created
-            }).ToList();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            return Ok(list_account);
+                var list_account = _accountRepository.GetAllAsync().Result.Where(x => new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
+                {
+                    AccountId = x.AccountId,
+                    Username = x.Username,
+                    AccountName = x.AccountName,
+                    AccountEmail = x.AccountEmail,
+                    PhoneNumber = x.PhoneNumber,
+                    Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
+                    Account_Status = x.Account_Status,
+                    Date_Created = x.Date_Created
+                }).ToList();
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                return Ok(list_account);
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
         }
 
         [HttpGet("/admin/accounts/detail/{id}")]
         public async Task<ActionResult<UserInformationDto>> GetAccountDetail(int id)
         {
-            var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == id).Select(x => new UserInformationDto
+            var adminAccount = GetIdAdmin();
+            if(adminAccount != null)
             {
-                AccountId = x.AccountId,
-                AccountName = x.AccountName,
-                AccountEmail = x.AccountEmail,
-                Address = x.Address,
-                Citizen_identification = x.Citizen_identification,
-                PhoneNumber = x.PhoneNumber,
-                Username = x.Username,
-                Date_Created = x.Date_Created,
-                Date_End = x.Date_End,
-                Major = _context.Major.Where(y => y.MajorId == x.MajorId).Select(x => x.MajorName).FirstOrDefault(),
-                Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
-                Account_Status = x.Account_Status
-            }).FirstOrDefault();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            return Ok(account);
+                var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == id).Select(x => new UserInformationDto
+                {
+                    AccountId = x.AccountId,
+                    AccountName = x.AccountName,
+                    AccountEmail = x.AccountEmail,
+                    Address = x.Address,
+                    Citizen_identification = x.Citizen_identification,
+                    PhoneNumber = x.PhoneNumber,
+                    Username = x.Username,
+                    Date_Created = x.Date_Created,
+                    Date_End = x.Date_End,
+                    Major = _context.Major.Where(y => y.MajorId == x.MajorId).Select(x => x.MajorName).FirstOrDefault(),
+                    Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
+                    Account_Status = x.Account_Status
+                }).FirstOrDefault();
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                return Ok(account);
+            }  
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
         }
 
         [HttpPost("searchAccount")]
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccountsBýearch(SearchAccountDto searchAccountDto)
         {
-            var list_account = _accountRepository.GetAllAsync().Result.Where(x => ((new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId) && searchAccountDto.RoleId == 0) || x.RoleId == searchAccountDto.RoleId)
+            var accountAdmin = GetIdAdmin();
+            if(accountAdmin != null)
+            {
+                var list_account = _accountRepository.GetAllAsync().Result.Where(x => ((new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId) && searchAccountDto.RoleId == 0) || x.RoleId == searchAccountDto.RoleId)
             && (searchAccountDto.AccountName == null || x.AccountName.Contains(searchAccountDto.AccountName))
             && (searchAccountDto.AccountEmail == null || x.AccountEmail.Contains(searchAccountDto.AccountEmail))
             && (searchAccountDto.Username == null || x.Username.Contains(searchAccountDto.Username))
@@ -210,74 +230,94 @@ namespace API.Controllers
                 Account_Status = x.Account_Status,
                 Date_Created = x.Date_Created
             }).ToList();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            return Ok(list_account);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                return Ok(list_account);
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
         }
 
         [HttpPost("changeStatusAccount")]
         public async Task<ActionResult<ApiResponseMessage>> ChangeStatusAccount(ChangeStatusAccountDto changeStatusAccountDto)
         {
-            var newaccount = new Account();
-            var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == changeStatusAccountDto.AccountId).FirstOrDefault();
-            if (account != null)
+            var accountAdmin = GetIdAdmin();
+            if(accountAdmin != null)
             {
-                _context.Entry(account).State = EntityState.Detached;
-            }
-            newaccount.AccountId = account.AccountId;
-            newaccount.AccountEmail = account.AccountEmail;
-            newaccount.Username = account.Username;
-            newaccount.AccountName = account.AccountName;
-            newaccount.PhoneNumber = account.PhoneNumber;
-            newaccount.Address = account.Address;
-            newaccount.Citizen_identification = account.Citizen_identification;
-            newaccount.PasswordHash = account.PasswordHash;
-            newaccount.PasswordSalt = account.PasswordSalt;
-            newaccount.MajorId = account.MajorId;
-            newaccount.RoleId = account.RoleId;
-            newaccount.Date_Created = account.Date_Created;
-            newaccount.Account_Status = changeStatusAccountDto.AccountStatus;
-            if (changeStatusAccountDto.AccountStatus == 0)
-            {
-                newaccount.Date_End = DateTime.UtcNow;
+                var newaccount = new Account();
+                var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == changeStatusAccountDto.AccountId).FirstOrDefault();
+                if (account != null)
+                {
+                    _context.Entry(account).State = EntityState.Detached;
+                }
+                newaccount.AccountId = account.AccountId;
+                newaccount.AccountEmail = account.AccountEmail;
+                newaccount.Username = account.Username;
+                newaccount.AccountName = account.AccountName;
+                newaccount.PhoneNumber = account.PhoneNumber;
+                newaccount.Address = account.Address;
+                newaccount.Citizen_identification = account.Citizen_identification;
+                newaccount.PasswordHash = account.PasswordHash;
+                newaccount.PasswordSalt = account.PasswordSalt;
+                newaccount.MajorId = account.MajorId;
+                newaccount.RoleId = account.RoleId;
+                newaccount.Date_Created = account.Date_Created;
+                newaccount.Account_Status = changeStatusAccountDto.AccountStatus;
+                if (changeStatusAccountDto.AccountStatus == 0)
+                {
+                    newaccount.Date_End = DateTime.UtcNow;
+                }
+                else
+                {
+                    newaccount.Date_End = DateTime.MaxValue;
+                }
+                _accountRepository.UpdateAsync(newaccount);
+                return new ApiResponseMessage("MSG17");
             }
             else
             {
-                newaccount.Date_End = DateTime.MaxValue;
+                return BadRequest(new ApiResponse(401));
             }
-            _accountRepository.UpdateAsync(newaccount);
-            return new ApiResponseMessage("MSG17");
         }
 
         [HttpPost("AddAccount")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewAccountForStaff(NewAccountDto account)
         {
-
-            if (await _accountRepository.isUserNameExisted(account.Username))
+            var accountAdmin = GetIdAdmin();
+            if(accountAdmin != null)
             {
-                return BadRequest(new ApiResponse(400, "Username already exist"));
+                if (await _accountRepository.isUserNameExisted(account.Username))
+                {
+                    return BadRequest(new ApiResponse(400, "Username already exist"));
+                }
+                if (await _accountRepository.isEmailExisted(account.AccountEmail))
+                {
+                    return BadRequest(new ApiResponse(400, "Email already exist"));
+                }
+                var newaccount = new Account();
+                using var hmac = new HMACSHA512();
+                newaccount.Username = account.Username;
+                newaccount.AccountEmail = account.AccountEmail;
+                newaccount.Address = account.Address;
+                newaccount.AccountName = account.AccountName;
+                newaccount.Citizen_identification = account.Citizen_identification;
+                newaccount.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(account.PasswordHash));
+                newaccount.PasswordSalt = hmac.Key;
+                newaccount.PhoneNumber = account.PhoneNumber;
+                newaccount.RoleId = 2;
+                newaccount.Date_Created = DateTime.UtcNow;
+                newaccount.Date_End = DateTime.MaxValue;
+                newaccount.Account_Status = 1;
+                _accountRepository.CreateAsync(newaccount);
+                SendMailNewStaff.SendEmailWhenCreateNewStaff(account.AccountEmail, account.Username, account.PasswordHash, account.AccountName);
+                return new ApiResponseMessage("MSG04");
             }
-            if (await _accountRepository.isEmailExisted(account.AccountEmail))
+            else
             {
-                return BadRequest(new ApiResponse(400, "Email already exist"));
+                return BadRequest(new ApiResponse(401));
             }
-            var newaccount = new Account();
-            using var hmac = new HMACSHA512();
-            newaccount.Username = account.Username;
-            newaccount.AccountEmail = account.AccountEmail;
-            newaccount.Address = account.Address;
-            newaccount.AccountName = account.AccountName;
-            newaccount.Citizen_identification = account.Citizen_identification;
-            newaccount.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(account.PasswordHash));
-            newaccount.PasswordSalt = hmac.Key;
-            newaccount.PhoneNumber = account.PhoneNumber;
-            newaccount.RoleId = 2;
-            newaccount.Date_Created = DateTime.UtcNow;
-            newaccount.Date_End = DateTime.MaxValue;
-            newaccount.Account_Status = 1;
-            _accountRepository.CreateAsync(newaccount);
-            SendMailNewStaff.SendEmailWhenCreateNewStaff(account.AccountEmail, account.Username, account.PasswordHash, account.AccountName);
-            return new ApiResponseMessage("MSG04");
         }
 
     }

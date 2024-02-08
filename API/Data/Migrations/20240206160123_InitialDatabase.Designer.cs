@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240131150744_UpdateDatabaseStatus")]
-    partial class UpdateDatabaseStatus
+    [Migration("20240206160123_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,6 @@ namespace API.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountId"));
 
                     b.Property<string>("AccountEmail")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AccountName")
@@ -45,11 +44,9 @@ namespace API.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Citizen_identification")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date_Created")
@@ -58,29 +55,32 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("Date_End")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MajorId")
+                    b.Property<int?>("MajorId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AccountId");
+
+                    b.HasIndex("MajorId")
+                        .IsUnique()
+                        .HasFilter("[MajorId] IS NOT NULL");
+
+                    b.HasIndex("RoleId")
+                        .IsUnique();
 
                     b.ToTable("Account");
                 });
@@ -115,6 +115,9 @@ namespace API.Data.Migrations
                     b.HasKey("AuctionId");
 
                     b.HasIndex("AccountCreateId");
+
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
                     b.ToTable("Auction");
                 });
@@ -172,6 +175,12 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountWinId");
 
+                    b.HasIndex("AuctionId")
+                        .IsUnique();
+
+                    b.HasIndex("ReasId")
+                        .IsUnique();
+
                     b.ToTable("AuctionsAccounting");
                 });
 
@@ -205,6 +214,12 @@ namespace API.Data.Migrations
                     b.HasKey("DepositId");
 
                     b.HasIndex("AccountSignId");
+
+                    b.HasIndex("ReasId")
+                        .IsUnique();
+
+                    b.HasIndex("RuleId")
+                        .IsUnique();
 
                     b.ToTable("DepositAmount");
                 });
@@ -320,6 +335,9 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountSendId");
 
+                    b.HasIndex("TypeId")
+                        .IsUnique();
+
                     b.ToTable("MoneyTransaction");
                 });
 
@@ -361,6 +379,12 @@ namespace API.Data.Migrations
                     b.HasKey("MoneyTransactionDetailId");
 
                     b.HasIndex("AccountReceiveId");
+
+                    b.HasIndex("AuctionId")
+                        .IsUnique();
+
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
                     b.ToTable("MoneyTransactionDetail");
                 });
@@ -462,9 +486,15 @@ namespace API.Data.Migrations
                     b.Property<int>("ReasStatus")
                         .HasColumnType("int");
 
+                    b.Property<int>("Type_Reas")
+                        .HasColumnType("int");
+
                     b.HasKey("ReasId");
 
                     b.HasIndex("AccountOwnerId");
+
+                    b.HasIndex("Type_Reas")
+                        .IsUnique();
 
                     b.ToTable("RealEstate");
                 });
@@ -477,15 +507,37 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReasDetailId"));
 
-                    b.Property<int>("RealEstateReasId")
-                        .HasColumnType("int");
+                    b.Property<string>("Documents_Proving_Marital_Relationship")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReasId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Reas_Cert_Of_Home_Ownership")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reas_Cert_Of_Land_Img_After")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reas_Cert_Of_Land_Img_Front")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reas_Registration_Book")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sales_Authorization_Contract")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ReasDetailId");
 
-                    b.HasIndex("RealEstateReasId");
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
                     b.ToTable("RealEstateDetail");
                 });
@@ -498,9 +550,6 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReasPhotoId"));
 
-                    b.Property<int>("RealEstateReasId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ReasId")
                         .HasColumnType("int");
 
@@ -510,7 +559,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("ReasPhotoId");
 
-                    b.HasIndex("RealEstateReasId");
+                    b.HasIndex("ReasId");
 
                     b.ToTable("RealEstatePhoto");
                 });
@@ -549,6 +598,10 @@ namespace API.Data.Migrations
 
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RuleId");
 
@@ -607,13 +660,29 @@ namespace API.Data.Migrations
                     b.ToTable("Task");
                 });
 
+            modelBuilder.Entity("API.Entity.Type_REAS", b =>
+                {
+                    b.Property<int>("Type_ReasId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Type_ReasId"));
+
+                    b.Property<string>("Type_Reas_Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Type_ReasId");
+
+                    b.ToTable("type_REAS");
+                });
+
             modelBuilder.Entity("API.Entity.Account", b =>
                 {
                     b.HasOne("API.Entity.Major", "Major")
                         .WithOne()
                         .HasForeignKey("API.Entity.Account", "MajorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("API.Entity.Role", "Role")
                         .WithOne()
@@ -812,14 +881,22 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("API.Entity.Type_REAS", "Type_REAS")
+                        .WithOne()
+                        .HasForeignKey("API.Entity.RealEstate", "Type_Reas")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("AccountOwner");
+
+                    b.Navigation("Type_REAS");
                 });
 
             modelBuilder.Entity("API.Entity.RealEstateDetail", b =>
                 {
                     b.HasOne("API.Entity.RealEstate", "RealEstate")
-                        .WithMany()
-                        .HasForeignKey("RealEstateReasId")
+                        .WithOne("Detail")
+                        .HasForeignKey("API.Entity.RealEstateDetail", "ReasId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -830,8 +907,8 @@ namespace API.Data.Migrations
                 {
                     b.HasOne("API.Entity.RealEstate", "RealEstate")
                         .WithMany("Photos")
-                        .HasForeignKey("RealEstateReasId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ReasId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("RealEstate");
@@ -899,6 +976,9 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entity.RealEstate", b =>
                 {
+                    b.Navigation("Detail")
+                        .IsRequired();
+
                     b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618

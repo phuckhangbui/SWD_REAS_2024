@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDatabase : Migration
+    public partial class InitialDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,6 +57,7 @@ namespace API.Data.Migrations
                     RuleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -66,18 +67,33 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "type_REAS",
+                columns: table => new
+                {
+                    Type_ReasId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type_Reas_Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_type_REAS", x => x.Type_ReasId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Account",
                 columns: table => new
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AccountName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Citizen_identification = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MajorId = table.Column<int>(type: "int", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    AccountEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Citizen_identification = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MajorId = table.Column<int>(type: "int", nullable: true),
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     Account_Status = table.Column<int>(type: "int", nullable: false),
                     Date_Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -214,10 +230,11 @@ namespace API.Data.Migrations
                     ReasAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReasPrice = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReasDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReasStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReasStatus = table.Column<int>(type: "int", nullable: false),
                     DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type_Reas = table.Column<int>(type: "int", nullable: false),
                     AccountOwnerId = table.Column<int>(type: "int", nullable: false),
                     AccountOwnerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -230,6 +247,12 @@ namespace API.Data.Migrations
                         column: x => x.AccountOwnerId,
                         principalTable: "Account",
                         principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RealEstate_type_REAS_Type_Reas",
+                        column: x => x.Type_Reas,
+                        principalTable: "type_REAS",
+                        principalColumn: "Type_ReasId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -339,15 +362,20 @@ namespace API.Data.Migrations
                 {
                     ReasDetailId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RealEstateReasId = table.Column<int>(type: "int", nullable: false),
-                    ReasId = table.Column<int>(type: "int", nullable: false)
+                    ReasId = table.Column<int>(type: "int", nullable: false),
+                    Reas_Cert_Of_Land_Img_Front = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reas_Cert_Of_Land_Img_After = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reas_Cert_Of_Home_Ownership = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reas_Registration_Book = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Documents_Proving_Marital_Relationship = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sales_Authorization_Contract = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RealEstateDetail", x => x.ReasDetailId);
                     table.ForeignKey(
-                        name: "FK_RealEstateDetail_RealEstate_RealEstateReasId",
-                        column: x => x.RealEstateReasId,
+                        name: "FK_RealEstateDetail_RealEstate_ReasId",
+                        column: x => x.ReasId,
                         principalTable: "RealEstate",
                         principalColumn: "ReasId",
                         onDelete: ReferentialAction.Cascade);
@@ -360,18 +388,17 @@ namespace API.Data.Migrations
                     ReasPhotoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReasPhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RealEstateReasId = table.Column<int>(type: "int", nullable: false),
                     ReasId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RealEstatePhoto", x => x.ReasPhotoId);
                     table.ForeignKey(
-                        name: "FK_RealEstatePhoto_RealEstate_RealEstateReasId",
-                        column: x => x.RealEstateReasId,
+                        name: "FK_RealEstatePhoto_RealEstate_ReasId",
+                        column: x => x.ReasId,
                         principalTable: "RealEstate",
                         principalColumn: "ReasId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -469,13 +496,14 @@ namespace API.Data.Migrations
                 name: "IX_Account_MajorId",
                 table: "Account",
                 column: "MajorId",
-                unique: true);
+                unique: false,
+                filter: "[MajorId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Account_RoleId",
                 table: "Account",
                 column: "RoleId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Auction_AccountCreateId",
@@ -486,7 +514,7 @@ namespace API.Data.Migrations
                 name: "IX_Auction_ReasId",
                 table: "Auction",
                 column: "ReasId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuctionsAccounting_AccountOwnerId",
@@ -502,13 +530,13 @@ namespace API.Data.Migrations
                 name: "IX_AuctionsAccounting_AuctionId",
                 table: "AuctionsAccounting",
                 column: "AuctionId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuctionsAccounting_ReasId",
                 table: "AuctionsAccounting",
                 column: "ReasId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DepositAmount_AccountSignId",
@@ -519,13 +547,13 @@ namespace API.Data.Migrations
                 name: "IX_DepositAmount_ReasId",
                 table: "DepositAmount",
                 column: "ReasId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DepositAmount_RuleId",
                 table: "DepositAmount",
                 column: "RuleId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Logs_AccountWriterId",
@@ -551,7 +579,7 @@ namespace API.Data.Migrations
                 name: "IX_MoneyTransaction_TypeId",
                 table: "MoneyTransaction",
                 column: "TypeId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MoneyTransactionDetail_AccountReceiveId",
@@ -562,13 +590,13 @@ namespace API.Data.Migrations
                 name: "IX_MoneyTransactionDetail_AuctionId",
                 table: "MoneyTransactionDetail",
                 column: "AuctionId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MoneyTransactionDetail_ReasId",
                 table: "MoneyTransactionDetail",
                 column: "ReasId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_News_AccountCreateId",
@@ -581,14 +609,21 @@ namespace API.Data.Migrations
                 column: "AccountOwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RealEstateDetail_RealEstateReasId",
-                table: "RealEstateDetail",
-                column: "RealEstateReasId");
+                name: "IX_RealEstate_Type_Reas",
+                table: "RealEstate",
+                column: "Type_Reas",
+                unique: false);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RealEstatePhoto_RealEstateReasId",
+                name: "IX_RealEstateDetail_ReasId",
+                table: "RealEstateDetail",
+                column: "ReasId",
+                unique: false);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RealEstatePhoto_ReasId",
                 table: "RealEstatePhoto",
-                column: "RealEstateReasId");
+                column: "ReasId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Task_AccountAssignedId",
@@ -648,6 +683,9 @@ namespace API.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Account");
+
+            migrationBuilder.DropTable(
+                name: "type_REAS");
 
             migrationBuilder.DropTable(
                 name: "Major");

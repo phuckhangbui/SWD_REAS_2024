@@ -28,6 +28,7 @@ public class DataContext : DbContext
     public DbSet<Role> Role { get; set; }
     public DbSet<Rule> Rule { get; set; }
     public DbSet<Task> Task { get; set; }
+    public DbSet<Type_REAS> type_REAS { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -128,7 +129,15 @@ public class DataContext : DbContext
             .Property(a => a.ReasId)
             .ValueGeneratedOnAdd()
             .UseIdentityColumn();
-        
+
+        modelBuilder.Entity<Type_REAS>()
+            .HasKey(k => k.Type_ReasId);
+
+        modelBuilder.Entity<Type_REAS>()
+            .Property(a => a.Type_ReasId)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
+
         modelBuilder.Entity<RealEstateDetail>()
             .HasKey(k => k.ReasDetailId);
         
@@ -328,6 +337,12 @@ public class DataContext : DbContext
             .HasOne(re => re.AccountOwner)
             .WithMany(a => a.RealEstate)
             .HasForeignKey(re => re.AccountOwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<RealEstate>()
+            .HasOne(x => x.Type_REAS)
+            .WithOne()
+            .HasForeignKey<RealEstate>(y => y.Type_Reas)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<RealEstateDetail>()

@@ -1,10 +1,12 @@
 ﻿using API.Data;
 using API.Errors;
+using API.Helper;
 using API.Interfaces;
 using API.Repository;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace API.Extensions
 {
@@ -19,6 +21,7 @@ namespace API.Extensions
             services.AddScoped<IRuleRepository, RuleRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAuctionRepository, AuctionRepository>();
+            services.AddScoped<ITypeReasRepository, TypeReasRepository>();
 
 
             services.AddDbContext<DataContext>(opt =>
@@ -29,6 +32,8 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); //the current position of the mapping profile
+            services.Configure<CloudinarySetting>(config.GetSection("CloudinarySettings"));
+            services.AddScoped<IPhotoService, PhotoService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {

@@ -11,13 +11,14 @@ namespace API.DTOs
         public int ReasStatus { get; set; }
         public DateTime DateStart { get; set; }
         public DateTime DateEnd { get; set; }
+        public int Type_Reas { get; set; }
         public string Message { get; set; }
         public int AccountOwnerId { get; set; }
         public string AccountOwnerName { get; set; }
         public DateTime DateCreated { get; set; }
 
-        public List<ListPhotoRealEstateDto> Photos { get; set; }
+        public List<PhotoFileDto> Photos { get; set; }
 
-        public RealEstatePaper Detail { get; set; }
+        public DetailFileReasDto Detail { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace API.DTOs
         public DateTime DateEnd { get; set; }
         public int AccountOwnerId { get; set; }
         public string AccountOwnerName { get; set; }
+        public string Type_REAS_Name { get; set; }
         public DateTime DateCreated { get; set; }
 
         public List<ListPhotoRealEstateDto> Photos { get; set; }
