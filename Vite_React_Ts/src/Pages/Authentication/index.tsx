@@ -18,7 +18,7 @@ export const Auth = () => {
     };
     localStorage.setItem("auth", JSON.stringify(authInfo));
 
-    navigate("/home");
+    navigate("/admin");
   };
 
   return (
