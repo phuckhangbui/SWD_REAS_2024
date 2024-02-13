@@ -21,7 +21,7 @@ namespace API.Extensions
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IMajorRepository, MajorRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
-
+            services.AddScoped<IAdminRepository, AdminRepository>();
 
             services.AddDbContext<DataContext>(opt =>
             {
@@ -30,7 +30,8 @@ namespace API.Extensions
 
             services.AddScoped<ITokenService, TokenService>();
 
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); //the current position of the mapping profile
+            services.AddAutoMapper(AppDomain.CurrentDomain
+                .GetAssemblies()); //the current position of the mapping profile
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -52,10 +53,8 @@ namespace API.Extensions
 
             services.AddCors(opt =>
             {
-                opt.AddPolicy("CorsPolicy", policy =>
-                {
-                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-                });
+                opt.AddPolicy("CorsPolicy",
+                    policy => { policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
             });
 
             return services;

@@ -9,5 +9,7 @@ public class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         CreateMap<Account, AccountDto>();
+        CreateMap<RealEstate, ListRealEstateDto>();
+        CreateMap<Auction, AuctionDto>();
     }
 }
