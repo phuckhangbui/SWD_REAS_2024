@@ -1,13 +1,16 @@
-using API.DTOs;
+﻿using API.DTOs;
 using API.Entity;
 using AutoMapper;
 
-namespace API.Helper;
-
-public class AutoMapperProfiles : Profile
+namespace API.Helper
 {
-    public AutoMapperProfiles()
+    public class AutoMapperProfiles : Profile
     {
-        CreateMap<Account, AccountDto>();
+        public AutoMapperProfiles()
+        {
+            CreateMap<RegisterDto, Account>();
+            CreateMap<NewAccountDto, Account>();
+            CreateMap<Auction, AuctionDto>(); ;
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace API.Controllers
         {
             try
             {
-                int idAdmin = int.Parse(this.User.Claims.First(i => i.Type == "AccountId").Value);
+                int idAdmin = int.Parse(this.User.Claims.First(i => i.Type == "RoleId").Value);
                 if (idAdmin.Equals(RoleEnum.Admin))
                 {
                     return idAdmin;
@@ -31,7 +31,8 @@ namespace API.Controllers
                 {
                     return null;
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return null;
             }

@@ -1,9 +1,7 @@
-using API.Extensions;
-using API.Interfaces;
-using API.Repository;
-using Microsoft.OpenApi.Models;
 using API.Data;
+using API.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

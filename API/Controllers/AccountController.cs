@@ -32,7 +32,6 @@ namespace API.Controllers
         [HttpPost("login/google")]
         public async Task<ActionResult<UserDto>> LoginGoogle([FromBody] LoginGoogleDto loginGoogleDto)
         {
-            var test = 1;
             try
             {
                 // validate token
@@ -154,7 +153,7 @@ namespace API.Controllers
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccounts()
         {
             var adminAccount = GetIdAdmin();
-            if(adminAccount != null)
+            if (adminAccount != null)
             {
                 var list_account = _accountRepository.GetAllAsync().Result.Where(x => new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
                 {
@@ -181,7 +180,7 @@ namespace API.Controllers
         public async Task<ActionResult<UserInformationDto>> GetAccountDetail(int id)
         {
             var adminAccount = GetIdAdmin();
-            if(adminAccount != null)
+            if (adminAccount != null)
             {
                 var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == id).Select(x => new UserInformationDto
                 {
@@ -201,7 +200,7 @@ namespace API.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(account);
-            }  
+            }
             else
             {
                 return BadRequest(new ApiResponse(401));
@@ -212,7 +211,7 @@ namespace API.Controllers
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccountsBýearch(SearchAccountDto searchAccountDto)
         {
             var accountAdmin = GetIdAdmin();
-            if(accountAdmin != null)
+            if (accountAdmin != null)
             {
                 var list_account = _accountRepository.GetAllAsync().Result.Where(x => ((new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId) && searchAccountDto.RoleId == 0) || x.RoleId == searchAccountDto.RoleId)
             && (searchAccountDto.AccountName == null || x.AccountName.Contains(searchAccountDto.AccountName))
@@ -244,7 +243,7 @@ namespace API.Controllers
         public async Task<ActionResult<ApiResponseMessage>> ChangeStatusAccount(ChangeStatusAccountDto changeStatusAccountDto)
         {
             var accountAdmin = GetIdAdmin();
-            if(accountAdmin != null)
+            if (accountAdmin != null)
             {
                 var newaccount = new Account();
                 var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == changeStatusAccountDto.AccountId).FirstOrDefault();
@@ -286,7 +285,7 @@ namespace API.Controllers
         public async Task<ActionResult<ApiResponseMessage>> CreateNewAccountForStaff(NewAccountDto account)
         {
             var accountAdmin = GetIdAdmin();
-            if(accountAdmin != null)
+            if (accountAdmin != null)
             {
                 if (await _accountRepository.isUserNameExisted(account.Username))
                 {
