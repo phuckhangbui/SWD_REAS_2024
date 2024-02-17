@@ -8,6 +8,6 @@ namespace API.Interfaces
     {
         Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam);
 
-        System.Threading.Tasks.Task EditAuctionStatus(string autionId, string statusCode)
+        System.Threading.Tasks.Task EditAuctionStatus(string autionId, string statusCode);
     }
 }
