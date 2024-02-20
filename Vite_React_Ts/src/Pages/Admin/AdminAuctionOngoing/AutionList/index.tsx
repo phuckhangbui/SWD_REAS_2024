@@ -11,7 +11,7 @@ import {
   Typography,
 } from "antd";
 import { AnyObject } from "antd/es/_util/type";
-import { NumberFormat } from "../../../../Utils/numbetFormat";
+import { NumberFormat } from "../../../../utils/numbetFormat";
 import { Avatar, Input as TailwindInput } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 

@@ -150,13 +150,13 @@ namespace API.Controllers
         }
 
 
-        [HttpGet("/admin/accounts")]
-        public async Task<ActionResult<List<AccountListDto>>> GetAllAccounts()
+        [HttpGet("/admin/user/staff")]
+        public async Task<ActionResult<List<AccountListDto>>> GetAllAccountStaffs()
         {
             var adminAccount = GetIdAdmin(_accountRepository);
             if(adminAccount != null)
             {
-                var list_account = _accountRepository.GetAllAsync().Result.Where(x => new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
+                var list_account = _accountRepository.GetAllAsync().Result.Where(x => x.RoleId.Equals((int)RoleEnum.Staff)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
                 {
                     AccountId = x.AccountId,
                     Username = x.Username,
@@ -177,27 +177,57 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/admin/accounts/detail/{id}")]
-        public async Task<ActionResult<UserInformationDto>> GetAccountDetail(int id)
+        [HttpGet("/admin/user/member")]
+        public async Task<ActionResult<List<AccountListDto>>> GetAllAccountMembers()
+        {
+            var adminAccount = GetIdAdmin(_accountRepository);
+            if (adminAccount != null)
+            {
+                var list_account = _accountRepository.GetAllAsync().Result.Where(x => x.RoleId.Equals((int)RoleEnum.Member)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
+                {
+                    AccountId = x.AccountId,
+                    Username = x.Username,
+                    AccountName = x.AccountName,
+                    AccountEmail = x.AccountEmail,
+                    PhoneNumber = x.PhoneNumber,
+                    Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
+                    Account_Status = x.Account_Status,
+                    Date_Created = x.Date_Created
+                }).ToList();
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                return Ok(list_account);
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
+        }       
+
+        [HttpGet("/admin/user/staff/detail/{id}")]
+        public async Task<ActionResult<UserInformationDto>> GetStaffDetail(int id)
+        {
+            var adminAccount = GetIdAdmin(_accountRepository);
+            if (adminAccount != null)
+            {
+                var account = getDetailAccount(id, _accountRepository, _context);
+                if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            return Ok(account);
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
+        }
+
+        [HttpGet("/admin/user/member/detail/{id}")]
+        public async Task<ActionResult<UserInformationDto>> GetMemberDetail(int id)
         {
             var adminAccount = GetIdAdmin(_accountRepository);
             if(adminAccount != null)
             {
-                var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == id).Select(x => new UserInformationDto
-                {
-                    AccountId = x.AccountId,
-                    AccountName = x.AccountName,
-                    AccountEmail = x.AccountEmail,
-                    Address = x.Address,
-                    Citizen_identification = x.Citizen_identification,
-                    PhoneNumber = x.PhoneNumber,
-                    Username = x.Username,
-                    Date_Created = x.Date_Created,
-                    Date_End = x.Date_End,
-                    Major = _context.Major.Where(y => y.MajorId == x.MajorId).Select(x => x.MajorName).FirstOrDefault(),
-                    Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
-                    Account_Status = x.Account_Status
-                }).FirstOrDefault();
+                var account = getDetailAccount(id, _accountRepository, _context);
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(account);

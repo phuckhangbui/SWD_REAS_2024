@@ -1,5 +1,6 @@
 const withMT = require("@material-tailwind/react/utils/withMT");
- 
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = withMT({
   content: [
     "./index.html",
@@ -8,7 +9,15 @@ module.exports = withMT({
     "./node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    screens: {
+      sm: "350px",
+    },
+    extend: {
+      colors: {
+        mainBlue: "#2482c2",
+        darkerMainBlue: "#2075ae",
+      },
+    },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/line-clamp")],
 });
