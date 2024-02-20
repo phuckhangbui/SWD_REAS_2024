@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "antd";
 import { Typography } from "@material-tailwind/react";
-import { NumberFormat } from "../../../../Utils/numbetFormat";
+import { NumberFormat } from "../../../../utils/numbetFormat";
 
 const Accounting: React.FC = () => (
   <Card title="Auction accounting" bordered={false}>
