@@ -112,7 +112,7 @@ const LoginModal = ({ closeModal }: LoginModalProps) => {
               </div>
               <div className="flex justify-end">
                 <a href="#" className="text-sm text-mainBlue hover:underline">
-                  Lost Password?
+                  Forgot Password?
                 </a>
               </div>
               <button
