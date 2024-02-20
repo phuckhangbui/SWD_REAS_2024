@@ -23,7 +23,6 @@ namespace API.Extensions
             services.AddScoped<IAuctionRepository, AuctionRepository>();
             services.AddScoped<ITypeReasRepository, TypeReasRepository>();
 
-
             services.AddDbContext<DataContext>(opt =>
             {
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
