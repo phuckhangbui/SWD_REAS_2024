@@ -1,4 +1,5 @@
 ﻿using API.Enums;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -7,6 +8,8 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class BaseApiController : ControllerBase
     {
+
+
         protected int? GetLoginAccountId()
         {
             try
@@ -18,12 +21,12 @@ namespace API.Controllers
                 return null;
             }
         }
-        protected int? GetIdAdmin()
+        protected int? GetIdAdmin(IAccountRepository accountRepository)
         {
             try
             {
                 int idAdmin = int.Parse(this.User.Claims.First(i => i.Type == "AccountId").Value);
-                if (idAdmin.Equals(RoleEnum.Admin))
+                if (accountRepository.GetAllAsync().Result.Where(x => x.AccountId == idAdmin).Select(x => x.RoleId).FirstOrDefault().Equals((int)RoleEnum.Admin))
                 {
                     return idAdmin;
                 }

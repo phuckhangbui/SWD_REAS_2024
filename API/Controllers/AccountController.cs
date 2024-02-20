@@ -153,7 +153,7 @@ namespace API.Controllers
         [HttpGet("/admin/accounts")]
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccounts()
         {
-            var adminAccount = GetIdAdmin();
+            var adminAccount = GetIdAdmin(_accountRepository);
             if(adminAccount != null)
             {
                 var list_account = _accountRepository.GetAllAsync().Result.Where(x => new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId)).OrderByDescending(x => x.AccountId).Select(x => new AccountListDto
@@ -180,7 +180,7 @@ namespace API.Controllers
         [HttpGet("/admin/accounts/detail/{id}")]
         public async Task<ActionResult<UserInformationDto>> GetAccountDetail(int id)
         {
-            var adminAccount = GetIdAdmin();
+            var adminAccount = GetIdAdmin(_accountRepository);
             if(adminAccount != null)
             {
                 var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == id).Select(x => new UserInformationDto
@@ -211,7 +211,7 @@ namespace API.Controllers
         [HttpPost("searchAccount")]
         public async Task<ActionResult<List<AccountListDto>>> GetAllAccountsBýearch(SearchAccountDto searchAccountDto)
         {
-            var accountAdmin = GetIdAdmin();
+            var accountAdmin = GetIdAdmin(_accountRepository);
             if(accountAdmin != null)
             {
                 var list_account = _accountRepository.GetAllAsync().Result.Where(x => ((new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(x.RoleId) && searchAccountDto.RoleId == 0) || x.RoleId == searchAccountDto.RoleId)
@@ -243,7 +243,7 @@ namespace API.Controllers
         [HttpPost("changeStatusAccount")]
         public async Task<ActionResult<ApiResponseMessage>> ChangeStatusAccount(ChangeStatusAccountDto changeStatusAccountDto)
         {
-            var accountAdmin = GetIdAdmin();
+            var accountAdmin = GetIdAdmin(_accountRepository);
             if(accountAdmin != null)
             {
                 var newaccount = new Account();
@@ -285,7 +285,7 @@ namespace API.Controllers
         [HttpPost("AddAccount")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewAccountForStaff(NewAccountDto account)
         {
-            var accountAdmin = GetIdAdmin();
+            var accountAdmin = GetIdAdmin(_accountRepository);
             if(accountAdmin != null)
             {
                 if (await _accountRepository.isUserNameExisted(account.Username))

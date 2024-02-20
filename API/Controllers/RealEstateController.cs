@@ -52,7 +52,7 @@ namespace API.Controllers
         {
             ParseValidate parseValidate = new ParseValidate();
             var _real_estate_list = _real_estate_repository.GetAllAsync().Result.Where(x =>
-                ((new[] { 2, 4, 7 }.Contains(x.ReasStatus) && searchRealEstateForMemerDto.ReasStatus == -1) || searchRealEstateForMemerDto.ReasStatus == x.ReasStatus) &&
+                ((new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Auctioning, (int)RealEstateEnum.Re_up}.Contains(x.ReasStatus) && searchRealEstateForMemerDto.ReasStatus == -1) || searchRealEstateForMemerDto.ReasStatus == x.ReasStatus) &&
                 (searchRealEstateForMemerDto.ReasName == null || x.ReasName.Contains(searchRealEstateForMemerDto.ReasName)) &&
                 ((string.IsNullOrEmpty(searchRealEstateForMemerDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateForMemerDto.ReasPriceTo)) ||
                 (parseValidate.ParseStringToInt(x.ReasPrice) >= parseValidate.ParseStringToInt(searchRealEstateForMemerDto.ReasPriceFrom) &&
@@ -116,7 +116,7 @@ namespace API.Controllers
         [HttpGet("/home/my_real_estate/create")]
         public async Task<ActionResult<List<CreateNewRealEstatePage>>> ViewCreateNewRealEstatePage()
         {
-            int? userMember = 1;//GetLoginAccountId();
+            int? userMember = GetLoginAccountId();
             if (userMember != null)
             {
                 var list_type_reas = _typeReasRepository.GetAllAsync().Result.Select(x => new CreateNewRealEstatePage
@@ -137,7 +137,7 @@ namespace API.Controllers
             [HttpPost("CreateRealEstate")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewRealEstate(NewRealEstateDto newRealEstateDto)
         {
-            int? userMember = 1;//GetLoginAccountId();
+            int? userMember = GetLoginAccountId();
             if (userMember != null)
             {
                 var newRealEstate = new RealEstate();

@@ -29,14 +29,7 @@ namespace API.Controllers
                 ReasDescription = x.ReasDescription,
                 AccountOwnerId = x.AccountOwnerId,
                 AccountOwnerName = x.AccountOwnerName,
-                Detail = _real_estate_detail_repository.GetAllAsync().Result.Where(y => y.ReasId == x.ReasId).Select(y => new RealEstatePaper
-                {
-                    Reas_Cert_Of_Land_Img_Front = y.Reas_Cert_Of_Land_Img_Front,
-                    Reas_Cert_Of_Land_Img_After = y.Reas_Cert_Of_Land_Img_After,
-                    Reas_Cert_Of_Home_Ownership = y.Reas_Cert_Of_Home_Ownership,
-                    Reas_Registration_Book = y.Reas_Registration_Book,
-                    Documents_Proving_Marital_Relationship = y.Documents_Proving_Marital_Relationship
-                }).FirstOrDefault(),
+                Detail = null,
                 Photos = _real_estate_photo_repository.GetAllAsync().Result.Where(z => z.ReasId == x.ReasId).Select(z => new ListPhotoRealEstateDto
                 {
                     ReasPhotoId = z.ReasPhotoId,
