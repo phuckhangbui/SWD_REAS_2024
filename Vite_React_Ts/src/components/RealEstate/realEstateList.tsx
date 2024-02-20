@@ -10,7 +10,7 @@ interface RealEstateListProps {
 const RealEstateList = ({ realEstatesList }: RealEstateListProps) => {
   const [realEstates, getRealEstates] = useState(realEstatesList);
   const [showModal, setShowModal] = useState(false);
-  const [realEstateId, setRealEstateId] = useState<number>(-1);
+  const [realEstateId, setRealEstateId] = useState<number>(0);
 
   const toggleModal = (realEstateId: number) => {
     setShowModal((prevShowModal) => !prevShowModal);
@@ -42,7 +42,6 @@ const RealEstateList = ({ realEstatesList }: RealEstateListProps) => {
     }
   };
 
-  
 
   return (
     <div>
@@ -70,6 +69,7 @@ const RealEstateList = ({ realEstatesList }: RealEstateListProps) => {
             closeModal={closeModal}
             realEstateId={realEstateId}
             address="1600 Amphitheatre Parkway, Mountain View, CA"
+            index="detail"
           />
         </div>
       )}

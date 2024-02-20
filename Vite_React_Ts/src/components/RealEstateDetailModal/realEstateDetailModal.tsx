@@ -2,11 +2,13 @@ import { Carousel } from "@material-tailwind/react";
 import { fromAddress, setKey, geocode, RequestType } from "react-geocode";
 import { useJsApiLoader, GoogleMap, Marker } from "@react-google-maps/api";
 import { useEffect, useRef, useState } from "react";
+import { handleGeoCode } from "../../api/map";
 
 interface RealEstateDetailModalProps {
   realEstateId: number;
   closeModal: () => void;
   address: string;
+  index: string;
 }
 
 const mapOptions = {
@@ -19,10 +21,13 @@ const RealEstateDetailModal = ({
   closeModal,
   realEstateId,
   address,
+  index,
 }: RealEstateDetailModalProps) => {
-  const [center, setCenter] = useState({ lat: 40.7128, lng: -74.006 });
-  console.log(address);
-  // Use Geocode to convert address to coordinates
+  const [center, setCenter] = useState<{
+    lat: number | null;
+    lng: number | null;
+  }>({ lat: null, lng: null });
+  const [tabStatus, setTabStatus] = useState(index);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string,
@@ -30,41 +35,30 @@ const RealEstateDetailModal = ({
 
   setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string);
 
-  const addresss = "1600 Amphitheatre Parkway, Mountain View, CA";
-  geocode(RequestType.ADDRESS, addresss)
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-
   useEffect(() => {
-    geocode(RequestType.ADDRESS, address)
-      .then(({ results }) => {
-        const { lat, lng } = results[0].geometry.location;
-        console.log({ lat, lng });
-        setCenter({ lat, lng });
-      })
-      .catch(console.error);
-  }, [address]);
+    const fetchData = async () => {
+      try {
+        const location = await handleGeoCode(address);
 
-  // useEffect(() => {
-  //   if (mapRef.current && center) {
-  //     const map = mapRef.current
-  //     setCenter(map)
-  //   }
-  // }, [center]);
+        if (location) {
+          setCenter(location);
+          console.log(center);
+        }
+      } catch (error) {
+        console.error("Error geocoding:", error);
+      }
+    };
 
-  const [tabStatus, setTabStatus] = useState(1);
+    fetchData();
+  }, []);
 
   // Change the tab index
-  const toggleTab = (index: number) => {
+  const toggleTab = (index: string) => {
     setTabStatus(index);
   };
 
   // Tab button status
-  const getActiveTab = (index: number) => {
+  const getActiveTab = (index: string) => {
     return `${
       index === tabStatus
         ? "text-mainBlue border-mainBlue font-bold"
@@ -73,7 +67,7 @@ const RealEstateDetailModal = ({
   };
 
   // Changing the tab description
-  const getActiveTabDetail = (index: number) => {
+  const getActiveTabDetail = (index: string) => {
     return `${index === tabStatus ? "" : "hidden"} mt-2 space-y-4 `;
   };
 
@@ -143,12 +137,12 @@ const RealEstateDetailModal = ({
                 height: "320px",
                 borderRadius: "0.5rem",
               }}
-              center={center}
+              center={{ lat: center.lat!, lng: center.lng! }}
               zoom={15}
               mapTypeId={"terrain"}
               options={mapOptions}
             >
-              <Marker position={center} />
+              <Marker position={{ lat: center.lat!, lng: center.lng! }} />
             </GoogleMap>
           </div>
         </div>
@@ -160,16 +154,16 @@ const RealEstateDetailModal = ({
               <ul className="mt-2 flex flex-row gap-4">
                 <li>
                   <button
-                    className={getActiveTab(1)}
-                    onClick={() => toggleTab(1)}
+                    className={getActiveTab("detail")}
+                    onClick={() => toggleTab("detail")}
                   >
                     Detail
                   </button>
                 </li>
                 <li>
                   <button
-                    className={getActiveTab(2)}
-                    onClick={() => toggleTab(2)}
+                    className={getActiveTab("auction")}
+                    onClick={() => toggleTab("auction")}
                   >
                     Auction
                   </button>
@@ -177,7 +171,7 @@ const RealEstateDetailModal = ({
               </ul>
             </div>
           </div>
-          <div className={getActiveTabDetail(1)}>
+          <div className={getActiveTabDetail("detail")}>
             <p className="text-base leading-relaxed text-gray-900">
               With less than a month to go before the European Union enacts new
               consumer privacy laws for its citizens, companies around the world
@@ -189,7 +183,7 @@ const RealEstateDetailModal = ({
               are updating their terms of service agreements to comply.
             </p>
           </div>
-          <div className={getActiveTabDetail(2)}>
+          <div className={getActiveTabDetail("auction")}>
             <p className="text-base leading-relaxed text-gray-900">
               With less than a month to go before the European Union enacts new
               consumer privacy laws for its citizens, companies around the world
