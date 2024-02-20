@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.Enums;
 using API.Helper;
 using API.Interfaces;
 using AutoMapper;
@@ -24,7 +25,7 @@ public class AdminRepository : IAdminRepository
     {
         var query = context.Account.AsQueryable();
 
-        query = query.Where(a => a.RoleId == 3);
+        query = query.Where(a => new[] { (int)RoleEnum.Member, (int)RoleEnum.Staff }.Contains(a.RoleId));
         
         if (accountParams.Month.HasValue)
         {
