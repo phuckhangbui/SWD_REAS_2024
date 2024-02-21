@@ -12,10 +12,10 @@ namespace API.Controllers
 		private readonly IRealEstateRepository _realEstateRepository;
 		private readonly IRealEstateDetailRepository _realEstateDetailRepository;
 
-		private const string BaseUri = "/admin/realestate";
-		private const string DetailUri = "/admin/realestate/{reasId}";
-		private const string BlockUri = BaseUri + "/block/{reasId}";
-		private const string UnblockUri = BaseUri + "/unblock/{reasId}";
+		private const string BaseUri = "/api/admin/realestates";
+		private const string DetailUri = "/api/admin/realestates/{reasId}";
+		private const string BlockUri = BaseUri + "/api/block/{reasId}";
+		private const string UnblockUri = BaseUri + "/api/unblock/{reasId}";
 
 		public AdminRealEstateController(
 			IRealEstateRepository realEstateRepository,

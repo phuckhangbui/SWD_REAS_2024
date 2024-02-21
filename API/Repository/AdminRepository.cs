@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.Enums;
 using API.Helper;
 using API.Interfaces;
 using AutoMapper;
@@ -43,5 +44,19 @@ public class AdminRepository : IAdminRepository
             query.AsNoTracking().ProjectTo<AccountDto>(mapper.ConfigurationProvider), 
             accountParams.PageNumber,
             accountParams.PageSize);
+    }
+
+    public async Task<List<StaffDto>> GetStaffAccount()
+    {
+        var staffAccounts = await context.Account
+            .Where(a => a.RoleId == (int)RoleEnum.Staff)
+            .Select(a => new StaffDto
+            {
+                AccountId = a.AccountId,
+                AccountName = a.AccountName
+            })
+            .ToListAsync();
+
+        return staffAccounts;
     }
 }

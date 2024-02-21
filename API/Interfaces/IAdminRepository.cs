@@ -6,4 +6,5 @@ namespace API.Interfaces;
 public interface IAdminRepository
 {
     Task<PageList<AccountDto>> GetAccounts(AccountParams accountParams);
+    Task<List<StaffDto>> GetStaffAccount();
 }

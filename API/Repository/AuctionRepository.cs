@@ -1,7 +1,6 @@
 ﻿using API.Data;
 using API.Entity;
 using API.DTOs;
-using API.Entity;
 using API.Enums;
 using API.Helper;
 using API.Interfaces;
@@ -11,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository
 {
-	public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
+    public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
 	{
 		private readonly DataContext _context;
 		private readonly IMapper _mapper;
