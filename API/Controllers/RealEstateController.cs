@@ -37,6 +37,7 @@ namespace API.Controllers
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
+                ReasArea = x.ReasArea,
                 ReasTypeName = _typeReasRepository.GetAllAsync().Result.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = x.ReasStatus,
                 DateStart = x.DateStart,
@@ -62,6 +63,7 @@ namespace API.Controllers
                     ReasId = x.ReasId,
                     ReasName = x.ReasName,
                     ReasPrice = x.ReasPrice,
+                    ReasArea = x.ReasArea,
                     ReasTypeName = _typeReasRepository.GetAllAsync().Result.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                     ReasStatus = x.ReasStatus,
                     DateStart = x.DateStart,
@@ -91,6 +93,7 @@ namespace API.Controllers
                     ReasId = x.ReasId,
                     ReasName = x.ReasName,
                     ReasPrice = x.ReasPrice,
+                    ReasArea = x.ReasArea,
                     ReasTypeName = _typeReasRepository.GetAllAsync().Result.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                     ReasStatus = x.ReasStatus,
                     DateStart = x.DateStart,
@@ -137,7 +140,7 @@ namespace API.Controllers
             [HttpPost("CreateRealEstate")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewRealEstate(NewRealEstateDto newRealEstateDto)
         {
-            int? userMember = GetLoginAccountId();
+            int? userMember = 23;//GetLoginAccountId();
             if (userMember != null)
             {
                 var newRealEstate = new RealEstate();
@@ -147,8 +150,9 @@ namespace API.Controllers
                 newRealEstate.ReasName = newRealEstateDto.ReasName;
                 newRealEstate.ReasPrice = newRealEstateDto.ReasPrice;
                 newRealEstate.ReasAddress = newRealEstateDto.ReasAddress;
+                newRealEstate.ReasArea = newRealEstateDto.ReasArea;
                 newRealEstate.ReasDescription = newRealEstateDto.ReasDescription;
-                newRealEstate.Message = newRealEstateDto.Message;
+                newRealEstate.Message = "";
                 newRealEstate.AccountOwnerId = userMember.Value;
                 newRealEstate.DateCreated = DateTime.UtcNow;
                 newRealEstate.Type_Reas = newRealEstateDto.Type_Reas;
