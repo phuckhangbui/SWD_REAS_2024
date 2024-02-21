@@ -45,7 +45,7 @@ namespace API.Controllers
 
 
         //for search also
-        [HttpGet("/auctions")]
+        [HttpGet("admin/auctions")]
         public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions(AuctionParam auctionParam)
         {
             //consider changing this to HttpPost
