@@ -8,30 +8,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-	public class AuctionController : BaseApiController
-	{
-		private readonly IAuctionRepository _auctionRepository;
+    public class AuctionController : BaseApiController
+    {
+        private readonly IAuctionRepository _auctionRepository;
 
-		public AuctionController(IAuctionRepository auctionRepository)
-		{
-			_auctionRepository = auctionRepository;
-		}
+        public AuctionController(IAuctionRepository auctionRepository)
+        {
+            _auctionRepository = auctionRepository;
+        }
 
-		private const string BaseUri = "/auctions";
+        private const string BaseUri = "/auctions";
 
-		[HttpGet(BaseUri)]
-		public async Task<IActionResult> GetRealEstates([FromQuery] AuctionParam auctionParam)
-		{
-			var auctions = await _auctionRepository.GetAuctionsAsync(auctionParam);
+        [HttpGet(BaseUri)]
+        public async Task<IActionResult> GetRealEstates([FromQuery] AuctionParam auctionParam)
+        {
+            var auctions = await _auctionRepository.GetAuctionsAsync(auctionParam);
 
-			Response.AddPaginationHeader(new PaginationHeader(auctions.CurrentPage, auctions.PageSize,
-			auctions.TotalCount, auctions.TotalPages));
+            Response.AddPaginationHeader(new PaginationHeader(auctions.CurrentPage, auctions.PageSize,
+            auctions.TotalCount, auctions.TotalPages));
 
-			return Ok(auctions);
-		}
+            return Ok(auctions);
+        }
 
 
-        [Authorize(policy: "AdminAndStaff")]
+
 
         //[HttpGet("/auctions")]
         //public async Task<ActionResult<List<Auction>>> GetAuctions()
@@ -45,6 +45,7 @@ namespace API.Controllers
 
 
         //for search also
+        [Authorize(policy: "AdminAndStaff")]
         [HttpGet("admin/auctions")]
         public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions(AuctionParam auctionParam)
         {
@@ -60,6 +61,7 @@ namespace API.Controllers
             return Ok(auctions);
         }
 
+        [Authorize(policy: "AdminAndStaff")]
         [HttpGet("/edit/status")]
         public async Task<ActionResult> ToggleAuctionStatus([FromQuery] string auctionId, string statusCode)
         {
