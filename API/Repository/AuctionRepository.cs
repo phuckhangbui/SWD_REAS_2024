@@ -33,7 +33,8 @@ namespace API.Repository
 			{
 				query = query.Where(a =>
 					a.RealEstate.ReasName.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
-					a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()));
+					a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
+					(a.DateStart >= auctionParam.TimeStart && a.DateStart <= auctionParam.TimeEnd));
 			}
 
 			return await PageList<AuctionDto>.CreateAsync(
