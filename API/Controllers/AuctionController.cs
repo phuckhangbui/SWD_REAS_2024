@@ -51,7 +51,7 @@ namespace API.Controllers
             //consider changing this to HttpPost
 
             //currently do not know search base on which properties
-            var auctions = await _auctionrepository.GetAuctions(auctionParam);
+            var auctions = await _auctionRepository.GetAuctions(auctionParam);
 
             //need to test the mapper here
             //currently expect mapper to auto flatten the object, but let see :0
@@ -65,7 +65,7 @@ namespace API.Controllers
         {
             try
             {
-                await _auctionrepository.EditAuctionStatus(auctionId, statusCode);
+                await _auctionRepository.EditAuctionStatus(auctionId, statusCode);
             }
             catch (Exception ex)
             {
