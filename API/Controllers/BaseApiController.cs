@@ -34,7 +34,8 @@ namespace API.Controllers
                 {
                     return null;
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return null;
             }
