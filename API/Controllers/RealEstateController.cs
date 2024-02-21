@@ -140,7 +140,7 @@ namespace API.Controllers
             [HttpPost("CreateRealEstate")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewRealEstate(NewRealEstateDto newRealEstateDto)
         {
-            int? userMember = 2;//GetLoginAccountId();
+            int? userMember = 23;//GetLoginAccountId();
             if (userMember != null)
             {
                 var newRealEstate = new RealEstate();
