@@ -32,7 +32,6 @@ namespace API.Controllers
         [HttpPost("login/google")]
         public async Task<ActionResult<UserDto>> LoginGoogle([FromBody] LoginGoogleDto loginGoogleDto)
         {
-            var test = 1;
             try
             {
                 // validate token
@@ -87,10 +86,10 @@ namespace API.Controllers
         }
 
 
-        [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        [HttpPost("/create/staff")]
+        public async Task<ActionResult<UserDto>> CreateAccount(RegisterDto registerDto)
         {
-
+            //thấy ở dưới cũng có create staff rùi, nhưng mà hỏi lại kĩ hơn sau khi nhận đc mail thì làm gì?
             if (await _accountRepository.isUserNameExisted(registerDto.Username))
             {
                 return BadRequest(new ApiException(400, "Username already exist"));
@@ -231,7 +230,7 @@ namespace API.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(account);
-            }  
+            }
             else
             {
                 return BadRequest(new ApiResponse(401));
