@@ -61,6 +61,33 @@ namespace API.Controllers
             }
         }
 
+        [HttpPost(BaseUri + "my_real_estate/search")]
+        public async Task<IActionResult> SearchOwnerRealEstateForMember(SearchRealEstateDto searchRealEstateDto)
+        {
+            int userMember = GetIdMember(_account_repository);
+            if (userMember != 0)
+            {
+                var reals = await _real_estate_repository.SearchRealEstateByKey(searchRealEstateDto);
+                Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
+                reals.TotalCount, reals.TotalPages));
+                if (reals.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
+                }
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
+        }
+
         [HttpGet(BaseUri + "my_real_estate/create")]
         public async Task<ActionResult<List<CreateNewRealEstatePage>>> ViewCreateNewRealEstatePage()
         {

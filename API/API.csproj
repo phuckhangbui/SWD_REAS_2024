@@ -14,6 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="DTOs\DepositAmountDetailDto.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="DTOs\DepositAmountDetailDto.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="CloudinaryDotNet" Version="1.25.0" />
     <PackageReference Include="Google.Apis.Auth" Version="1.66.0" />

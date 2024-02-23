@@ -11,6 +11,8 @@ namespace API.Interfaces
 		Task<bool> CheckRealEstateExist(int reasId);
         Task<PageList<RealEstateDto>> GetOwnerRealEstate(int idOwner);
         Task<PageList<RealEstateDto>> GetRealEstateOnGoing();
+        Task<PageList<RealEstateDto>> GetRealEstateOnGoingBySearch(SearchRealEstateDto searchRealEstateDto);
+        Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoingBySearch(SearchRealEstateDto searchRealEstateDto);
         Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoing();
         Task<PageList<RealEstateDto>> SearchRealEstateByKey(SearchRealEstateDto searchRealEstateDto);
         Task<PageList<RealEstateDto>> GetAllRealEstateOnRealEstatePage();

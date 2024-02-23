@@ -1,6 +1,8 @@
-﻿namespace API.DTOs
+﻿using API.Helper;
+
+namespace API.DTOs
 {
-    public class SearchNewsParam
+    public class SearchNewsParam : PaginationParams
     {
         public string? KeyWork {  get; set; }
     }
