@@ -162,5 +162,8 @@ namespace API.Repository
         public async Task<string> GetNameAccountByAccountIdAsync(int accountId)
         => await _context.Account
                 .Where(x => x.AccountId == accountId).Select(x => x.AccountName).FirstOrDefaultAsync();
+
+        public async Task<int> GetIdAccountToReceiveMoney()
+        => await _context.Account.Where(x => x.AccountName.Equals("admin")).Select(x => x.AccountId).FirstOrDefaultAsync();
     }
 }
