@@ -158,5 +158,9 @@ namespace API.Repository
                 return null;
             }  
         }
+
+        public async Task<string> GetNameAccountByAccountIdAsync(int accountId)
+        => await _context.Account
+                .Where(x => x.AccountId == accountId).Select(x => x.AccountName).FirstOrDefaultAsync();
     }
 }

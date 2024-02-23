@@ -44,6 +44,26 @@ namespace API.Controllers
             }
         }
 
+        protected int GetIdMember(IAccountRepository accountRepository)
+        {
+            try
+            {
+                int idAdmin = int.Parse(this.User.Claims.First(i => i.Type == "AccountId").Value);
+                if (accountRepository.GetAllAsync().Result.Where(x => x.AccountId == idAdmin).Select(x => x.RoleId).FirstOrDefault().Equals((int)RoleEnum.Member))
+                {
+                    return idAdmin;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+
         protected int GetIdStaff(IAccountRepository accountRepository)
         {
             try

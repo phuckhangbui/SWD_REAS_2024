@@ -19,6 +19,7 @@ namespace API.Controllers
         private readonly IRealEstateDetailRepository _real_estate_detail_repository;
         private readonly IPhotoService _photoService;
         private readonly ITypeReasRepository _typeReasRepository;
+        private const string BaseUri = "/home/";
         public MemberRealEstateController(IRealEstateRepository realEstateRepository,
             IAccountRepository accountRepository,
             IRealEstatePhotoRepository realEstatePhotoRepository,
@@ -34,10 +35,10 @@ namespace API.Controllers
             _typeReasRepository = typeReasRepository;
         }
 
-        [HttpGet("/home/my_real_estate")]
+        [HttpGet(BaseUri + "my_real_estate")]
         public async Task<ActionResult<List<RealEstateDto>>> GetOnwerRealEstate([FromQuery] PaginationParams paginationParams)
         {
-            int userMember = GetLoginAccountId();
+            int userMember = GetIdMember(_account_repository);
             if (userMember != 0)
             {
                 var reals = await _real_estate_repository.GetRealEstateOnGoing();
@@ -60,10 +61,10 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/home/my_real_estate/create")]
+        [HttpGet(BaseUri + "my_real_estate/create")]
         public async Task<ActionResult<List<CreateNewRealEstatePage>>> ViewCreateNewRealEstatePage()
         {
-            int userMember = GetLoginAccountId();
+            int userMember = GetIdMember(_account_repository);
             if (userMember != 0)
             {
                 var list_type_reas = _typeReasRepository.GetAllAsync().Result.Select(x => new CreateNewRealEstatePage
@@ -81,10 +82,10 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("/home/my_real_estate/create")]
+        [HttpPost(BaseUri + "my_real_estate/create")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewRealEstate(NewRealEstateDto newRealEstateDto)
         {
-            int userMember = GetLoginAccountId();
+            int userMember = GetIdMember(_account_repository);
             if (userMember != 0)
             {
                 var newRealEstate = new RealEstate();
@@ -103,7 +104,7 @@ namespace API.Controllers
                 newRealEstate.DateStart = newRealEstateDto.DateStart;
                 newRealEstate.DateEnd = newRealEstateDto.DateEnd;
                 newRealEstate.ReasStatus = (int)RealEstateEnum.In_progress;
-                newRealEstate.AccountOwnerName = _account_repository.GetAllAsync().Result.Where(x => x.AccountId == userMember).Select(x => x.AccountName).FirstOrDefault();
+                newRealEstate.AccountOwnerName = await _account_repository.GetNameAccountByAccountIdAsync(userMember);
                 await _real_estate_repository.CreateAsync(newRealEstate);
                 foreach (PhotoFileDto photos in newRealEstateDto.Photos)
                 {
@@ -157,10 +158,10 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/home/my_real_estate/detail/{id}")]
+        [HttpGet(BaseUri + "my_real_estate/detail/{id}")]
         public async Task<ActionResult<RealEstateDetailDto>> ViewOwnerRealEstateDetail(int id)
         {
-            int userMember = GetLoginAccountId();
+            int userMember = GetIdMember(_account_repository);
             if (userMember != 0)
             {
                 var _real_estate_detail = _real_estate_detail_repository.GetRealEstateDetail(id);

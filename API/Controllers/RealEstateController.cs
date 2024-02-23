@@ -11,6 +11,7 @@ namespace API.Controllers
     {
         private readonly IRealEstateRepository _real_estate_repository;
         private readonly IRealEstateDetailRepository _real_estate_detail_repository;
+        private const string BaseUri = "/home/";
 
         public RealEstateController(IRealEstateRepository realEstateRepository, IRealEstateDetailRepository real_estate_detail_repository)
         {
@@ -18,7 +19,7 @@ namespace API.Controllers
             _real_estate_detail_repository = real_estate_detail_repository;
         }
 
-        [HttpGet("/home/real_estate")]
+        [HttpGet(BaseUri + "real_estate")]
         public async Task<IActionResult> ListRealEstate([FromQuery] PaginationParams paginationParams)
         {
             var reals = await _real_estate_repository.GetAllRealEstateOnRealEstatePage();
@@ -37,7 +38,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("/home/real_estate/search")]
+        [HttpPost(BaseUri + "real_estate/search")]
         public async Task<IActionResult> SearchRealEstateForMember(SearchRealEstateDto searchRealEstateDto)
         {
             var reals = await _real_estate_repository.SearchRealEstateByKey(searchRealEstateDto);
@@ -56,7 +57,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/home/real_estate/detail/{id}")]
+        [HttpGet(BaseUri + "real_estate/detail/{id}")]
         public async Task<ActionResult<RealEstateDetailDto>> ViewRealEstateDetail(int id)
         {
             var _real_estate_detail = _real_estate_detail_repository.GetRealEstateDetail(id);
