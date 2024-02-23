@@ -7,7 +7,6 @@ namespace API.DTOs
         public int ReasId { get; set; }
         public string ReasName { get; set; }
         public string ReasPrice { get; set; }
-        public int ReasArea { get; set; }
         public string ReasTypeName { get; set; }
         public int ReasStatus { get; set; }
         public DateTime DateStart { get; set; }

@@ -32,6 +32,7 @@ namespace API.Controllers
         [HttpPost("login/google")]
         public async Task<ActionResult<UserDto>> LoginGoogle([FromBody] LoginGoogleDto loginGoogleDto)
         {
+            var test = 1;
             try
             {
                 // validate token
@@ -86,42 +87,42 @@ namespace API.Controllers
         }
 
 
-        //[HttpPost("/create/staff")]
-        //public async Task<ActionResult<UserDto>> CreateAccount(RegisterDto registerDto)
-        //{
-        //    //thấy ở dưới cũng có create staff rùi, nhưng mà hỏi lại kĩ hơn sau khi nhận đc mail thì làm gì?
-        //    if (await _accountRepository.isUserNameExisted(registerDto.Username))
-        //    {
-        //        return BadRequest(new ApiException(400, "Username already exist"));
-        //    }
-        //    if (await _accountRepository.isEmailExisted(registerDto.AccountEmail))
-        //    {
-        //        return BadRequest(new ApiException(400, "Email already exist"));
-        //    }
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        {
 
-        //    var account = _mapper.Map<Account>(registerDto);
+            if (await _accountRepository.isUserNameExisted(registerDto.Username))
+            {
+                return BadRequest(new ApiException(400, "Username already exist"));
+            }
+            if (await _accountRepository.isEmailExisted(registerDto.AccountEmail))
+            {
+                return BadRequest(new ApiException(400, "Email already exist"));
+            }
 
-        //    using var hmac = new HMACSHA512();
+            var account = _mapper.Map<Account>(registerDto);
 
-        //    account.AccountEmail = registerDto.AccountEmail.ToLower();
-        //    account.Username = registerDto.Username.ToLower();
-        //    account.AccountName = registerDto.AccountName;
-        //    account.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-        //    account.PasswordSalt = hmac.Key;
-        //    account.MajorId = 1;
-        //    account.Date_Created = DateTime.UtcNow;
-        //    account.Date_End = DateTime.MaxValue;
+            using var hmac = new HMACSHA512();
 
-        //    await _accountRepository.CreateAsync(account);
+            account.AccountEmail = registerDto.AccountEmail.ToLower();
+            account.Username = registerDto.Username.ToLower();
+            account.AccountName = registerDto.AccountName;
+            account.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+            account.PasswordSalt = hmac.Key;
+            account.MajorId = 1;
+            account.Date_Created = DateTime.UtcNow;
+            account.Date_End = DateTime.MaxValue;
 
-        //    return new UserDto
-        //    {
-        //        Email = account.AccountEmail,
-        //        Token = _tokenService.CreateToken(account),
-        //        AccountName = account.AccountName,
-        //        Username = account.Username
-        //    };
-        //}
+            await _accountRepository.CreateAsync(account);
+
+            return new UserDto
+            {
+                Email = account.AccountEmail,
+                Token = _tokenService.CreateToken(account),
+                AccountName = account.AccountName,
+                Username = account.Username
+            };
+        }
 
         [HttpPost("login/admin")]
         public async Task<ActionResult<UserDto>> LoginAdmin(LoginDto loginDto)
@@ -230,7 +231,7 @@ namespace API.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(account);
-            }
+            }  
             else
             {
                 return BadRequest(new ApiResponse(401));
@@ -314,18 +315,18 @@ namespace API.Controllers
         [HttpPost("AddAccount")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewAccountForStaff(NewAccountDto account)
         {
-            //var accountAdmin = GetIdAdmin(_accountRepository);
-            //if(accountAdmin != null)
-            //{
-            if (await _accountRepository.isUserNameExisted(account.Username))
+            var accountAdmin = GetIdAdmin(_accountRepository);
+            if(accountAdmin != null)
             {
-                return BadRequest(new ApiResponse(400, "Username already exist"));
-            }
-            if (await _accountRepository.isEmailExisted(account.AccountEmail))
-            {
-                return BadRequest(new ApiResponse(400, "Email already exist"));
-            }
-            var newaccount = new Account();
+                if (await _accountRepository.isUserNameExisted(account.Username))
+                {
+                    return BadRequest(new ApiResponse(400, "Username already exist"));
+                }
+                if (await _accountRepository.isEmailExisted(account.AccountEmail))
+                {
+                    return BadRequest(new ApiResponse(400, "Email already exist"));
+                }
+                var newaccount = new Account();
                 using var hmac = new HMACSHA512();
                 newaccount.Username = account.Username;
                 newaccount.AccountEmail = account.AccountEmail;
@@ -340,13 +341,13 @@ namespace API.Controllers
                 newaccount.Date_End = DateTime.MaxValue;
                 newaccount.Account_Status = 1;
                 _accountRepository.CreateAsync(newaccount);
-                //SendMailNewStaff.SendEmailWhenCreateNewStaff(account.AccountEmail, account.Username, account.PasswordHash, account.AccountName);
+                SendMailNewStaff.SendEmailWhenCreateNewStaff(account.AccountEmail, account.Username, account.PasswordHash, account.AccountName);
                 return new ApiResponseMessage("MSG04");
-            //}
-            //else
-            //{
-            //    return BadRequest(new ApiResponse(401));
-            //}
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
         }
 
     }

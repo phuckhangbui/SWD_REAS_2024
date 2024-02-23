@@ -4,14 +4,8 @@ using API.Helper;
 
 namespace API.Interfaces
 {
-
-    public interface IAuctionRepository : IBaseRepository<Auction>
-    {
-        Task<PageList<AuctionDto>> GetAuctionsAsync(AuctionParam auctionParam);
-
-        Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam);
-
-        System.Threading.Tasks.Task EditAuctionStatus(string autionId, string statusCode);
-    }
-
+	public interface IAuctionRepository : IBaseRepository<Auction>
+	{
+		Task<PageList<AuctionDto>> GetAuctionsAsync(AuctionParam auctionParam);
+	}
 }

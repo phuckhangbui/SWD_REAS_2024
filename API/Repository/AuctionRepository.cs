@@ -1,4 +1,5 @@
 ﻿using API.Data;
+using API.Entity;
 using API.DTOs;
 using API.Enums;
 using API.Helper;
@@ -31,8 +32,7 @@ namespace API.Repository
 			{
 				query = query.Where(a =>
 					a.RealEstate.ReasName.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
-					a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
-					(a.DateStart >= auctionParam.TimeStart && a.DateStart <= auctionParam.TimeEnd));
+					a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()));
 			}
 
 			return await PageList<AuctionDto>.CreateAsync(
@@ -40,34 +40,5 @@ namespace API.Repository
 			auctionParam.PageNumber,
 			auctionParam.PageSize);
 		}
-
-        public async Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam)
-        {
-            var query = _context.Auction.AsQueryable();
-
-            //logic for search here 
-
-            //divine the logic for 2 case with the condition or without the condition
-
-
-            query = query.OrderByDescending(a => a.DateStart);
-            return await PageList<AuctionDto>.CreateAsync(
-                query.AsNoTracking().ProjectTo<AuctionDto>(_mapper.ConfigurationProvider),  //need testing for the mapper here
-                auctionParam.PageNumber,
-                auctionParam.PageSize);
-        }
-
-        public async System.Threading.Tasks.Task EditAuctionStatus(string autionId, string statusCode)
-        {
-            Auction auction = await _context.Auction.FindAsync(autionId);
-
-            if (auction == null)
-            {
-                throw new Exception();
-            }
-
-            auction.Status = int.Parse(statusCode);
-            await UpdateAsync(auction);
-        }
-    }
+	}
 }

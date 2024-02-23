@@ -25,7 +25,6 @@ namespace API.Controllers
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
-                ReasArea = x.ReasArea,
                 ReasAddress = x.ReasAddress,
                 ReasDescription = x.ReasDescription,
                 AccountOwnerId = x.AccountOwnerId,
@@ -54,7 +53,6 @@ namespace API.Controllers
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
-                ReasArea = x.ReasArea,
                 ReasAddress = x.ReasAddress,
                 ReasDescription = x.ReasDescription,
                 Detail = _real_estate_detail_repository.GetAllAsync().Result.Where(y => y.ReasId == x.ReasId).Select(y => new RealEstatePaper
