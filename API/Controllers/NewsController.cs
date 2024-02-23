@@ -10,7 +10,7 @@ namespace API.Controllers
     public class NewsController : BaseApiController
     {
         private readonly INewsRepository _newsRepository;
-        private const string BaseUri = "/home/";
+        private const string BaseUri = "/api/home/";
 
         public NewsController(INewsRepository newsRepository)
         {

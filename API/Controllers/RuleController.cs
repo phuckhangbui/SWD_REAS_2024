@@ -14,7 +14,7 @@ namespace API.Controllers
     {
         private readonly IRuleRepository _rule_repository;
         private readonly IAccountRepository _account_repository;
-        private const string BaseUri = "/admin/";
+        private const string BaseUri = "/api/admin/";
         public RuleController(IRuleRepository ruleRepository, IAccountRepository account_repository)
         {
             _rule_repository = ruleRepository;

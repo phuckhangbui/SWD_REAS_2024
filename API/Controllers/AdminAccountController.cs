@@ -20,7 +20,7 @@ public class AdminAccountController : BaseApiController
 {
     private readonly IAccountRepository _accountRepository;
     private readonly IMapper _mapper;
-    private const string BaseUri = "/admin/";
+    private const string BaseUri = "/api/admin/";
 
     public AdminAccountController(IMapper mapper, IAccountRepository accountRepository)
     {

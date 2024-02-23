@@ -11,7 +11,7 @@ namespace API.Controllers
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IDepositAmountRepository _depositAmountRepository;
-        private const string BaseUri = "/home/";
+        private const string BaseUri = "/api/home/";
 
         public MemberDepositAmountController(IDepositAmountRepository depositAmountRepository, IAccountRepository accountRepository)
         {

@@ -9,7 +9,7 @@ namespace API.Controllers
     {
         private readonly IRuleRepository _rule_repository;
         private readonly IAccountRepository _account_repository;
-        private const string BaseUri = "/home/"; 
+        private const string BaseUri = "/api/home/"; 
 
         public MemberRuleContract(IRuleRepository ruleRepository, IAccountRepository account_repository)
         {

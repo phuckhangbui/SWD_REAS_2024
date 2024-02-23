@@ -14,7 +14,7 @@ namespace API.Controllers
         private readonly IRealEstateRepository _realEstateRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IRealEstateDetailRepository _realEstateDetailRepository;
-        private const string BaseUri = "/staff/";
+        private const string BaseUri = "/api/staff/";
 
         public StaffRealEstateController(IRealEstateRepository realEstateRepository, IAccountRepository accountRepository, IRealEstateDetailRepository realEstateDetailRepository)
         {

@@ -19,7 +19,7 @@ namespace API.Controllers
         private readonly IRealEstateDetailRepository _real_estate_detail_repository;
         private readonly IPhotoService _photoService;
         private readonly ITypeReasRepository _typeReasRepository;
-        private const string BaseUri = "/home/";
+        private const string BaseUri = "/api/home/";
         public MemberRealEstateController(IRealEstateRepository realEstateRepository,
             IAccountRepository accountRepository,
             IRealEstatePhotoRepository realEstatePhotoRepository,

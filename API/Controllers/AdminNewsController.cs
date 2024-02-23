@@ -15,7 +15,7 @@ namespace API.Controllers
     {
         private readonly INewsRepository _newsRepository;
         private readonly IAccountRepository _accountRepository;
-        private const string BaseUri = "/admin/";
+        private const string BaseUri = "/api/admin/";
 
         public AdminNewsController(INewsRepository newsRepository, IAccountRepository accountRepository)
         {

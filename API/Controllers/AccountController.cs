@@ -2,7 +2,6 @@
 using API.Entity;
 using API.Errors;
 using API.Interfaces;
-using AutoMapper;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
@@ -75,44 +74,6 @@ namespace API.Controllers
 
             }
         }
-
-
-        //[HttpPost("/create/staff")]
-        //public async Task<ActionResult<UserDto>> CreateAccount(RegisterDto registerDto)
-        //{
-        //    //thấy ở dưới cũng có create staff rùi, nhưng mà hỏi lại kĩ hơn sau khi nhận đc mail thì làm gì?
-        //    if (await _accountRepository.isUserNameExisted(registerDto.Username))
-        //    {
-        //        return BadRequest(new ApiException(400, "Username already exist"));
-        //    }
-        //    if (await _accountRepository.isEmailExisted(registerDto.AccountEmail))
-        //    {
-        //        return BadRequest(new ApiException(400, "Email already exist"));
-        //    }
-
-        //    var account = _mapper.Map<Account>(registerDto);
-
-        //    using var hmac = new HMACSHA512();
-
-        //    account.AccountEmail = registerDto.AccountEmail.ToLower();
-        //    account.Username = registerDto.Username.ToLower();
-        //    account.AccountName = registerDto.AccountName;
-        //    account.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-        //    account.PasswordSalt = hmac.Key;
-        //    account.MajorId = 1;
-        //    account.Date_Created = DateTime.UtcNow;
-        //    account.Date_End = DateTime.MaxValue;
-
-        //    await _accountRepository.CreateAsync(account);
-
-        //    return new UserDto
-        //    {
-        //        Email = account.AccountEmail,
-        //        Token = _tokenService.CreateToken(account),
-        //        AccountName = account.AccountName,
-        //        Username = account.Username
-        //    };
-        //}
 
         [HttpPost("login/admin")]
         public async Task<ActionResult<UserDto>> LoginAdmin(LoginDto loginDto)

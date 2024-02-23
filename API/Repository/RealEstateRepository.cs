@@ -15,11 +15,13 @@ namespace API.Repository
     {
         private readonly DataContext _context;
 		private readonly IMapper _mapper;
+        private readonly IRealEstatePhotoRepository _realEstatePhotoRepository;
 
-        public RealEstateRepository(DataContext context, IMapper mapper) : base(context)
+        public RealEstateRepository(DataContext context, IMapper mapper, IRealEstatePhotoRepository realEstatePhotoRepository) : base(context)
         {
             _context = context;
 			_mapper = mapper;
+            _realEstatePhotoRepository = realEstatePhotoRepository;
         }
 
 		public async Task<PageList<RealEstateDto>> GetRealEstatesAsync(RealEstateParam realEstateParam)
@@ -121,6 +123,7 @@ namespace API.Repository
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
+                UriPhotoFirst = _realEstatePhotoRepository.GetBestUriPhoto(x.ReasId),
                 ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
@@ -152,6 +155,7 @@ namespace API.Repository
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
+                UriPhotoFirst = _realEstatePhotoRepository.GetBestUriPhoto(x.ReasId),
                 ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                     DateStart = x.DateStart,
@@ -174,6 +178,7 @@ namespace API.Repository
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
+                UriPhotoFirst = _realEstatePhotoRepository.GetBestUriPhoto(x.ReasId),
                 ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
