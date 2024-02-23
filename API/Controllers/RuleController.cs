@@ -1,8 +1,6 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entity;
-using API.Errors;
-using API.Helper;
 using API.Interfaces;
 using API.MessageResponse;
 using API.Repository;
@@ -13,73 +11,59 @@ namespace API.Controllers
     public class RuleController : BaseApiController
     {
         private readonly IRuleRepository _rule_repository;
-        private readonly IAccountRepository _account_repository;
-        private const string BaseUri = "/admin/";
-        public RuleController(IRuleRepository ruleRepository, IAccountRepository account_repository)
+        public RuleController(IRuleRepository ruleRepository)
         {
             _rule_repository = ruleRepository;
-            _account_repository = account_repository;
         }
 
-        [HttpGet(BaseUri + "rule")]
-        public async Task<ActionResult<List<Rule>>> GetAllRule([FromQuery] PaginationParams paginationParams)
+        [HttpGet("/home/real_estate/rule")]
+        public async Task<ActionResult<Rule>> GetRule()
         {
-            int idAdmin = GetIdAdmin(_account_repository);
-            if (idAdmin != 0)
+            var rule = _rule_repository.GetAllAsync().Result.Where(x => x.Title == "Rule").Select(x => new Rule
             {
-                var rule = _rule_repository.GetAllRule();
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                return Ok(rule);
-            }
-            else
-            {
-                return BadRequest(new ApiResponse(401));
-            }
+                Title = x.Title,
+                Content = x.Content,
+            }).FirstOrDefault();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            return Ok(rule);
         }
 
-        [HttpPost(BaseUri + "rule/add")]
+        [HttpGet("/admin/rule")]
+        public async Task<ActionResult<List<Rule>>> GetAllRule()
+        {
+            var rule = _rule_repository.GetAllAsync();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            return Ok(rule);
+        }
+
+        [HttpPost("CreateRule")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewRule(RuleCreateDto ruleCreate)
         {
-            int idAdmin = GetIdAdmin(_account_repository);
-            if (idAdmin != 0)
+            var rule = new Rule
             {
-                var rule = _rule_repository.CreateNewRule(ruleCreate);
-                if (rule != null)
-                {
-                    return new ApiResponseMessage("MSG18");
-                }
-                else
-                {
-                    return BadRequest(new ApiResponse(400, "Have any error when excute operation"));
-                }
-            }
-            else
-            {
-                return BadRequest(new ApiResponse(401));
-            }
+                Title = ruleCreate.Title,
+                Content = ruleCreate.Content,
+                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow,
+            };
+            _rule_repository.CreateAsync(rule).Wait();
+            return new ApiResponseMessage("MSG");
         }
 
-        [HttpPost(BaseUri + "rule/update")]
-        public async Task<ActionResult<ApiResponseMessage>> UpdateRule(RuleChangeContentDto ruleChangeContent)
+        [HttpPost("UpdateRule")]
+        public async Task<ActionResult<ApiResponseMessage>> UpdateRule (RuleCreateDto ruleUpdate)
         {
-            int idAdmin = GetIdAdmin(_account_repository);
-            if (idAdmin != 0)
+            var rule = new Rule
             {
-                var rule = _rule_repository.UpdateRuleByContentChange(ruleChangeContent);
-                if (rule != null)
-                {
-                    return new ApiResponseMessage("MSG03");
-                }
-                else
-                {
-                    return BadRequest(new ApiResponse(400, "Have any error when excute operation"));
-                }
-            }
-            else
-            {
-                return BadRequest(new ApiResponse(401));
-            }
+                Title = ruleUpdate.Title,
+                Content = ruleUpdate.Content,
+                DateCreated = ruleUpdate.DateCreated,
+                DateUpdated = DateTime.UtcNow,
+            };
+            _rule_repository.UpdateAsync(rule).Wait();
+            return new ApiResponseMessage("MSG03");
         }
     }
 }

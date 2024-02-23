@@ -12,6 +12,7 @@ namespace API.DTOs
         public DateTime DateStart { get; set; }
         public DateTime DateEnd { get; set; }
         public int Type_Reas { get; set; }
+        public int AccountOwnerId { get; set; }
         public List<PhotoFileDto> Photos { get; set; }
 
         public DetailFileReasDto Detail { get; set; }

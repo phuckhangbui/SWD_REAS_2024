@@ -1,4 +1,4 @@
-﻿const MemberList: React.FC = () => {
+const MemberList: React.FC = () => {
     return <></>;
   };
   

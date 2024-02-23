@@ -18,7 +18,7 @@ namespace API.DTOs
         public string Type_REAS_Name { get; set; }
         public DateTime DateCreated { get; set; }
 
-        public List<RealEstatePhotoDto> Photos { get; set; }
+        public List<ListPhotoRealEstateDto> Photos { get; set; }
         public RealEstatePaper Detail { get; set; }
     }
 }

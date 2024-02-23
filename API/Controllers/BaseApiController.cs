@@ -1,9 +1,10 @@
-﻿using API.DTOs;
+﻿using API.Data;
+using API.DTOs;
 using API.Enums;
-using API.Extension;
-using API.Helper;
 using API.Interfaces;
+using API.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -13,7 +14,7 @@ namespace API.Controllers
     {
 
 
-        protected int GetLoginAccountId()
+        protected int? GetLoginAccountId()
         {
             try
             {
@@ -21,67 +22,48 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return 0;
+                return null;
             }
         }
-        protected int GetIdAdmin(IAccountRepository accountRepository)
+        protected int? GetIdAdmin(IAccountRepository accountRepository)
         {
             try
             {
-                int idAdmin = int.Parse(this.User.Claims.First(i => i.Type == "AccountId").Value);
+                int idAdmin = 1;//int.Parse(this.User.Claims.First(i => i.Type == "AccountId").Value);
                 if (accountRepository.GetAllAsync().Result.Where(x => x.AccountId == idAdmin).Select(x => x.RoleId).FirstOrDefault().Equals((int)RoleEnum.Admin))
                 {
                     return idAdmin;
                 }
                 else
                 {
-                    return 0;
+                    return null;
                 }
             }
             catch (Exception ex)
             {
-                return 0;
+                return null;
             }
         }
 
-        protected int GetIdMember(IAccountRepository accountRepository)
+        protected UserInformationDto getDetailAccount(int id, IAccountRepository _accountRepository, DataContext _context)
         {
-            try
+            var account = _accountRepository.GetAllAsync().Result.Where(x => x.AccountId == id).Select(x => new UserInformationDto
             {
-                int idAdmin = int.Parse(this.User.Claims.First(i => i.Type == "AccountId").Value);
-                if (accountRepository.GetAllAsync().Result.Where(x => x.AccountId == idAdmin).Select(x => x.RoleId).FirstOrDefault().Equals((int)RoleEnum.Member))
-                {
-                    return idAdmin;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
-        }
+                AccountId = x.AccountId,
+                AccountName = x.AccountName,
+                AccountEmail = x.AccountEmail,
+                Address = x.Address,
+                Citizen_identification = x.Citizen_identification,
+                PhoneNumber = x.PhoneNumber,
+                Username = x.Username,
+                Date_Created = x.Date_Created,
+                Date_End = x.Date_End,
+                Major = _context.Major.Where(y => y.MajorId == x.MajorId).Select(x => x.MajorName).FirstOrDefault(),
+                Role = _context.Role.Where(y => y.RoleId == x.RoleId).Select(x => x.RoleName).FirstOrDefault(),
+                Account_Status = x.Account_Status
+            }).FirstOrDefault();
 
-        protected int GetIdStaff(IAccountRepository accountRepository)
-        {
-            try
-            {
-                int idStaff = int.Parse(this.User.Claims.First(i => i.Type == "AccountId").Value);
-                if (accountRepository.GetAllAsync().Result.Where(x => x.AccountId == idStaff).Select(x => x.RoleId).FirstOrDefault().Equals((int)RoleEnum.Staff))
-                {
-                    return idStaff;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
+            return account;
         }
     }
 }

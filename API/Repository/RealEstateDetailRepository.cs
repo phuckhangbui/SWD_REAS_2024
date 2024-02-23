@@ -10,36 +10,34 @@ namespace API.Repository
     public class RealEstateDetailRepository : BaseRepository<RealEstateDetail>, IRealEstateDetailRepository
     {
 		private readonly DataContext _context;
+		private readonly IMapper _mapper;
 
-		public RealEstateDetailRepository(DataContext context) : base(context)
+		public RealEstateDetailRepository(DataContext context, IMapper mapper) : base(context)
 		{
 			_context = context;
+			_mapper = mapper;
 		}
 
-        public async Task<RealEstateDetailDto> GetRealEstateDetail(int id)
-        {
-            var _real_estate_detail = _context.RealEstate.Where(x => x.ReasId == id).Select(x => new RealEstateDetailDto
-            {
-                ReasId = x.ReasId,
-                ReasName = x.ReasName,
-                ReasPrice = x.ReasPrice,
-                ReasArea = x.ReasArea,
-                ReasAddress = x.ReasAddress,
-                ReasDescription = x.ReasDescription,
-                AccountOwnerId = x.AccountOwnerId,
-                AccountOwnerName = x.AccountOwnerName,
-                Detail = null,
-                Photos = _context.RealEstatePhoto.Where(z => z.ReasId == x.ReasId).Select(z => new RealEstatePhotoDto
-                {
-                    ReasPhotoId = z.ReasPhotoId,
-                    ReasPhotoUrl = z.ReasPhotoUrl,
-                }).ToList(),
-                ReasStatus = x.ReasStatus,
-                DateStart = x.DateStart,
-                DateEnd = x.DateEnd,
-                DateCreated = x.DateCreated,
-            }).FirstOrDefaultAsync();
-            return await _real_estate_detail;
-        }
-    }
+		public async Task<RealEstateInfoDto> GetRealEstateDetailAsync(int realsId)
+		{
+			var realEstateDetail = 
+				await _context.RealEstateDetail
+				.SingleOrDefaultAsync(r => r.ReasId == realsId);
+
+			var realEstateInfoDto = _mapper.Map<RealEstateInfoDto>(realEstateDetail);
+			var realEstatePhotos = 
+				await _context.RealEstatePhoto.Where(r => r.ReasId == realsId).ToListAsync();
+
+			if (realEstatePhotos.Any())
+			{
+				realEstateInfoDto.Photos = _mapper.Map<List<RealEstatePhotoDto>>(realEstatePhotos);
+			}
+			else
+			{
+				realEstateInfoDto.Photos = new List<RealEstatePhotoDto>();
+			}
+
+			return realEstateInfoDto;
+		}
+	}
 }

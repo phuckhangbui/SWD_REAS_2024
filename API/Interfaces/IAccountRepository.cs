@@ -1,6 +1,4 @@
-﻿using API.DTOs;
-using API.Entity;
-using API.Helper;
+﻿using API.Entity;
 
 namespace API.Interfaces
 {
@@ -10,12 +8,8 @@ namespace API.Interfaces
         Task<bool> isUserNameExisted(string userName);
         Task<Account> GetAccountByUsernameAsync(string username);
         Task<Account> GetAccountByAccountIdAsync(int accountId);
-        Task<string> GetNameAccountByAccountIdAsync(int accountId);
         Task<Account> GetAccountByEmailAsync(string email);
-        Task<PageList<AccountDto>> GetAccountsBySearch(AccountParams accountParams);
-        Task<PageList<AccountDto>> GetAllStaffAccounts();
-        Task<PageList<AccountDto>> GetAllMemberAccounts();
-        Task<UserInformationDto> GetAccountDetail(int id);
-        Task<ChangeStatusAccountDto> UpdateStatusAccount(ChangeStatusAccountDto changeStatusAccountDto);
+
+
     }
 }

@@ -7,7 +7,6 @@ public class News
     public int AccountCreateId { get; set; }
     public string AccountName { get; set; }
     public string NewsTitle { get; set; }
-    public string NewsSumary { get; set; }
     public string NewsContent { get; set; }
     public DateTime DateCreated { get; set; }
 }
