@@ -13,4 +13,5 @@
         Decline_after_auction = 8,
         Block = 9,
     }
+
 }

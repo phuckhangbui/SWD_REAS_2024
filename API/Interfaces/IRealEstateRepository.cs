@@ -7,9 +7,14 @@ namespace API.Interfaces
     public interface IRealEstateRepository : IBaseRepository<RealEstate>
     {
         Task<PageList<RealEstateDto>> GetRealEstatesAsync(RealEstateParam realEstateParam);
-        Task<RealEstateDto> GetRealEstateAsync(int reasId);
-        Task<RealEstateDto> GetRealEstateWithStatusAsync(int reasId, int status);
-        Task<RealEstateDto> UpdateRealEstateStatusAsync(int reasId, int status);
+        Task<ReasStatusDto> UpdateRealEstateStatusAsync(ReasStatusDto reasStatusDto);
 		Task<bool> CheckRealEstateExist(int reasId);
-	}
+        Task<PageList<RealEstateDto>> GetOwnerRealEstate(int idOwner);
+        Task<PageList<RealEstateDto>> GetRealEstateOnGoing();
+        Task<PageList<RealEstateDto>> GetRealEstateOnGoingBySearch(SearchRealEstateDto searchRealEstateDto);
+        Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoingBySearch(SearchRealEstateDto searchRealEstateDto);
+        Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoing();
+        Task<PageList<RealEstateDto>> SearchRealEstateByKey(SearchRealEstateDto searchRealEstateDto);
+        Task<PageList<RealEstateDto>> GetAllRealEstateOnRealEstatePage();
+    }
 }

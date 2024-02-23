@@ -1,13 +1,87 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entity;
+using API.Helper;
 using API.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 namespace API.Repository
 {
     public class RuleRepository : BaseRepository<Rule>, IRuleRepository
     {
-        public RuleRepository(DataContext context) : base(context)
+        private readonly DataContext _context;
+        private readonly IMapper _mapper;
+        public RuleRepository(DataContext context, IMapper mapper) : base(context)
         {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<Rule> CreateNewRule(RuleCreateDto ruleCreate)
+        {
+            var rule = new Rule
+            {
+                Title = ruleCreate.Title,
+                Content = ruleCreate.Content,
+                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow,
+            };
+            try
+            {
+                await CreateAsync(rule);
+                return rule;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            
+        }
+
+        public async Task<PageList<Rule>> GetAllRule()
+        {
+            PaginationParams paginationParams = new PaginationParams();
+            var rule = _context.Rule;
+            return await PageList<Rule>.CreateAsync(
+                rule.AsNoTracking().ProjectTo<Rule>(_mapper.ConfigurationProvider),
+                paginationParams.PageNumber,
+                paginationParams.PageSize);
+        }
+
+        public async Task<Rule> GetRuleWhenUserSignInAuction()
+        {
+            return await _context.Rule.Where(x => x.Title == "Auction Contract").Select(x => new Rule
+            {
+                Title = x.Title,
+                Content = x.Content
+            }).SingleOrDefaultAsync();
+        }
+
+        public async Task<RuleChangeContentDto> UpdateRuleByContentChange(RuleChangeContentDto ruleChangeContent)
+        {
+            var query = await _context.Rule.Where(x => x.RuleId == ruleChangeContent.idRule).SingleOrDefaultAsync();
+            if (query != null)
+            {
+                    query.Content = ruleChangeContent.content;
+                    query.DateUpdated = ruleChangeContent.DateUpdate;
+                    try
+                    {
+                        await UpdateAsync(query);
+                        return ruleChangeContent;
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
+            }
+            else
+            {
+                return null;
+            }
+
         }
     }
 }

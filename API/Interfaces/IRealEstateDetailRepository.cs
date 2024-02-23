@@ -5,6 +5,6 @@ namespace API.Interfaces
 {
     public interface IRealEstateDetailRepository : IBaseRepository<RealEstateDetail>
     {
-        Task<RealEstateInfoDto> GetRealEstateDetailAsync(int reasId);
+        Task<RealEstateDetailDto> GetRealEstateDetail(int id);
     }
 }
