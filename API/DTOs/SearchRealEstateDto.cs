@@ -1,6 +1,6 @@
 ﻿namespace API.DTOs
 {
-    public class SearchRealEstateForMemerDto
+    public class SearchRealEstateDto
     {
         public string ReasName { get; set; }
         public string ReasPriceFrom { get; set; }

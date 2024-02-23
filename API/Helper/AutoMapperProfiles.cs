@@ -10,8 +10,10 @@ namespace API.Helper
         {
             CreateMap<RegisterDto, Account>();
             CreateMap<NewAccountDto, Account>();
+            CreateMap<ChangeStatusAccountDto, Account>();
+            CreateMap<RuleChangeContentDto, Rule>();
             CreateMap<RealEstate, RealEstateDto>();
-            CreateMap<RealEstateDetail, RealEstateInfoDto>();
+            CreateMap<RealEstateDto, RealEstateDto>();
             CreateMap<RealEstatePhoto, RealEstatePhotoDto>();
             CreateMap<Auction, AuctionDto>()
                 .ForMember(dest => dest.AccountCreateName, opt => opt.MapFrom(src => src.AccountCreateName));
