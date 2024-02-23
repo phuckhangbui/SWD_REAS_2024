@@ -17,15 +17,19 @@ namespace API.Controllers
         private readonly IAccountRepository _account_repository;
         private readonly IRealEstatePhotoRepository _real_estate_photo_repository;
         private readonly IRealEstateDetailRepository _real_estate_detail_repository;
+        private readonly IMoneyTransactionRepository _money_transaction_repository;
         private readonly IPhotoService _photoService;
         private readonly ITypeReasRepository _typeReasRepository;
+        private readonly IMoneyTransactionDetailRepository _moneyTransactionDetailRepository;
         private const string BaseUri = "/api/home/";
         public MemberRealEstateController(IRealEstateRepository realEstateRepository,
             IAccountRepository accountRepository,
             IRealEstatePhotoRepository realEstatePhotoRepository,
             IRealEstateDetailRepository realEstateDetailRepository,
             IPhotoService photoService,
-            ITypeReasRepository typeReasRepository)
+            ITypeReasRepository typeReasRepository,
+            IMoneyTransactionRepository money_transaction_repository,
+            IMoneyTransactionDetailRepository moneyTransactionDetailRepository)
         {
             _real_estate_repository = realEstateRepository;
             _account_repository = accountRepository;
@@ -33,6 +37,8 @@ namespace API.Controllers
             _real_estate_detail_repository = realEstateDetailRepository;
             _photoService = photoService;
             _typeReasRepository = typeReasRepository;
+            _money_transaction_repository = money_transaction_repository;
+            _moneyTransactionDetailRepository = moneyTransactionDetailRepository;
         }
 
         [HttpGet(BaseUri + "my_real_estate")]
@@ -195,6 +201,42 @@ namespace API.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(_real_estate_detail);
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
+        }
+
+        [HttpPost(BaseUri + "my_real_estate/payment")]
+        public async Task<ActionResult<ApiResponseMessage>> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateDto transactionMoneyCreateDto)
+        {
+            int userMember = GetIdMember(_account_repository);
+            if (userMember != 0)
+            {
+                if(transactionMoneyCreateDto.Money != transactionMoneyCreateDto.MoneyPaid)
+                {
+                    return new ApiResponseMessage("MSG20");
+                }
+                else
+                {
+                    try
+                    {
+                        ReasStatusDto reasStatusDto = new ReasStatusDto();
+                        reasStatusDto.Id = transactionMoneyCreateDto.IdReas;
+                        reasStatusDto.status = (int)RealEstateEnum.Selling;
+                        reasStatusDto.statusMessage = "";
+                        await _real_estate_repository.UpdateRealEstateStatusAsync(reasStatusDto);
+                        await _money_transaction_repository.CreateNewMoneyTransaction(transactionMoneyCreateDto, userMember);
+                        int idTransaction = await _money_transaction_repository.GetIdTransactionWhenCreateNewTransaction();
+                        await _moneyTransactionDetailRepository.CreateNewMoneyTransaction(transactionMoneyCreateDto, idTransaction);
+                        return new ApiResponseMessage("MSG19");
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new ApiResponse(400, "Have any error when excute operation"));
+                    }
+                }
             }
             else
             {
