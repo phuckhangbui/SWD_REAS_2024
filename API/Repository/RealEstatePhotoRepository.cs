@@ -12,8 +12,5 @@ namespace API.Repository
         {
             _dataContext = context;
         }
-
-        public string GetBestUriPhoto(int id)
-        => _dataContext.RealEstatePhoto.Where(x => x.ReasId == id).Select(x => x.ReasPhotoUrl).FirstOrDefault();
     }
 }

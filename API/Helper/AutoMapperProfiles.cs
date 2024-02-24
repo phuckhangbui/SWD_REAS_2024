@@ -12,8 +12,10 @@ namespace API.Helper
             CreateMap<NewAccountDto, Account>();
             CreateMap<ChangeStatusAccountDto, Account>();
             CreateMap<RuleChangeContentDto, Rule>();
+            CreateMap<AccountDto, Account>();
             CreateMap<AccountDto, AccountDto>();
             CreateMap<NewsDto, NewsDto>();
+            CreateMap<News, NewsDto>();
             CreateMap<Rule, Rule>();
             CreateMap<RealEstate, RealEstateDto>();
             CreateMap<RealEstateDto, RealEstateDto>();
