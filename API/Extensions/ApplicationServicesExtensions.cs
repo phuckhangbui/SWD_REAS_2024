@@ -23,7 +23,8 @@ namespace API.Extensions
             services.AddScoped<IAuctionRepository, AuctionRepository>();
             services.AddScoped<ITypeReasRepository, TypeReasRepository>();
             services.AddScoped<ITaskRepository, TaskRepository>();
-            services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<IMoneyTransactionRepository, MoneyTransactionRepository>();
+            services.AddScoped<IMoneyTransactionDetailRepository, MoneyTransactionDetailRepository>();
 
             services.AddDbContext<DataContext>(opt =>
             {

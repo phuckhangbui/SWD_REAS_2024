@@ -27,11 +27,6 @@ namespace API.Controllers
         [Authorize(policy: "Staff")]
         public async Task<IActionResult> GetStaffTasks([FromQuery] TaskParam taskParam, int staffId)
         {
-            if (taskParam == null)
-            {
-                return BadRequest(new ApiResponse(400));
-            }
-
             var tasks = await _taskRepository.GetTasksStaffRoleAsync(taskParam, staffId);
             if (tasks == null)
             {

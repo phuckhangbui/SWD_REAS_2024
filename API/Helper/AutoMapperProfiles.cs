@@ -17,5 +17,8 @@ public class AutoMapperProfiles : Profile
         CreateMap<Auction, AuctionDto>()
             .ForMember(dest => dest.AccountCreateName, opt => opt.MapFrom(src => src.AccountCreateName));
         CreateMap<Entity.Task, TaskDto>();
+        CreateMap<MoneyTransaction, MoneyTransactionDto>();
+        CreateMap<MoneyTransactionDetail, MoneyTransactionDetailDto>();
+
     }
 }

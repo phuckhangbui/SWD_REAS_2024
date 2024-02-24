@@ -31,12 +31,4 @@ public class AdminController : BaseApiController
             accounts.TotalCount, accounts.TotalPages));
         return Ok(accounts);
     }
-
-    //For assign task from admin to staff
-    [HttpGet("/api/admin/staffAccounts")]
-    public async Task<ActionResult<List<StaffDto>>> GetStaffAccounts()
-    {
-        var staffAccounts = await _adminRepository.GetStaffAccount();
-        return Ok(staffAccounts);
-    }
 }
