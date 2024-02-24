@@ -1,16 +1,17 @@
-﻿namespace API.DTOs
+﻿using API.Entity;
+
+namespace API.DTOs
 {
-	public class RealEstateDto
-	{
-		public int ReasId { get; set; }
-		public string ReasName { get; set; }
-		public string ReasAddress { get; set; }
-		public string ReasPrice { get; set; }
-		public string ReasDescription { get; set; }
-		public int ReasStatus { get; set; }
-		public DateTime DateStart { get; set; }
-		public DateTime DateEnd { get; set; }
-		public int AccountOwnerId { get; set; }
-		public DateTime DateCreated { get; set; }
-	}
+    public class RealEstateDto
+    {
+        public int ReasId { get; set; }
+        public string ReasName { get; set; }
+        public string ReasPrice { get; set; }
+        public int ReasArea { get; set; }
+        public string ReasTypeName { get; set; }
+        public string ReasStatus { get; set; }
+        public string UriPhotoFirst { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateEnd { get; set; }
+    }
 }

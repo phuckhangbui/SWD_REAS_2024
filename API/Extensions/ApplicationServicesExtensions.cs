@@ -21,6 +21,10 @@ namespace API.Extensions
             services.AddScoped<IRuleRepository, RuleRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAuctionRepository, AuctionRepository>();
+            services.AddScoped<INewsRepository, NewsRepository>();
+            services.AddScoped<IMoneyTransactionDetailRepository, MoneyTransactionDetailRepository>();
+            services.AddScoped<IMoneyTransactionRepository, MoneyTransactionRepository>();
+            services.AddScoped<IDepositAmountRepository, DepositAmountRepository>();
             services.AddScoped<ITypeReasRepository, TypeReasRepository>();
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IMoneyTransactionRepository, MoneyTransactionRepository>();

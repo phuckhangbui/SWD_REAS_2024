@@ -8,11 +8,17 @@ public class AutoMapperProfiles : Profile
 {
     public AutoMapperProfiles()
     {
-        CreateMap<Account, AccountDto>();
         CreateMap<RegisterDto, Account>();
         CreateMap<NewAccountDto, Account>();
+        CreateMap<ChangeStatusAccountDto, Account>();
+        CreateMap<RuleChangeContentDto, Rule>();
+        CreateMap<AccountDto, Account>();
+        CreateMap<AccountDto, AccountDto>();
+        CreateMap<NewsDto, NewsDto>();
+        CreateMap<News, NewsDto>();
+        CreateMap<Rule, Rule>();
         CreateMap<RealEstate, RealEstateDto>();
-        CreateMap<RealEstateDetail, RealEstateInfoDto>();
+        CreateMap<RealEstateDto, RealEstateDto>();
         CreateMap<RealEstatePhoto, RealEstatePhotoDto>();
         CreateMap<Auction, AuctionDto>()
             .ForMember(dest => dest.AccountCreateName, opt => opt.MapFrom(src => src.AccountCreateName));

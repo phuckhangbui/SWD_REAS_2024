@@ -8,5 +8,6 @@ public class News
     public string AccountName { get; set; }
     public string NewsTitle { get; set; }
     public string NewsContent { get; set; }
+    public string Thumbnail {  get; set; }
     public DateTime DateCreated { get; set; }
 }
