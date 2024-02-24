@@ -1,6 +1,8 @@
-﻿namespace API.DTOs
+﻿using API.Helper;
+
+namespace API.DTOs
 {
-    public class SearchRealEstateForMemerDto
+    public class SearchRealEstateDto : PaginationParams
     {
         public string ReasName { get; set; }
         public string ReasPriceFrom { get; set; }
