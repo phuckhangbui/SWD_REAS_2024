@@ -1,36 +1,43 @@
-﻿using API.Data;
-using API.DTOs;
-using API.Entity;
+﻿using API.Entity;
 using API.Errors;
+using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Service;
 using API.MessageResponse;
-using API.Repository;
+using API.Param;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class RuleController : BaseApiController
     {
-        private readonly IRuleRepository _rule_repository;
-        private readonly IAccountRepository _account_repository;
+        private readonly IRuleService _ruleService;
         private const string BaseUri = "/api/admin/";
-        public RuleController(IRuleRepository ruleRepository, IAccountRepository account_repository)
+        public RuleController(IRuleService ruleService)
         {
-            _rule_repository = ruleRepository;
-            _account_repository = account_repository;
+            _ruleService = ruleService;
         }
 
         [HttpGet(BaseUri + "rule")]
-        public async Task<ActionResult<List<Rule>>> GetAllRule([FromQuery] PaginationParams paginationParams)
+        public async Task<ActionResult<Rule>> GetAllRule([FromQuery] PaginationParams paginationParams)
         {
-            int idAdmin = GetIdAdmin(_account_repository);
+            int idAdmin = GetIdAdmin(_ruleService.AccountRepository);
             if (idAdmin != 0)
             {
-                var rule = _rule_repository.GetAllRule();
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                return Ok(rule);
+                var rule = await _ruleService.GetAllRule();
+                Response.AddPaginationHeader(new PaginationHeader(rule.CurrentPage, rule.PageSize,
+                rule.TotalCount, rule.TotalPages));
+                if (rule.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(rule);
+                }
             }
             else
             {
@@ -39,13 +46,13 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "rule/add")]
-        public async Task<ActionResult<ApiResponseMessage>> CreateNewRule(RuleCreateDto ruleCreate)
+        public async Task<ActionResult<ApiResponseMessage>> CreateNewRule(RuleCreateParam ruleCreate)
         {
-            int idAdmin = GetIdAdmin(_account_repository);
+            int idAdmin = GetIdAdmin(_ruleService.AccountRepository);
             if (idAdmin != 0)
             {
-                var rule = _rule_repository.CreateNewRule(ruleCreate);
-                if (rule != null)
+                var rule = await _ruleService.CreateNewRule(ruleCreate);
+                if (rule)
                 {
                     return new ApiResponseMessage("MSG18");
                 }
@@ -61,13 +68,13 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "rule/update")]
-        public async Task<ActionResult<ApiResponseMessage>> UpdateRule(RuleChangeContentDto ruleChangeContent)
+        public async Task<ActionResult<ApiResponseMessage>> UpdateRule(RuleChangeContentParam ruleChangeContent)
         {
-            int idAdmin = GetIdAdmin(_account_repository);
+            int idAdmin = GetIdAdmin(_ruleService.AccountRepository);
             if (idAdmin != 0)
             {
-                var rule = _rule_repository.UpdateRuleByContentChange(ruleChangeContent);
-                if (rule != null)
+                var rule = await _ruleService.UpdateRule(ruleChangeContent);
+                if (rule)
                 {
                     return new ApiResponseMessage("MSG03");
                 }

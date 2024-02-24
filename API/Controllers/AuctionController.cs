@@ -2,19 +2,21 @@ using API.DTOs;
 using API.Errors;
 using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Service;
+using API.MessageResponse;
+using API.Param;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-	public class AuctionController : BaseApiController
+    public class AuctionController : BaseApiController
 	{
-		private readonly IAuctionRepository _auctionRepository;
+        private readonly IAuctionService _auctionService;
 
-		public AuctionController(IAuctionRepository auctionRepository)
+		public AuctionController(IAuctionService auctionService)
 		{
-			_auctionRepository = auctionRepository;
+			_auctionService = auctionService;
 		}
 
 		private const string BaseUri = "/auctions";
@@ -22,7 +24,7 @@ namespace API.Controllers
 		[HttpGet(BaseUri)]
 		public async Task<IActionResult> GetRealEstates([FromQuery] AuctionParam auctionParam)
 		{
-			var auctions = await _auctionRepository.GetAuctionsAsync(auctionParam);
+			var auctions = await _auctionService.GetRealEstates(auctionParam);
 
 			Response.AddPaginationHeader(new PaginationHeader(auctions.CurrentPage, auctions.PageSize,
 			auctions.TotalCount, auctions.TotalPages));
@@ -51,7 +53,7 @@ namespace API.Controllers
             //consider changing this to HttpPost
 
             //currently do not know search base on which properties
-            var auctions = await _auctionRepository.GetAuctions(auctionParam);
+            var auctions = await _auctionService.GetAuctions(auctionParam);
 
             //need to test the mapper here
             //currently expect mapper to auto flatten the object, but let see :0
@@ -61,11 +63,13 @@ namespace API.Controllers
         }
 
         [HttpGet("/edit/status")]
-        public async Task<ActionResult> ToggleAuctionStatus([FromQuery] string auctionId, string statusCode)
+        public async Task<ActionResult<ApiResponseMessage>> ToggleAuctionStatus([FromQuery] string auctionId, string statusCode)
         {
             try
             {
-                await _auctionRepository.EditAuctionStatus(auctionId, statusCode);
+                bool check = await _auctionService.ToggleAuctionStatus(auctionId, statusCode);
+                if (check) return new ApiResponseMessage("MSG03");
+                else return BadRequest(new ApiResponse(401, "Have any error when excute operation."));
             }
             catch (Exception ex)
             {

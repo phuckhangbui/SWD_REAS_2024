@@ -1,5 +1,5 @@
 ﻿using API.Data;
-using API.Interfaces;
+using API.Interface.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository
@@ -18,10 +18,17 @@ namespace API.Repository
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task CreateAsync(T entity)
+        public async Task<bool> CreateAsync(T entity)
         {
-            _context.Set<T>().Add(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Set<T>().Add(entity);
+                await _context.SaveChangesAsync();
+                return true;
+            }catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         public async Task DeleteAsync(ICollection<T> entity)
@@ -41,11 +48,18 @@ namespace API.Repository
 
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
-            var tracker = _context.Attach(entity);
-            tracker.State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                var tracker = _context.Attach(entity);
+                tracker.State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return true;
+            }catch(Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

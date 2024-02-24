@@ -1,61 +1,74 @@
-﻿using API.DTOs;
+﻿using API.Errors;
 using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Service;
 using API.MessageResponse;
+using API.Param;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class MemberDepositAmountController : BaseApiController
     {
-        private readonly IAccountRepository _accountRepository;
-        private readonly IDepositAmountRepository _depositAmountRepository;
+        private readonly IMemberDepositAmountService _memberDepositAmountService;
         private const string BaseUri = "/api/home/";
 
-        public MemberDepositAmountController(IDepositAmountRepository depositAmountRepository, IAccountRepository accountRepository)
+        public MemberDepositAmountController(IMemberDepositAmountService memberDepositAmountService)
         {
-            _accountRepository = accountRepository;
-            _depositAmountRepository = depositAmountRepository;
+            _memberDepositAmountService = memberDepositAmountService;
         }
 
         [HttpGet(BaseUri + "my-deposit")]
         public async Task<IActionResult> ListDepositAmoutByMember([FromQuery] PaginationParams paginationParams)
         {
-            int userMember = GetIdMember(_accountRepository);
-            var deposit = await _depositAmountRepository.GetDepositAmoutForMember(userMember);
-            Response.AddPaginationHeader(new PaginationHeader(deposit.CurrentPage, deposit.PageSize,
-            deposit.TotalCount, deposit.TotalPages));
-            if (deposit.PageSize == 0)
+            int userMember = GetIdMember(_memberDepositAmountService.AccountRepository);
+            if(userMember != 0)
             {
-                var apiResponseMessage = new ApiResponseMessage("MSG01");
-                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                var deposit = await _memberDepositAmountService.ListDepositAmoutByMember(userMember);
+                Response.AddPaginationHeader(new PaginationHeader(deposit.CurrentPage, deposit.PageSize,
+                deposit.TotalCount, deposit.TotalPages));
+                if (deposit.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(deposit);
+                }
             }
             else
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                return Ok(deposit);
+                return BadRequest(new ApiResponse(401));
             }
         }
 
         [HttpGet(BaseUri + "my-deposit/search")]
-        public async Task<IActionResult> ListDepositAmoutByMemberWhenSearch([FromQuery] SearchDepositAmountDto searchDepositAmountDto)
+        public async Task<IActionResult> ListDepositAmoutByMemberWhenSearch([FromQuery] SearchDepositAmountParam searchDepositAmountParam)
         {
-            int userMember = GetIdMember(_accountRepository);
-            var deposit = await _depositAmountRepository.GetDepositAmoutForMemberBySearch(searchDepositAmountDto, userMember);
-            Response.AddPaginationHeader(new PaginationHeader(deposit.CurrentPage, deposit.PageSize,
-            deposit.TotalCount, deposit.TotalPages));
-            if (deposit.PageSize == 0)
+            int userMember = GetIdMember(_memberDepositAmountService.AccountRepository);
+            if(userMember != 0)
             {
-                var apiResponseMessage = new ApiResponseMessage("MSG01");
-                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                var deposit = await _memberDepositAmountService.ListDepositAmoutByMemberWhenSearch(searchDepositAmountParam, userMember);
+                Response.AddPaginationHeader(new PaginationHeader(deposit.CurrentPage, deposit.PageSize,
+                deposit.TotalCount, deposit.TotalPages));
+                if (deposit.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(deposit);
+                }
             }
             else
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                return Ok(deposit);
+                return BadRequest(new ApiResponse(401));
             }
         }
     }

@@ -1,8 +1,8 @@
 ﻿using API.Data;
-using API.DTOs;
 using API.Entity;
-using API.Enums;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
+using API.Param.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository
@@ -15,7 +15,7 @@ namespace API.Repository
             _dataContext = context;
         }
 
-        public async Task<TransactionMoneyCreateDto> CreateNewMoneyTransaction(TransactionMoneyCreateDto transactionMoneyCreateDto, int idAccount)
+        public async Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idAccount)
         {
             MoneyTransaction moneyTransaction = new MoneyTransaction();
             moneyTransaction.TransactionStatus = (int)TransactionEnum.Received;
@@ -25,12 +25,16 @@ namespace API.Repository
             moneyTransaction.Money = transactionMoneyCreateDto.MoneyPaid;
             try
             {
-                await CreateAsync(moneyTransaction);
-                return transactionMoneyCreateDto;
+                bool check = await CreateAsync(moneyTransaction);
+                if (check)
+                {
+                    return true; 
+                }
+                else return false;
             }
             catch (Exception ex)
             {
-                return null;
+                return false;
             }
         }
 

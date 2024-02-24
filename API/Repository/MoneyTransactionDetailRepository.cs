@@ -1,7 +1,7 @@
 ﻿using API.Data;
-using API.DTOs;
 using API.Entity;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
 using API.Validate;
 
 namespace API.Repository
@@ -17,7 +17,7 @@ namespace API.Repository
             _accountRepository = accountRepository;
         }
 
-        public async Task<TransactionMoneyCreateDto> CreateNewMoneyTransaction(TransactionMoneyCreateDto transactionMoneyCreateDto, int idTransaction)
+        public async Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idTransaction)
         {
             MoneyTransactionDetail moneyTransactionDetail = new MoneyTransactionDetail();
             moneyTransactionDetail.MoneyTransactionId = idTransaction;
@@ -30,11 +30,12 @@ namespace API.Repository
             moneyTransactionDetail.RemainingAmount = kq.ToString();
             try
             {
-                await CreateAsync(moneyTransactionDetail);
-                return transactionMoneyCreateDto;
+                bool check = await CreateAsync(moneyTransactionDetail);
+                if (check) { return true; }
+                else return false;
             }catch (Exception ex)
             {
-                return null;
+                return false;
             }
         }
     }

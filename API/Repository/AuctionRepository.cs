@@ -1,16 +1,17 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
+using API.Param.Enums;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository
 {
-	public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
+    public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
 	{
 		private readonly DataContext _context;
 		private readonly IMapper _mapper;
@@ -58,17 +59,23 @@ namespace API.Repository
                 auctionParam.PageSize);
         }
 
-        public async System.Threading.Tasks.Task EditAuctionStatus(string autionId, string statusCode)
+        public async Task<bool> EditAuctionStatus(string autionId, string statusCode)
         {
-            Auction auction = await _context.Auction.FindAsync(autionId);
+			try
+			{
+                Auction auction = await _context.Auction.FindAsync(autionId);
 
-            if (auction == null)
-            {
-                throw new Exception();
+                if (auction == null)
+                {
+                    throw new Exception();
+                }
+
+                auction.Status = int.Parse(statusCode);
+                bool check = await UpdateAsync(auction);
+                if (check) return true;
+                else return false;
             }
-
-            auction.Status = int.Parse(statusCode);
-            await UpdateAsync(auction);
+            catch (Exception ex) { return false; }
         }
     }
 }

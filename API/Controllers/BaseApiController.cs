@@ -1,8 +1,8 @@
 ﻿using API.DTOs;
-using API.Enums;
 using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

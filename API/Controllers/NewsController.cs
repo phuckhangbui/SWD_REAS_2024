@@ -1,26 +1,27 @@
-﻿using API.DTOs;
-using API.Extension;
+﻿using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Interface.Service;
 using API.MessageResponse;
+using API.Param;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class NewsController : BaseApiController
     {
-        private readonly INewsRepository _newsRepository;
+        private readonly INewsService _newsService;
         private const string BaseUri = "/api/home/";
 
-        public NewsController(INewsRepository newsRepository)
+        public NewsController(INewsService newsService)
         {
-            _newsRepository = newsRepository;
+            _newsService = newsService;
         }
 
         [HttpGet(BaseUri + "news")]
         public async Task<IActionResult> GetAllNews([FromQuery] PaginationParams paginationParams)
         {
-            var listNews = await _newsRepository.GetAllInNewsPage();
+            var listNews = await _newsService.GetAllNews();
             Response.AddPaginationHeader(new PaginationHeader(listNews.CurrentPage, listNews.PageSize,
             listNews.TotalCount, listNews.TotalPages));
             if (listNews.PageSize == 0)
@@ -39,7 +40,7 @@ namespace API.Controllers
         [HttpGet(BaseUri + "news/detail/{id}")]
         public async Task<IActionResult> GetNewsDetail(int id)
         {
-            var newsDetail = _newsRepository.GetDetailOfNews(id);
+            var newsDetail = _newsService.GetNewsDetail(id);
             if (newsDetail.Result != null)
             {
                 return Ok(newsDetail);
@@ -53,7 +54,7 @@ namespace API.Controllers
         [HttpPost(BaseUri + "news/search")]
         public async Task<IActionResult> SearchNews(SearchNewsParam searchNews)
         {
-            var reals = await _newsRepository.SearchNewByKey(searchNews);
+            var reals = await _newsService.SearchNews(searchNews);
             Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
             reals.TotalCount, reals.TotalPages));
             if (reals.PageSize == 0)

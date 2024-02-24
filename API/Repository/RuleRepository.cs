@@ -1,12 +1,11 @@
 ﻿using API.Data;
-using API.DTOs;
 using API.Entity;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using System.Xml;
 
 namespace API.Repository
 {
@@ -20,7 +19,7 @@ namespace API.Repository
             _mapper = mapper;
         }
 
-        public async Task<Rule> CreateNewRule(RuleCreateDto ruleCreate)
+        public async Task<bool> CreateNewRule(RuleCreateParam ruleCreate)
         {
             var rule = new Rule
             {
@@ -31,12 +30,13 @@ namespace API.Repository
             };
             try
             {
-                await CreateAsync(rule);
-                return rule;
+                bool check = await CreateAsync(rule);
+                if (check) { return true; }
+                else return false;
             }
             catch (Exception ex)
             {
-                return null;
+                return false;
             }
             
         }
@@ -60,7 +60,7 @@ namespace API.Repository
             }).SingleOrDefaultAsync();
         }
 
-        public async Task<RuleChangeContentDto> UpdateRuleByContentChange(RuleChangeContentDto ruleChangeContent)
+        public async Task<bool> UpdateRuleByContentChange(RuleChangeContentParam ruleChangeContent)
         {
             var query = await _context.Rule.Where(x => x.RuleId == ruleChangeContent.idRule).SingleOrDefaultAsync();
             if (query != null)
@@ -69,17 +69,18 @@ namespace API.Repository
                     query.DateUpdated = ruleChangeContent.DateUpdate;
                     try
                     {
-                        await UpdateAsync(query);
-                        return ruleChangeContent;
+                        bool check = await UpdateAsync(query);
+                    if (check) return true;
+                    else return false;
                     }
                     catch (Exception ex)
                     {
-                        return null;
+                        return false;
                     }
             }
             else
             {
-                return null;
+                return false;
             }
 
         }
