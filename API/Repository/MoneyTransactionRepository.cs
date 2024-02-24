@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entity;
+using API.Enums;
 using API.Helper;
 using API.Interfaces;
 using AutoMapper;
@@ -11,18 +12,42 @@ namespace API.Repository
 {
     public class MoneyTransactionRepository : BaseRepository<MoneyTransaction>, IMoneyTransactionRepository
     {
-        private readonly DataContext _context;
+        private readonly DataContext _dataContext;
         private readonly IMapper _mapper;
 
         public MoneyTransactionRepository(DataContext context, IMapper mapper) : base(context)
         {
-            _context = context;
+            _dataContext = context;
             _mapper = mapper;
+        }
+
+        public async Task<TransactionMoneyCreateDto> CreateNewMoneyTransaction(TransactionMoneyCreateDto transactionMoneyCreateDto, int idAccount)
+        {
+            MoneyTransaction moneyTransaction = new MoneyTransaction();
+            moneyTransaction.TransactionStatus = (int)TransactionEnum.Received;
+            moneyTransaction.TypeId = 3;
+            moneyTransaction.DateExecution = DateTime.UtcNow;
+            moneyTransaction.AccountSendId = idAccount;
+            moneyTransaction.Money = transactionMoneyCreateDto.MoneyPaid;
+            try
+            {
+                await CreateAsync(moneyTransaction);
+                return transactionMoneyCreateDto;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<int> GetIdTransactionWhenCreateNewTransaction()
+        {
+            return await _dataContext.MoneyTransaction.MaxAsync(x => x.TransactionId);
         }
 
         public async Task<PageList<MoneyTransactionDto>> GetMoneyTransactionsAsync(MoneyTransactionParam moneyTransactionParam)
         {
-            var query = _context.MoneyTransaction.AsQueryable();
+            var query = _dataContext.MoneyTransaction.AsQueryable();
 
             if (moneyTransactionParam.TransactionStatus != 0)
             {

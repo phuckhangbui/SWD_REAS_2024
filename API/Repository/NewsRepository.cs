@@ -24,7 +24,6 @@ namespace API.Repository
             try
             {
                 News news = new News();
-                news.Thumbnail = newsDto.ThumbnailUri;
                 news.NewsTitle = newsDto.NewsTitle;
                 news.NewsSumary = newsDto.NewsSumary;
                 news.NewsContent = newsDto.NewsContent;
@@ -97,7 +96,6 @@ namespace API.Repository
             newsDto.NewsTitle= news.NewsTitle;
             newsDto.NewsSumary= news.NewsSumary;
             newsDto.NewsContent = news.NewsContent;
-            newsDto.Thumbnail = news.Thumbnail;
             try
             {
                 UpdateAsync(newsDto);
