@@ -6,6 +6,8 @@ using API.Helper;
 using API.Interfaces;
 using API.MessageResponse;
 using API.Repository;
+using API.Services;
+using API.Validate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
 
@@ -15,12 +17,14 @@ namespace API.Controllers
     {
         private readonly INewsRepository _newsRepository;
         private readonly IAccountRepository _accountRepository;
+        private readonly IPhotoService _photoService;
         private const string BaseUri = "/api/admin/";
 
-        public AdminNewsController(INewsRepository newsRepository, IAccountRepository accountRepository)
+        public AdminNewsController(INewsRepository newsRepository, IAccountRepository accountRepository, IPhotoService photoService)
         {
             _accountRepository = accountRepository;
             _newsRepository = newsRepository;
+            _photoService = photoService;
         }
 
         [HttpGet(BaseUri + "news")]
@@ -81,6 +85,15 @@ namespace API.Controllers
             int idAdmin = GetIdAdmin(_accountRepository);
             if (idAdmin != 0)
             {
+                ConvertStringToFile convertStringToFile = new ConvertStringToFile();
+                IFormFile formFile = convertStringToFile.ConvertToIFormFile(newCreate.ThumbnailUri);
+                var result = await _photoService.AddPhotoNewsAsync(formFile, newCreate.NewsTitle);
+                if (result.Error != null)
+                {
+                    return BadRequest(result.Error.Message);
+                }
+
+                newCreate.ThumbnailUri = result.SecureUrl.AbsoluteUri;
                 string name = await _accountRepository.GetNameAccountByAccountIdAsync(idAdmin);
                 var news = _newsRepository.CreateNewNewsByAdmin(newCreate, idAdmin, name);
                 if (news != null)
@@ -104,6 +117,15 @@ namespace API.Controllers
             int idAdmin = GetIdAdmin(_accountRepository);
             if (idAdmin != 0)
             {
+                ConvertStringToFile convertStringToFile = new ConvertStringToFile();
+                IFormFile formFile = convertStringToFile.ConvertToIFormFile(newsDetailDto.Thumbnail);
+                var result = await _photoService.AddPhotoNewsAsync(formFile, newsDetailDto.NewsTitle);
+                if (result.Error != null)
+                {
+                    return BadRequest(result.Error.Message);
+                }
+
+                newsDetailDto.Thumbnail = result.SecureUrl.AbsoluteUri;
                 var news = _newsRepository.UpdateNewsByAdmin(newsDetailDto);
                 if (news != null)
                 {

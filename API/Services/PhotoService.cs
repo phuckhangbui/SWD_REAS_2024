@@ -38,6 +38,23 @@ namespace API.Services
             return uploadResult;
         }
 
+        public async Task<ImageUploadResult> AddPhotoNewsAsync(IFormFile file, string title)
+        {
+            var uploadResult = new ImageUploadResult();
+            if (file.Length > 0)
+            {
+                using var stream = file.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(file.FileName, stream),
+                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
+                    Folder = "News",
+                };
+                uploadResult = await cloudinary.UploadAsync(uploadParams);
+            }
+            return uploadResult;
+        }
+
         public async Task<DeletionResult> DeletePhotoAsync(string publicId)
         {
             var deleteParams = new DeletionParams(publicId);
