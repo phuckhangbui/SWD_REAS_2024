@@ -1,28 +1,28 @@
 ﻿using API.DTOs;
 using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Interface.Service;
 using API.MessageResponse;
+using API.Param;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class RealEstateController : BaseApiController
     {
-        private readonly IRealEstateRepository _real_estate_repository;
-        private readonly IRealEstateDetailRepository _real_estate_detail_repository;
+        private readonly IRealEstateService _realEstateService;
         private const string BaseUri = "/api/home/";
 
-        public RealEstateController(IRealEstateRepository realEstateRepository, IRealEstateDetailRepository real_estate_detail_repository)
+        public RealEstateController(IRealEstateService realEstateService)
         {
-            _real_estate_repository = realEstateRepository;
-            _real_estate_detail_repository = real_estate_detail_repository;
+            _realEstateService = realEstateService;
         }
 
         [HttpGet(BaseUri + "real_estate")]
         public async Task<IActionResult> ListRealEstate([FromQuery] PaginationParams paginationParams)
         {
-            var reals = await _real_estate_repository.GetAllRealEstateOnRealEstatePage();
+            var reals = await _realEstateService.ListRealEstate();
             Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
             reals.TotalCount, reals.TotalPages));
             if (reals.PageSize == 0)
@@ -39,9 +39,9 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "real_estate/search")]
-        public async Task<IActionResult> SearchRealEstateForMember(SearchRealEstateDto searchRealEstateDto)
+        public async Task<IActionResult> SearchRealEstateForMember(SearchRealEstateParam searchRealEstateDto)
         {
-            var reals = await _real_estate_repository.SearchRealEstateByKey(searchRealEstateDto);
+            var reals = await _realEstateService.SearchRealEstateForMember(searchRealEstateDto);
             Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
             reals.TotalCount, reals.TotalPages));
             if (reals.PageSize == 0)
@@ -60,7 +60,7 @@ namespace API.Controllers
         [HttpGet(BaseUri + "real_estate/detail/{id}")]
         public async Task<ActionResult<RealEstateDetailDto>> ViewRealEstateDetail(int id)
         {
-            var _real_estate_detail = _real_estate_detail_repository.GetRealEstateDetail(id);
+            var _real_estate_detail = _realEstateService.ViewRealEstateDetail(id);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             return Ok(_real_estate_detail);

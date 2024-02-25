@@ -1,10 +1,8 @@
 ﻿using API.Data;
-using API.DTOs;
 using API.Entity;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
 using API.Validate;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository
 {
@@ -13,15 +11,13 @@ namespace API.Repository
         private readonly DataContext _dataContext;
         private readonly IAccountRepository _accountRepository;
         private ParseValidate parseValidate = new ParseValidate();
-        private readonly IMapper _mapper;
-        public MoneyTransactionDetailRepository(DataContext context, IAccountRepository accountRepository, IMapper mapper) : base(context)
+        public MoneyTransactionDetailRepository(DataContext context, IAccountRepository accountRepository) : base(context)
         {
             _dataContext = context;
             _accountRepository = accountRepository;
-            _mapper = mapper;
         }
 
-        public async Task<TransactionMoneyCreateDto> CreateNewMoneyTransaction(TransactionMoneyCreateDto transactionMoneyCreateDto, int idTransaction)
+        public async Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idTransaction)
         {
             MoneyTransactionDetail moneyTransactionDetail = new MoneyTransactionDetail();
             moneyTransactionDetail.MoneyTransactionId = idTransaction;
@@ -34,24 +30,13 @@ namespace API.Repository
             moneyTransactionDetail.RemainingAmount = kq.ToString();
             try
             {
-                await CreateAsync(moneyTransactionDetail);
-                return transactionMoneyCreateDto;
-            }
-            catch (Exception ex)
+                bool check = await CreateAsync(moneyTransactionDetail);
+                if (check) { return true; }
+                else return false;
+            }catch (Exception ex)
             {
-                return null;
+                return false;
             }
-        }
-
-        public async Task<MoneyTransactionDetailDto> GetMoneyTransactionDetailAsync(int transactionId)
-        {
-            var transactionDetail = await _dataContext.MoneyTransactionDetail.SingleOrDefaultAsync(m => m.MoneyTransactionId == transactionId);
-            if (transactionDetail != null)
-            {
-                return _mapper.Map<MoneyTransactionDetailDto>(transactionDetail);
-            }
-
-            return null;
         }
     }
 }

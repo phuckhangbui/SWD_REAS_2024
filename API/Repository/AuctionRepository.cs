@@ -1,9 +1,10 @@
 ﻿using API.Data;
-using API.Entity;
 using API.DTOs;
-using API.Enums;
+using API.Entity;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
+using API.Param.Enums;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,8 @@ namespace API.Repository
 			{
 				query = query.Where(a =>
 					a.RealEstate.ReasName.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
-					a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()));
+					a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
+					(a.DateStart >= auctionParam.TimeStart && a.DateStart <= auctionParam.TimeEnd));
 			}
 
 			return await PageList<AuctionDto>.CreateAsync(
@@ -40,5 +42,40 @@ namespace API.Repository
 			auctionParam.PageNumber,
 			auctionParam.PageSize);
 		}
-	}
+
+        public async Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam)
+        {
+            var query = _context.Auction.AsQueryable();
+
+            //logic for search here 
+
+            //divine the logic for 2 case with the condition or without the condition
+
+
+            query = query.OrderByDescending(a => a.DateStart);
+            return await PageList<AuctionDto>.CreateAsync(
+                query.AsNoTracking().ProjectTo<AuctionDto>(_mapper.ConfigurationProvider),  //need testing for the mapper here
+                auctionParam.PageNumber,
+                auctionParam.PageSize);
+        }
+
+        public async Task<bool> EditAuctionStatus(string autionId, string statusCode)
+        {
+			try
+			{
+                Auction auction = await _context.Auction.FindAsync(autionId);
+
+                if (auction == null)
+                {
+                    throw new Exception();
+                }
+
+                auction.Status = int.Parse(statusCode);
+                bool check = await UpdateAsync(auction);
+                if (check) return true;
+                else return false;
+            }
+            catch (Exception ex) { return false; }
+        }
+    }
 }

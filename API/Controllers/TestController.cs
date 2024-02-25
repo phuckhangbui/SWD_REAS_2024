@@ -1,5 +1,5 @@
 ﻿using API.Entity;
-using API.Interfaces;
+using API.Interface.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

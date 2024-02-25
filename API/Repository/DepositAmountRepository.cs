@@ -2,7 +2,8 @@
 using API.DTOs;
 using API.Entity;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
 using API.Validate;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -41,7 +42,7 @@ namespace API.Repository
             paginationParams.PageSize);
         }
 
-        public async Task<PageList<DepositAmountDto>> GetDepositAmoutForMemberBySearch(SearchDepositAmountDto searchDepositAmountDto, int id)
+        public async Task<PageList<DepositAmountDto>> GetDepositAmoutForMemberBySearch(SearchDepositAmountParam searchDepositAmountDto, int id)
         {
             var getNameStaus = new GetStatusName();
             var parseValidate = new ParseValidate();

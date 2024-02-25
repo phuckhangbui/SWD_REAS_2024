@@ -1,5 +1,5 @@
 ﻿using API.Errors;
-using API.Interfaces;
+using API.Interface.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

@@ -1,43 +1,47 @@
-﻿using API.DTOs;
-using API.Enums;
-using API.Errors;
+﻿using API.Errors;
 using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Interface.Service;
 using API.MessageResponse;
+using API.Param;
+using API.Param.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class AdminRealEstateController : BaseApiController
     {
-        private readonly IRealEstateRepository _realEstateRepository;
-        private readonly IRealEstateDetailRepository _realEstateDetailRepository;
-        private readonly IAccountRepository _accountRepository;
+        private readonly IAdminRealEstateService _adminRealEstateService;
 
         private const string BaseUri = "/api/admin/";
 
-        public AdminRealEstateController(
-            IRealEstateRepository realEstateRepository,
-            IRealEstateDetailRepository realEstateDetailRepository,
-            IAccountRepository accountRepository)
+        public AdminRealEstateController(IAdminRealEstateService adminRealEstateService)
         {
-            _realEstateRepository = realEstateRepository;
-            _realEstateDetailRepository = realEstateDetailRepository;
-            _accountRepository = accountRepository;
+            _adminRealEstateService = adminRealEstateService;
         }
 
         [HttpPost(BaseUri + "real-estate/all/search")]
-        public async Task<IActionResult> GetAllRealEstates([FromQuery] RealEstateParam realEstateParam)
+        public async Task<IActionResult> GetAllRealEstatesBySearch([FromQuery] SearchRealEstateParam searchRealEstateParam)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                var reals = await _realEstateRepository.GetAllRealEstateExceptOnGoing();
+                var reals = await _adminRealEstateService.GetAllRealEstatesBySearch(searchRealEstateParam);
 
                 Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
                 reals.TotalCount, reals.TotalPages));
-                return Ok(reals);
+                if (reals.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
+                }
             }
             else
             {
@@ -46,16 +50,25 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "real-estate/pending/search")]
-        public async Task<IActionResult> GetAllRealEstatesPending([FromQuery] RealEstateParam realEstateParam)
+        public async Task<IActionResult> GetAllRealEstatesPendingBySearch([FromQuery] SearchRealEstateParam searchRealEstateParam)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                var reals = await _realEstateRepository.GetRealEstateOnGoing();
-
+                var reals = await _adminRealEstateService.GetAllRealEstatesPendingBySearch(searchRealEstateParam);
                 Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
                 reals.TotalCount, reals.TotalPages));
-                return Ok(reals);
+                if (reals.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
+                }
             }
             else
             {
@@ -66,16 +79,10 @@ namespace API.Controllers
         [HttpGet(BaseUri + "real-estate/pending/detail/{reasId}")]
         public async Task<IActionResult> GetRealEstatePendingDetail(int reasId)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                bool isExist = await _realEstateRepository.CheckRealEstateExist(reasId);
-                if (!isExist)
-                {
-                    return BadRequest(new ApiException(404));
-                }
-
-                var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetail(reasId);
+                var realEstateDetailDto = await _adminRealEstateService.GetRealEstatePendingDetail(reasId);
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(realEstateDetailDto);
@@ -89,17 +96,12 @@ namespace API.Controllers
         [HttpGet(BaseUri + "real-estate/all/detail/{reasId}")]
         public async Task<IActionResult> GetRealEstateAllDetail(int reasId)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                bool isExist = await _realEstateRepository.CheckRealEstateExist(reasId);
-                if (!isExist)
-                {
-                    return BadRequest(new ApiException(404));
-                }
-
-                var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetail(reasId);
-
+                var realEstateDetailDto = await _adminRealEstateService.GetRealEstateAllDetail(reasId);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
                 return Ok(realEstateDetailDto);
             }
             else
@@ -111,16 +113,11 @@ namespace API.Controllers
         [HttpPost(BaseUri + "real-estate/all/block")]
         public async Task<ActionResult<ApiResponseMessage>> BlockRealEstate(int reasId)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                ReasStatusDto reasStatus = new ReasStatusDto();
-                reasStatus.Id = reasId;
-                reasStatus.status = (int)RealEstateEnum.Block;
-                reasStatus.statusMessage = "";
-
-                var updateReal = _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);
-                if (updateReal.Result != null)
+                bool check = await _adminRealEstateService.BlockRealEstate(reasId);
+                if (check)
                 {
                     return new ApiResponseMessage("MSG03");
                 }
@@ -138,16 +135,16 @@ namespace API.Controllers
         [HttpPost(BaseUri + "real-estate/all/unblock")]
         public async Task<ActionResult<ApiResponseMessage>> UnblockRealEstate(int reasId)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                ReasStatusDto reasStatus = new ReasStatusDto();
+                ReasStatusParam reasStatus = new ReasStatusParam();
                 reasStatus.Id = reasId;
                 reasStatus.status = (int)RealEstateEnum.Selling;
                 reasStatus.statusMessage = "";
 
-                var updateReal = _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);
-                if (updateReal.Result != null)
+                bool check = await _adminRealEstateService.UnblockRealEstate(reasId);
+                if (check)
                 {
                     return new ApiResponseMessage("MSG03");
                 }
@@ -165,14 +162,24 @@ namespace API.Controllers
         [HttpGet(BaseUri + "real-estate/pending")]
         public async Task<IActionResult> GetRealEstateOnGoingByAdmin([FromQuery] PaginationParams paginationParams)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                var reals = await _realEstateRepository.GetRealEstateOnGoing();
+                var reals = await _adminRealEstateService.GetRealEstateOnGoingByAdmin();
 
                 Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
                 reals.TotalCount, reals.TotalPages));
-                return Ok(reals);
+                if (reals.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
+                }
             }
             else
             {
@@ -183,14 +190,24 @@ namespace API.Controllers
         [HttpGet(BaseUri + "real-estate/all")]
         public async Task<IActionResult> GetAllRealEstateExceptOnGoingByAdmin([FromQuery] PaginationParams paginationParams)
         {
-            int idAmin = GetIdAdmin(_accountRepository);
+            int idAmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAmin != 0)
             {
-                var reals = await _realEstateRepository.GetAllRealEstateExceptOnGoing();
+                var reals = await _adminRealEstateService.GetAllRealEstateExceptOnGoingByAdmin();
 
                 Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
                 reals.TotalCount, reals.TotalPages));
-                return Ok(reals);
+                if (reals.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
+                }
             }
             else
             {
@@ -199,13 +216,13 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "real-estate/pending/change")]
-        public async Task<ActionResult<ApiResponseMessage>> UpdateStatusRealEstateByAdmin(ReasStatusDto reasStatusDto)
+        public async Task<ActionResult<ApiResponseMessage>> UpdateStatusRealEstateByAdmin(ReasStatusParam reasStatusDto)
         {
-            int idAdmin = 1;//GetIdAdmin(_accountRepository);
+            int idAdmin = GetIdAdmin(_adminRealEstateService.AccountRepository);
             if (idAdmin != 0)
             {
-                var updateReal = _realEstateRepository.UpdateRealEstateStatusAsync(reasStatusDto);
-                if (updateReal.Result != null)
+                var updateReal = await _adminRealEstateService.UpdateStatusRealEstateByAdmin(reasStatusDto);
+                if (updateReal)
                 {
                     return new ApiResponseMessage("MSG03");
                 }

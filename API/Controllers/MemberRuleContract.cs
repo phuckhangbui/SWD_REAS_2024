@@ -1,29 +1,28 @@
 ﻿using API.Entity;
 using API.Errors;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Interface.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class MemberRuleContract : BaseApiController
     {
-        private readonly IRuleRepository _rule_repository;
-        private readonly IAccountRepository _account_repository;
+        private readonly IMemberRuleService _memberRuleService;
         private const string BaseUri = "/api/home/"; 
 
-        public MemberRuleContract(IRuleRepository ruleRepository, IAccountRepository account_repository)
+        public MemberRuleContract(IMemberRuleService memberRuleService)
         {
-            _rule_repository = ruleRepository;
-            _account_repository = account_repository;
+            _memberRuleService = memberRuleService;
         }
 
         [HttpGet(BaseUri + "real_estate/rule")]
         public async Task<ActionResult<Rule>> GetRuleContractWhenUserSignInAuction()
         {
-            int userMember = GetIdMember(_account_repository);
+            int userMember = GetIdMember(_memberRuleService.AccountRepository);
             if (userMember != 0)
             {
-                var rule = _rule_repository.GetRuleWhenUserSignInAuction();
+                var rule = _memberRuleService.GetRuleContractWhenUserSignInAuction();
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(rule);
