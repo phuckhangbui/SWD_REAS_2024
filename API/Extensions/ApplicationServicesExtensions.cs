@@ -28,6 +28,7 @@ namespace API.Extensions
             services.AddScoped<IMoneyTransactionRepository, MoneyTransactionRepository>();
             services.AddScoped<IDepositAmountRepository, DepositAmountRepository>();
             services.AddScoped<ITypeReasRepository, TypeReasRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IRealEstateService, RealEstateService>();
             services.AddScoped<IRuleService, RuleService>();
             services.AddScoped<IAccountService, AccountService>();
@@ -40,6 +41,7 @@ namespace API.Extensions
             services.AddScoped<IMemberRealEstateService, MemberRealEstateService>();
             services.AddScoped<IMemberRuleService, MemberRuleService>();
             services.AddScoped<IStaffRealEstateService, StaffRealEstateService>();
+            services.AddScoped<ITaskService, TaskService>();
 
             services.AddDbContext<DataContext>(opt =>
             {

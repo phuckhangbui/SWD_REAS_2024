@@ -1,8 +1,8 @@
 ﻿using API.Data;
 using API.DTOs;
-using API.Enums;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param.Enums;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -23,11 +23,6 @@ namespace API.Repository
         public Task<bool> CheckAccountAssignedValid(int accountId)
         {
             return _context.Account.AnyAsync(c => c.AccountId.Equals(accountId) && c.RoleId.Equals((int)RoleEnum.Staff)); 
-        }
-
-        public Task<bool> CheckAccountCreateValid(int accountId)
-        {
-            return _context.Account.AnyAsync(c => c.AccountId.Equals(accountId) && c.RoleId.Equals((int)RoleEnum.Admin));
         }
 
         public async Task<TaskDto> CreateTaskAsync(CreateUpdateTaskDto taskDto, int adminId)
@@ -75,7 +70,7 @@ namespace API.Repository
             return _mapper.Map<TaskDto>(existingTask);
         }
 
-        public async Task<TaskDto?> GetTaskAsync(int adminId, int taskId)
+        public async Task<TaskDto?> GetTaskAdminRoleAsync(int adminId, int taskId)
         {
             var task = await _context.Task.SingleOrDefaultAsync(t => t.AccountCreateId == adminId &&
                                     t.TaskId == taskId);
@@ -91,6 +86,11 @@ namespace API.Repository
         {
             var query = _context.Task.AsQueryable();
             query = query.Where(t => t.AccountCreateId == adminId);
+
+            if (taskParam.Status != -1)
+            {
+                query = query.Where(t => t.Status == taskParam.Status);
+            }
 
             if (!string.IsNullOrEmpty(taskParam.AccountAssignedName))
             {
@@ -119,6 +119,11 @@ namespace API.Repository
             {
                 var query = _context.Task.AsQueryable();
                 query = query.Where(t => t.AccountAssignedId.Equals(staffId));
+
+                if (taskParam.Status != -1)
+                {
+                    query = query.Where(t => t.Status == taskParam.Status);
+                }
 
                 if (!string.IsNullOrEmpty(taskParam.AccountAssignedName))
                 {
