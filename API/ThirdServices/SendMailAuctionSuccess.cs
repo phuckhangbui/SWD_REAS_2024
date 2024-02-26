@@ -20,9 +20,8 @@ namespace API.ThirdServices
                 "<p>This email confirms the following details:</p>" +
                 "<ul>" +
                 "<li><strong>Winning Bid:</strong> <span class=\"bold\">" + winAmount + "$</span></li>" +
-                "<li><strong>Deposit Due:</strong> <span class=\"bold\">" + depositAmount + "$</span></li>" +
-                "<li><strong>Expected Payment Date:</strong> Full payment is due on <span class=\"bold\">" + expectedPaymentDate + "</span></li>" +
-                "</ul>\r\n\r\n  <p>To secure your purchase, a deposit of <span class=\"bold\">" + depositAmount + "</span> is required by <span class=\"bold\">" + expectedPaymentDate + "</span>. You can submit your deposit via the REAS website. Once the deposit is received, we will begin processing the closing documents.</p>" +
+                "<li><strong>Already Paid:</strong> <span class=\"bold\">" + depositAmount + "$</span></li>" +
+                "</ul>\r\n\r\n  <p>To secure your purchase, you need to contact us before <span class=\"bold\">" + expectedPaymentDate + "</span>" +
                 "<p>We understand that this is an exciting time, and we are here to help every step of the way. Please feel free to reach out to us with any questions or concerns you may have. You can contact us directly at <span class=\"bold\">(+84) 123 345 2341</span> or by replying to this email.</p>" +
                 "<p>We look forward to working with you to finalize the purchase of your new property!</p>" +
                 "<p>Sincerely,</p>  " +

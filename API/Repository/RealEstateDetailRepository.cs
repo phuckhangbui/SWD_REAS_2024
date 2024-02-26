@@ -8,12 +8,12 @@ namespace API.Repository
 {
     public class RealEstateDetailRepository : BaseRepository<RealEstateDetail>, IRealEstateDetailRepository
     {
-		private readonly DataContext _context;
+        private readonly DataContext _context;
 
-		public RealEstateDetailRepository(DataContext context) : base(context)
-		{
-			_context = context;
-		}
+        public RealEstateDetailRepository(DataContext context) : base(context)
+        {
+            _context = context;
+        }
 
         public async Task<RealEstateDetailDto> GetRealEstateDetail(int id)
         {

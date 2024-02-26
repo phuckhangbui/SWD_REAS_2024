@@ -30,12 +30,12 @@ namespace API.Repository
                 DepositId = x.DepositId,
                 Amount = x.Amount,
                 AccountSignId = x.AccountSignId,
-                DateSign = x.DateSign,
+                DepositDate = x.DepositDate,
                 ReasId = x.ReasId,
                 RuleId = x.RuleId,
                 Status = getNameStaus.GetDepositAmountStatusName(x.Status),
             });
-            depositAmountByAccount = depositAmountByAccount.OrderByDescending(x => x.DateSign);
+            depositAmountByAccount = depositAmountByAccount.OrderByDescending(x => x.DepositDate);
             return await PageList<DepositAmountDto>.CreateAsync(
             depositAmountByAccount.AsNoTracking().ProjectTo<DepositAmountDto>(_mapper.ConfigurationProvider),
             paginationParams.PageNumber,
@@ -51,21 +51,21 @@ namespace API.Repository
             ((string.IsNullOrEmpty(searchDepositAmountDto.AmountFrom) && string.IsNullOrEmpty(searchDepositAmountDto.AmountTo)) ||
             ((parseValidate.ParseStringToInt(x.Amount) >= parseValidate.ParseStringToInt(searchDepositAmountDto.AmountFrom)) &&
             (parseValidate.ParseStringToInt(x.Amount) <= parseValidate.ParseStringToInt(searchDepositAmountDto.AmountTo))) &&
-            ((searchDepositAmountDto.DateSignFrom == null && searchDepositAmountDto.DateSignTo == null) ||
-            (x.DateSign >= searchDepositAmountDto.DateSignFrom &&
-            x.DateSign <= searchDepositAmountDto.DateSignTo))))
+            ((searchDepositAmountDto.DepositDateFrom == null && searchDepositAmountDto.DepositDateTo == null) ||
+            (x.DepositDate >= searchDepositAmountDto.DepositDateFrom &&
+            x.DepositDate <= searchDepositAmountDto.DepositDateTo))))
             .Select(x => new DepositAmountDto
             {
                 DepositId = x.DepositId,
                 Amount = x.Amount,
                 AccountSignId = x.AccountSignId,
-                DateSign = x.DateSign,
+                DepositDate = x.DepositDate,
                 ReasId = x.ReasId,
                 RuleId = x.RuleId,
                 Status = getNameStaus.GetDepositAmountStatusName(x.Status),
             });
 
-            depositAmountBySearch = depositAmountBySearch.OrderByDescending(x => x.DateSign);
+            depositAmountBySearch = depositAmountBySearch.OrderByDescending(x => x.DepositDate);
             return await PageList<DepositAmountDto>.CreateAsync(
             depositAmountBySearch.AsNoTracking().ProjectTo<DepositAmountDto>(_mapper.ConfigurationProvider),
             paginationParams.PageNumber,

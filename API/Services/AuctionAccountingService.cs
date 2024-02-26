@@ -14,7 +14,7 @@ namespace API.Services
         private readonly IRealEstateDetailRepository _realEstateDetailRepository;
 
         readonly float DEPOSIT_PERCENT = 0.1f;
-        readonly float COMISSION_PERCENT = 0.02f;
+        readonly float COMMISSION_PERCENT = 0.02f;
         readonly int DATE_UNTIL_PAY = 3;
 
         public AuctionAccountingService(IAuctionAccountingRepository auctionAccountingRepository, IAuctionRepository auctionRepository, IAccountRepository accountRepository, IRealEstateDetailRepository realEstateDetailRepository)
@@ -52,8 +52,8 @@ namespace API.Services
             auctionAccounting.EstimatedPaymentDate = DateTime.Now.AddDays(DATE_UNTIL_PAY);
 
             auctionAccounting.MaxAmount = auctionDetailDto.WinAmount;
-            auctionAccounting.DepositAmount = auctionDetailDto.WinAmount * DEPOSIT_PERCENT;
-            auctionAccounting.CommissionAmount = auctionDetailDto.WinAmount * COMISSION_PERCENT;
+            auctionAccounting.DepositAmount = float.Parse(realEstate.ReasPrice) * DEPOSIT_PERCENT;
+            auctionAccounting.CommissionAmount = auctionDetailDto.WinAmount * COMMISSION_PERCENT;
             auctionAccounting.AmountOwnerReceived = auctionDetailDto.WinAmount - auctionAccounting.CommissionAmount;
 
             try
