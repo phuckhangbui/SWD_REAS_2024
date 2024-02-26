@@ -12,36 +12,36 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Repository
 {
     public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
-	{
-		private readonly DataContext _context;
-		private readonly IMapper _mapper;
+    {
+        private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
-		public AuctionRepository(DataContext context, IMapper mapper) : base(context)
-		{
-			_context = context;
-			_mapper = mapper;
-		}
+        public AuctionRepository(DataContext context, IMapper mapper) : base(context)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-		public async Task<PageList<AuctionDto>> GetAuctionsAsync(AuctionParam auctionParam)
-		{
-			var query = _context.Auction.AsQueryable();
+        public async Task<PageList<AuctionDto>> GetAuctionsAsync(AuctionParam auctionParam)
+        {
+            var query = _context.Auction.AsQueryable();
 
-			query = query.Where(a => a.Status != (int)AuctionStatus.NotYet);
-			query = query.OrderByDescending(a => a.DateStart);
+            query = query.Where(a => a.Status != (int)AuctionStatus.NotYet);
+            query = query.OrderByDescending(a => a.DateStart);
 
-			if (!string.IsNullOrEmpty(auctionParam.Keyword))
-			{
-				query = query.Where(a =>
-					a.RealEstate.ReasName.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
-					a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
-					(a.DateStart >= auctionParam.TimeStart && a.DateStart <= auctionParam.TimeEnd));
-			}
+            if (!string.IsNullOrEmpty(auctionParam.Keyword))
+            {
+                query = query.Where(a =>
+                    a.RealEstate.ReasName.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
+                    a.RealEstate.ReasAddress.ToLower().Contains(auctionParam.Keyword.ToLower()) ||
+                    (a.DateStart >= auctionParam.TimeStart && a.DateStart <= auctionParam.TimeEnd));
+            }
 
-			return await PageList<AuctionDto>.CreateAsync(
-			query.AsNoTracking().ProjectTo<AuctionDto>(_mapper.ConfigurationProvider),
-			auctionParam.PageNumber,
-			auctionParam.PageSize);
-		}
+            return await PageList<AuctionDto>.CreateAsync(
+            query.AsNoTracking().ProjectTo<AuctionDto>(_mapper.ConfigurationProvider),
+            auctionParam.PageNumber,
+            auctionParam.PageSize);
+        }
 
         public async Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam)
         {
@@ -61,9 +61,9 @@ namespace API.Repository
 
         public async Task<bool> EditAuctionStatus(string autionId, string statusCode)
         {
-			try
-			{
-                Auction auction = await _context.Auction.FindAsync(autionId);
+            try
+            {
+                Auction auction = await _context.Auction.FindAsync(int.Parse(autionId));
 
                 if (auction == null)
                 {
@@ -76,6 +76,11 @@ namespace API.Repository
                 else return false;
             }
             catch (Exception ex) { return false; }
+        }
+
+        public Auction GetAuction(int auctionId)
+        {
+            return _context.Auction.Find(auctionId);
         }
     }
 }

@@ -13,6 +13,8 @@ namespace API.Interface.Repository
         Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam);
 
         Task<bool> EditAuctionStatus(string autionId, string statusCode);
+
+        Auction GetAuction(int auctionId);
     }
 
 }

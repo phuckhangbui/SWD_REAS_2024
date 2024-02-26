@@ -60,7 +60,7 @@ namespace API.Controllers
         [HttpGet(BaseUri + "real_estate/detail/{id}")]
         public async Task<ActionResult<RealEstateDetailDto>> ViewRealEstateDetail(int id)
         {
-            var _real_estate_detail = _realEstateService.ViewRealEstateDetail(id);
+            var _real_estate_detail = await _realEstateService.ViewRealEstateDetail(id);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             return Ok(_real_estate_detail);

@@ -124,13 +124,29 @@ namespace API.Repository
             ParseValidate parseValidate = new ParseValidate();
             var statusName = new GetStatusName();
             var page = new PaginationParams();
+            int? minPrice = null;
+            int? maxPrice = null;
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom))
+                minPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom);
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))
+                maxPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo);
+
             var query = _context.RealEstate.Where(x => x.AccountOwnerId.Equals(idOwner) && ((searchRealEstateDto.ReasStatus == -1)
                 || searchRealEstateDto.ReasStatus == x.ReasStatus) &&
                 (searchRealEstateDto.ReasName == null || x.ReasName.Contains(searchRealEstateDto.ReasName)) &&
-                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo)) ||
-                (parseValidate.ParseStringToInt(x.ReasPrice) >= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom) &&
-                parseValidate.ParseStringToInt(x.ReasPrice) <= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo))))
-                .Select(x => new RealEstateDto { 
+                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))));
+            if (minPrice != null)
+            {
+                string minPriceStr = minPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{minPriceStr}%"));
+            }
+
+            if (maxPrice != null)
+            {
+                string maxPriceStr = maxPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{maxPriceStr}%"));
+            }
+            var result = query.Select(x => new RealEstateDto { 
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
@@ -151,29 +167,50 @@ namespace API.Repository
         public async Task<PageList<RealEstateDto>> SearchRealEstateByKey(SearchRealEstateParam searchRealEstateDto)
         {
             var statusName = new GetStatusName();
-            ParseValidate parseValidate = new ParseValidate();
+            ParseValidate parseValidate = new();
             var page = new PaginationParams();
+            int? minPrice = null;
+            int? maxPrice = null;
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom))
+                minPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom);
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))
+                maxPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo);
+
             var query = _context.RealEstate.AsQueryable();
-            query = (IQueryable<RealEstate>)query.Where(x =>
-                ((new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Auctioning, (int)RealEstateEnum.Re_up }.Contains(x.ReasStatus) && searchRealEstateDto.ReasStatus == -1) 
+            query = query.Where(x =>
+                ((new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Auctioning, (int)RealEstateEnum.Re_up }.Contains(x.ReasStatus) && searchRealEstateDto.ReasStatus == -1)
                 || searchRealEstateDto.ReasStatus == x.ReasStatus) &&
                 (searchRealEstateDto.ReasName == null || x.ReasName.Contains(searchRealEstateDto.ReasName)) &&
-                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo)) ||
-                (parseValidate.ParseStringToInt(x.ReasPrice) >= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom) &&
-                parseValidate.ParseStringToInt(x.ReasPrice) <= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo))))
-                .Select(x => new RealEstateDto
+                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))));
+
+            // Xử lý giá trị ReasPrice: bỏ dấu
+            if (minPrice != null)
             {
-                ReasId = x.ReasId,
-                ReasName = x.ReasName,
-                ReasPrice = x.ReasPrice,
-                ReasArea = x.ReasArea,
-                UriPhotoFirst = _context.RealEstatePhoto.Where(x => x.ReasId == x.ReasId).Select(x => x.ReasPhotoUrl).FirstOrDefault(),
-                    ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
-                ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
-                    DateStart = x.DateStart,
-                DateEnd = x.DateEnd,
-            });
+                string minPriceStr = minPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{minPriceStr}%"));
+            }
+
+            if (maxPrice != null)
+            {
+                string maxPriceStr = maxPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{maxPriceStr}%"));
+            }
             query = query.OrderByDescending(a => a.DateStart);
+
+            var result = query
+                .Select(x => new RealEstateDto
+                {
+                    ReasId = x.ReasId,
+                    ReasName = x.ReasName,
+                    ReasPrice = x.ReasPrice,
+                    ReasArea = x.ReasArea,
+                    UriPhotoFirst = _context.RealEstatePhoto.Where(y => y.ReasId == x.ReasId).Select(y => y.ReasPhotoUrl).FirstOrDefault(),
+                    ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
+                    ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
+                    DateStart = x.DateStart,
+                    DateEnd = x.DateEnd
+                })
+                .ToList();
             return await PageList<RealEstateDto>.CreateAsync(
             query.AsNoTracking().ProjectTo<RealEstateDto>(_mapper.ConfigurationProvider),
             page.PageNumber,
@@ -207,12 +244,28 @@ namespace API.Repository
             var statusName = new GetStatusName();
             var parseValidate = new ParseValidate();
             var page = new PaginationParams();
+            int? minPrice = null;
+            int? maxPrice = null;
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom))
+                minPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom);
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))
+                maxPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo);
+
             var query = _context.RealEstate.Where(x => (x.ReasStatus == (int)RealEstateEnum.In_progress) &&
                 (searchRealEstateDto.ReasName == null || x.ReasName.Contains(searchRealEstateDto.ReasName)) &&
-                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo)) ||
-                (parseValidate.ParseStringToInt(x.ReasPrice) >= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom) &&
-                parseValidate.ParseStringToInt(x.ReasPrice) <= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo))))
-                .Select(x => new RealEstateDto
+                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))));
+            if (minPrice != null)
+            {
+                string minPriceStr = minPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{minPriceStr}%"));
+            }
+
+            if (maxPrice != null)
+            {
+                string maxPriceStr = maxPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{maxPriceStr}%"));
+            }
+            var result = query.Select(x => new RealEstateDto
             {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
@@ -222,7 +275,7 @@ namespace API.Repository
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
                 DateEnd = x.DateEnd,
-            });
+            }).ToList();
             query = query.OrderByDescending(a => a.DateStart);
             return await PageList<RealEstateDto>.CreateAsync(
             query.AsNoTracking().ProjectTo<RealEstateDto>(_mapper.ConfigurationProvider),
@@ -235,13 +288,29 @@ namespace API.Repository
             var statusName = new GetStatusName();
             var parseValidate = new ParseValidate();
             var page = new PaginationParams();
+            int? minPrice = null;
+            int? maxPrice = null;
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom))
+                minPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom);
+            if (!string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))
+                maxPrice = (int?)parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo);
+
             var query = _context.RealEstate.Where(x => ((x.ReasStatus != (int)RealEstateEnum.In_progress && searchRealEstateDto.ReasStatus == -1)
                 || searchRealEstateDto.ReasStatus == x.ReasStatus) &&
                 (searchRealEstateDto.ReasName == null || x.ReasName.Contains(searchRealEstateDto.ReasName)) &&
-                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo)) ||
-                (parseValidate.ParseStringToInt(x.ReasPrice) >= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceFrom) &&
-                parseValidate.ParseStringToInt(x.ReasPrice) <= parseValidate.ParseStringToInt(searchRealEstateDto.ReasPriceTo))))
-                .Select(x => new RealEstateDto
+                ((string.IsNullOrEmpty(searchRealEstateDto.ReasPriceFrom) && string.IsNullOrEmpty(searchRealEstateDto.ReasPriceTo))));
+            if (minPrice != null)
+            {
+                string minPriceStr = minPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{minPriceStr}%"));
+            }
+
+            if (maxPrice != null)
+            {
+                string maxPriceStr = maxPrice.ToString();
+                query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{maxPriceStr}%"));
+            }
+            var result = query.Select(x => new RealEstateDto
                 {
                     ReasId = x.ReasId,
                     ReasName = x.ReasName,
@@ -251,7 +320,7 @@ namespace API.Repository
                     ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                     DateStart = x.DateStart,
                     DateEnd = x.DateEnd,
-                });
+                }).ToList();
             query = query.OrderByDescending(a => a.DateStart);
             return await PageList<RealEstateDto>.CreateAsync(
             query.AsNoTracking().ProjectTo<RealEstateDto>(_mapper.ConfigurationProvider),

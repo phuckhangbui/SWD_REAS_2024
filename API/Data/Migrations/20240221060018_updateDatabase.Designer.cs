@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240221060018_updateDatabase")]
+    partial class updateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,23 +144,27 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("AmountOwnerReceived")
-                        .HasColumnType("real");
+                    b.Property<string>("AmountOwnerReceived")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AuctionId")
                         .HasColumnType("int");
 
-                    b.Property<float>("CommissionAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("CommissionAmount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("DepositAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("DepositAmount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EstimatedPaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<float>("MaxAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("MaxAmount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReasId")
                         .HasColumnType("int");
@@ -192,7 +199,7 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DepositDate")
+                    b.Property<DateTime>("DateSign")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ReasId")
@@ -421,15 +428,7 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NewsSumary")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("NewsTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Thumbnail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -471,9 +470,6 @@ namespace API.Data.Migrations
                     b.Property<string>("ReasAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ReasArea")
-                        .HasColumnType("int");
 
                     b.Property<string>("ReasDescription")
                         .IsRequired()
@@ -701,7 +697,7 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entity.Auction", b =>
                 {
-                    b.HasOne("API.Entity.Account", "AccountCreate")
+                    b.HasOne("API.Entity.Account", "AcountCreate")
                         .WithMany("Auctions")
                         .HasForeignKey("AccountCreateId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -714,7 +710,7 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("AccountCreate");
+                    b.Navigation("AcountCreate");
 
                     b.Navigation("RealEstate");
                 });

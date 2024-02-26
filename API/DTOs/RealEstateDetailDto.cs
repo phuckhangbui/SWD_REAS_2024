@@ -1,6 +1,4 @@
-﻿using API.Entity;
-
-namespace API.DTOs
+﻿namespace API.DTOs
 {
     public class RealEstateDetailDto
     {
