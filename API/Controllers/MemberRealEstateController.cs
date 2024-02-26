@@ -1,47 +1,30 @@
 ﻿using API.DTOs;
-using API.Entity;
-using API.Enums;
 using API.Errors;
 using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Service;
 using API.MessageResponse;
-using API.Validate;
+using API.Param;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class MemberRealEstateController : BaseApiController
     {
-        private readonly IRealEstateRepository _real_estate_repository;
-        private readonly IAccountRepository _account_repository;
-        private readonly IRealEstatePhotoRepository _real_estate_photo_repository;
-        private readonly IRealEstateDetailRepository _real_estate_detail_repository;
-        private readonly IPhotoService _photoService;
-        private readonly ITypeReasRepository _typeReasRepository;
+        private readonly IMemberRealEstateService _memberRealEstateService;
         private const string BaseUri = "/api/home/";
-        public MemberRealEstateController(IRealEstateRepository realEstateRepository,
-            IAccountRepository accountRepository,
-            IRealEstatePhotoRepository realEstatePhotoRepository,
-            IRealEstateDetailRepository realEstateDetailRepository,
-            IPhotoService photoService,
-            ITypeReasRepository typeReasRepository)
+        public MemberRealEstateController(IMemberRealEstateService memberRealEstateService)
         {
-            _real_estate_repository = realEstateRepository;
-            _account_repository = accountRepository;
-            _real_estate_photo_repository = realEstatePhotoRepository;
-            _real_estate_detail_repository = realEstateDetailRepository;
-            _photoService = photoService;
-            _typeReasRepository = typeReasRepository;
+            _memberRealEstateService = memberRealEstateService;
         }
 
         [HttpGet(BaseUri + "my_real_estate")]
-        public async Task<ActionResult<List<RealEstateDto>>> GetOnwerRealEstate([FromQuery] PaginationParams paginationParams)
+        public async Task<ActionResult<RealEstateDto>> GetOnwerRealEstate([FromQuery] PaginationParams paginationParams)
         {
-            int userMember = GetIdMember(_account_repository);
+            int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
             if (userMember != 0)
             {
-                var reals = await _real_estate_repository.GetRealEstateOnGoing();
+                var reals = await _memberRealEstateService.GetOnwerRealEstate(userMember);
                 Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
                 reals.TotalCount, reals.TotalPages));
                 if (reals.PageSize != 0)
@@ -62,12 +45,12 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "my_real_estate/search")]
-        public async Task<IActionResult> SearchOwnerRealEstateForMember(SearchRealEstateDto searchRealEstateDto)
+        public async Task<IActionResult> SearchOwnerRealEstateForMember(SearchRealEstateParam searchRealEstateParam)
         {
-            int userMember = GetIdMember(_account_repository);
+            int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
             if (userMember != 0)
             {
-                var reals = await _real_estate_repository.SearchRealEstateByKey(searchRealEstateDto);
+                var reals = await _memberRealEstateService.SearchOwnerRealEstateForMember(searchRealEstateParam, userMember);
                 Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
                 reals.TotalCount, reals.TotalPages));
                 if (reals.PageSize == 0)
@@ -89,16 +72,12 @@ namespace API.Controllers
         }
 
         [HttpGet(BaseUri + "my_real_estate/create")]
-        public async Task<ActionResult<List<CreateNewRealEstatePage>>> ViewCreateNewRealEstatePage()
+        public async Task<ActionResult<CreateNewRealEstatePage>> ViewCreateNewRealEstatePage()
         {
-            int userMember = GetIdMember(_account_repository);
+            int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
             if (userMember != 0)
             {
-                var list_type_reas = _typeReasRepository.GetAllAsync().Result.Select(x => new CreateNewRealEstatePage
-                {
-                    TypeReasId = x.Type_ReasId,
-                    TypeName = x.Type_Reas_Name,
-                });
+                var list_type_reas = _memberRealEstateService.ViewCreateNewRealEstatePage();
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(list_type_reas);
@@ -110,74 +89,18 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "my_real_estate/create")]
-        public async Task<ActionResult<ApiResponseMessage>> CreateNewRealEstate(NewRealEstateDto newRealEstateDto)
+        public async Task<ActionResult<ApiResponseMessage>> CreateNewRealEstate(NewRealEstateParam newRealEstateDto)
         {
-            int userMember = GetIdMember(_account_repository);
+            int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
             if (userMember != 0)
             {
-                var newRealEstate = new RealEstate();
-                var newPhotoList = new RealEstatePhoto();
-                var newDetail = new RealEstateDetail();
-                ConvertStringToFile convertStringToFile = new ConvertStringToFile();
-                newRealEstate.ReasName = newRealEstateDto.ReasName;
-                newRealEstate.ReasPrice = newRealEstateDto.ReasPrice;
-                newRealEstate.ReasAddress = newRealEstateDto.ReasAddress;
-                newRealEstate.ReasArea = newRealEstateDto.ReasArea;
-                newRealEstate.ReasDescription = newRealEstateDto.ReasDescription;
-                newRealEstate.Message = "";
-                newRealEstate.AccountOwnerId = userMember;
-                newRealEstate.DateCreated = DateTime.UtcNow;
-                newRealEstate.Type_Reas = newRealEstateDto.Type_Reas;
-                newRealEstate.DateStart = newRealEstateDto.DateStart;
-                newRealEstate.DateEnd = newRealEstateDto.DateEnd;
-                newRealEstate.ReasStatus = (int)RealEstateEnum.In_progress;
-                newRealEstate.AccountOwnerName = await _account_repository.GetNameAccountByAccountIdAsync(userMember);
-                await _real_estate_repository.CreateAsync(newRealEstate);
-                foreach (PhotoFileDto photos in newRealEstateDto.Photos)
+                bool flag = await _memberRealEstateService.CreateNewRealEstate(newRealEstateDto, userMember);
+                if (flag)
+                    return new ApiResponseMessage("MSG16");
+                else
                 {
-                    IFormFile formFile = convertStringToFile.ConvertToIFormFile(photos.ReasPhotoUrl);
-                    var result = await _photoService.AddPhotoAsync(formFile, newRealEstate.ReasId, newRealEstate.ReasName, newRealEstate.AccountOwnerName);
-                    if (result.Error != null)
-                    {
-                        return BadRequest(result.Error.Message);
-                    }
-
-                    newPhotoList.ReasPhotoUrl = result.SecureUrl.AbsoluteUri;
-                    newPhotoList.ReasId = newRealEstate.ReasId;
-                    newPhotoList.ReasPhotoId = 0;
-
-                    await _real_estate_photo_repository.CreateAsync(newPhotoList);
+                    return BadRequest(new ApiResponse(400,"Have any error when excute operation."));
                 }
-                try
-                {
-                    IFormFile file_documents_Proving_Marital_Relationship = convertStringToFile.ConvertToIFormFile(newRealEstateDto.Detail.Documents_Proving_Marital_Relationship);
-                    IFormFile file_reas_Cert_Of_Land_Img_Front = convertStringToFile.ConvertToIFormFile(newRealEstateDto.Detail.Reas_Cert_Of_Land_Img_Front);
-                    IFormFile file_reas_Cert_Of_Land_Img_After = convertStringToFile.ConvertToIFormFile(newRealEstateDto.Detail.Reas_Cert_Of_Land_Img_After);
-                    IFormFile file_reas_Cert_Of_Home_Ownership = convertStringToFile.ConvertToIFormFile(newRealEstateDto.Detail.Reas_Cert_Of_Home_Ownership);
-                    IFormFile file_reas_Registration_Book = convertStringToFile.ConvertToIFormFile(newRealEstateDto.Detail.Reas_Registration_Book);
-                    IFormFile file_sales_Authorization_Contract = convertStringToFile.ConvertToIFormFile(newRealEstateDto.Detail.Sales_Authorization_Contract);
-                    var documents_Proving_Marital_Relationship = await _photoService.AddPhotoAsync(file_documents_Proving_Marital_Relationship, newRealEstate.ReasId, newRealEstate.ReasName, newRealEstate.AccountOwnerName);
-                    var reas_Cert_Of_Land_Img_Front = await _photoService.AddPhotoAsync(file_reas_Cert_Of_Land_Img_Front, newRealEstate.ReasId, newRealEstate.ReasName, newRealEstate.AccountOwnerName);
-                    var reas_Cert_Of_Land_Img_After = await _photoService.AddPhotoAsync(file_reas_Cert_Of_Land_Img_After, newRealEstate.ReasId, newRealEstate.ReasName, newRealEstate.AccountOwnerName);
-                    var reas_Cert_Of_Home_Ownership = await _photoService.AddPhotoAsync(file_reas_Cert_Of_Home_Ownership, newRealEstate.ReasId, newRealEstate.ReasName, newRealEstate.AccountOwnerName);
-                    var reas_Registration_Book = await _photoService.AddPhotoAsync(file_reas_Registration_Book, newRealEstate.ReasId, newRealEstate.ReasName, newRealEstate.AccountOwnerName);
-                    var sales_Authorization_Contract = await _photoService.AddPhotoAsync(file_sales_Authorization_Contract, newRealEstate.ReasId, newRealEstate.ReasName, newRealEstate.AccountOwnerName);
-                    newDetail.Documents_Proving_Marital_Relationship = documents_Proving_Marital_Relationship.SecureUrl.AbsoluteUri;
-                    newDetail.Reas_Cert_Of_Land_Img_Front = reas_Cert_Of_Land_Img_Front.SecureUrl.AbsoluteUri;
-                    newDetail.Reas_Cert_Of_Land_Img_After = reas_Cert_Of_Land_Img_After.SecureUrl.AbsoluteUri;
-                    newDetail.Reas_Cert_Of_Home_Ownership = reas_Cert_Of_Home_Ownership.SecureUrl.AbsoluteUri;
-                    newDetail.Reas_Registration_Book = reas_Registration_Book.SecureUrl.AbsoluteUri;
-                    newDetail.Sales_Authorization_Contract = sales_Authorization_Contract.SecureUrl.AbsoluteUri;
-                    newDetail.ReasId = newRealEstate.ReasId;
-                    await _real_estate_detail_repository.CreateAsync(newDetail);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ModelState);
-                }
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                return new ApiResponseMessage("MSG16");
             }
             else
             {
@@ -188,13 +111,44 @@ namespace API.Controllers
         [HttpGet(BaseUri + "my_real_estate/detail/{id}")]
         public async Task<ActionResult<RealEstateDetailDto>> ViewOwnerRealEstateDetail(int id)
         {
-            int userMember = GetIdMember(_account_repository);
+            int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
             if (userMember != 0)
             {
-                var _real_estate_detail = _real_estate_detail_repository.GetRealEstateDetail(id);
+                var _real_estate_detail = _memberRealEstateService.ViewOwnerRealEstateDetail(id);
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(_real_estate_detail);
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
+        }
+
+        [HttpPost(BaseUri + "my_real_estate/payment")]
+        public async Task<ActionResult<ApiResponseMessage>> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam)
+        {
+            int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
+            if (userMember != 0)
+            {
+                if(transactionMoneyCreateParam.Money != transactionMoneyCreateParam.MoneyPaid)
+                {
+                    return new ApiResponseMessage("MSG20");
+                }
+                else
+                {
+                    try
+                    {
+                        bool check = await _memberRealEstateService.PaymentAmountToUpRealEstaeAfterApprove(transactionMoneyCreateParam, userMember);
+                        if (check)
+                            return new ApiResponseMessage("MSG19");
+                        else return BadRequest(new ApiResponse(401, "Have any error when excute operation"));
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new ApiResponse(400, "Have any error when excute operation"));
+                    }
+                }
             }
             else
             {

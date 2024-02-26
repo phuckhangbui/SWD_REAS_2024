@@ -1,89 +1,109 @@
 ﻿using API.DTOs;
-using API.Entity;
 using API.Errors;
 using API.Extension;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Service;
 using API.MessageResponse;
-using API.Repository;
+using API.Param;
+using API.Validate;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 namespace API.Controllers
 {
     public class AdminNewsController : BaseApiController
     {
-        private readonly INewsRepository _newsRepository;
-        private readonly IAccountRepository _accountRepository;
+        private readonly IAdminNewsService _adminNewsService;
         private const string BaseUri = "/api/admin/";
 
-        public AdminNewsController(INewsRepository newsRepository, IAccountRepository accountRepository)
+        public AdminNewsController(IAdminNewsService adminNewsService)
         {
-            _accountRepository = accountRepository;
-            _newsRepository = newsRepository;
+            _adminNewsService = adminNewsService;
         }
 
         [HttpGet(BaseUri + "news")]
         public async Task<IActionResult> GetAllNewsByAdmin([FromQuery] PaginationParams paginationParams)
         {
-            var listNews = await _newsRepository.GetAllInNewsPage();
-            Response.AddPaginationHeader(new PaginationHeader(listNews.CurrentPage, listNews.PageSize,
-            listNews.TotalCount, listNews.TotalPages));
-            if (listNews.PageSize == 0)
+            int idAdmin = GetIdAdmin(_adminNewsService.AccountRepository);
+            if (idAdmin != 0)
             {
-                var apiResponseMessage = new ApiResponseMessage("MSG01");
-                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                var listNews = await _adminNewsService.GetAllNewsByAdmin();
+                Response.AddPaginationHeader(new PaginationHeader(listNews.CurrentPage, listNews.PageSize,
+                listNews.TotalCount, listNews.TotalPages));
+                if (listNews.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(listNews);
+                }
             }
             else
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                return Ok(listNews);
+                return BadRequest(new ApiResponse(401));
             }
         }
 
         [HttpGet(BaseUri + "news/detail/{id}")]
         public async Task<IActionResult> GetNewsDetailByAdmin(int id)
         {
-            var newsDetail = _newsRepository.GetDetailOfNews(id);
-            if(newsDetail.Result != null)
+            int idAdmin = GetIdAdmin(_adminNewsService.AccountRepository);
+            if (idAdmin != 0)
             {
-                return Ok(newsDetail);
+                var newsDetail = await _adminNewsService.GetNewsDetailByAdmin(id);
+                if (newsDetail != null)
+                {
+                    return Ok(newsDetail);
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
-                return null;
+                return BadRequest(new ApiResponse(401));
             }
         }
 
         [HttpPost(BaseUri + "news/search")]
         public async Task<IActionResult> SearchNewsByAdmin(SearchNewsParam searchNews)
         {
-            var reals = await _newsRepository.SearchNewByKey(searchNews);
-            Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
-            reals.TotalCount, reals.TotalPages));
-            if (reals.PageSize == 0)
+            int idAdmin = GetIdAdmin(_adminNewsService.AccountRepository);
+            if (idAdmin != 0)
             {
-                var apiResponseMessage = new ApiResponseMessage("MSG01");
-                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                var reals = await _adminNewsService.SearchNewsByAdmin(searchNews);
+                Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
+                reals.TotalCount, reals.TotalPages));
+                if (reals.PageSize == 0)
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
+                }
             }
             else
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                return Ok(reals);
+                return BadRequest(new ApiResponse(401));
             }
         }
 
         [HttpPost(BaseUri + "news/add")]
         public async Task<ActionResult<ApiResponseMessage>> AddNewNews(NewsCreate newCreate)
         {
-            int idAdmin = GetIdAdmin(_accountRepository);
+            int idAdmin = GetIdAdmin(_adminNewsService.AccountRepository);
             if (idAdmin != 0)
             {
-                string name = await _accountRepository.GetNameAccountByAccountIdAsync(idAdmin);
-                var news = _newsRepository.CreateNewNewsByAdmin(newCreate, idAdmin, name);
-                if (news != null)
+                bool check = await _adminNewsService.AddNewNews(newCreate, idAdmin);
+                if (check)
                 {
                     return new ApiResponseMessage("MSG18");
                 }
@@ -101,11 +121,11 @@ namespace API.Controllers
         [HttpPost(BaseUri + "news/update")]
         public async Task<ActionResult<ApiResponseMessage>> UpdateNewNews(NewsDetailDto newsDetailDto)
         {
-            int idAdmin = GetIdAdmin(_accountRepository);
+            int idAdmin = GetIdAdmin(_adminNewsService.AccountRepository);
             if (idAdmin != 0)
             {
-                var news = _newsRepository.UpdateNewsByAdmin(newsDetailDto);
-                if (news != null)
+                bool check = await _adminNewsService.UpdateNewNews(newsDetailDto);
+                if (check)
                 {
                     return new ApiResponseMessage("MSG03");
                 }

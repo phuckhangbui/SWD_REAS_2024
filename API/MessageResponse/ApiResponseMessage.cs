@@ -20,6 +20,8 @@
         public const string MSG16 = "MSG16";
         public const string MSG17 = "MSG17";
         public const string MSG18 = "MSG18";
+        public const string MSG19 = "MSG19";
+        public const string MSG20 = "MSG20";
 
 
         public string MessageCode { get; set; }
@@ -50,6 +52,8 @@
             MSG16 => "Your real estate has been recorded in the system, please wait for admin to confirm.",
             MSG17 => "Change status account successfully. ",
             MSG18 => "Create new rule successfully",
+            MSG19 => "Your real estate has uploaded on website.",
+            MSG20 => "The amount you entered to pay does not match the suggested amount.",
             _ => null
         };
     }

@@ -2,7 +2,8 @@
 using API.DTOs;
 using API.Entity;
 using API.Helper;
-using API.Interfaces;
+using API.Interface.Repository;
+using API.Param;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -19,23 +20,31 @@ namespace API.Repository
             _mapper = mapper;
         }
 
-        public  async Task<News> CreateNewNewsByAdmin(NewsCreate newsDto, int id, string name)
+        public async Task<bool> CreateNewNewsByAdmin(NewsCreate newsDto, int id, string name)
         {
             try
             {
                 News news = new News();
+                news.Thumbnail = newsDto.ThumbnailUri;
                 news.NewsTitle = newsDto.NewsTitle;
                 news.NewsSumary = newsDto.NewsSumary;
                 news.NewsContent = newsDto.NewsContent;
                 news.AccountCreateId = id;
                 news.DateCreated = DateTime.UtcNow;
                 news.AccountName = name;
-                CreateAsync(news);
-                return news;
+                bool check = await CreateAsync(news);
+                if (check)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                return null;
+                return false;
             }
         }
 
@@ -90,19 +99,27 @@ namespace API.Repository
             }
         }
 
-        public async Task<News> UpdateNewsByAdmin(NewsDetailDto news)
+        public async Task<bool> UpdateNewsByAdmin(NewsDetailDto news)
         {
             var newsDto = await _dataContext.News.Where(x => x.NewsId == news.NewsId).FirstOrDefaultAsync();
             newsDto.NewsTitle= news.NewsTitle;
             newsDto.NewsSumary= news.NewsSumary;
             newsDto.NewsContent = news.NewsContent;
+            newsDto.Thumbnail = news.Thumbnail;
             try
             {
-                UpdateAsync(newsDto);
-                return newsDto;
+                bool check = await UpdateAsync(newsDto);
+                if (check)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }catch (Exception ex)
             {
-                return null;
+                return false;
             }
         }
     }

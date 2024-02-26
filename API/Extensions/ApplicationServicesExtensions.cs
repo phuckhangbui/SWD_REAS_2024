@@ -1,6 +1,8 @@
 ﻿using API.Data;
 using API.Errors;
 using API.Helper;
+using API.Interface.Repository;
+using API.Interface.Service;
 using API.Interfaces;
 using API.Repository;
 using API.Services;
@@ -21,7 +23,23 @@ namespace API.Extensions
             services.AddScoped<IRuleRepository, RuleRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAuctionRepository, AuctionRepository>();
+            services.AddScoped<INewsRepository, NewsRepository>();
+            services.AddScoped<IMoneyTransactionDetailRepository, MoneyTransactionDetailRepository>();
+            services.AddScoped<IMoneyTransactionRepository, MoneyTransactionRepository>();
+            services.AddScoped<IDepositAmountRepository, DepositAmountRepository>();
             services.AddScoped<ITypeReasRepository, TypeReasRepository>();
+            services.AddScoped<IRealEstateService, RealEstateService>();
+            services.AddScoped<IRuleService, RuleService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAuctionService, AuctionService>();
+            services.AddScoped<INewsService, NewsService>();
+            services.AddScoped<IAdminAccountService, AdminAccountService>();
+            services.AddScoped<IAdminNewsService, AdminNewsService>();
+            services.AddScoped<IAdminRealEstateService, AdminRealEstateService>();
+            services.AddScoped<IMemberDepositAmountService, MemberDepositAmountService>();
+            services.AddScoped<IMemberRealEstateService, MemberRealEstateService>();
+            services.AddScoped<IMemberRuleService, MemberRuleService>();
+            services.AddScoped<IStaffRealEstateService, StaffRealEstateService>();
 
             services.AddDbContext<DataContext>(opt =>
             {
