@@ -42,6 +42,7 @@ namespace API.Extensions
             services.AddScoped<IMemberRuleService, MemberRuleService>();
             services.AddScoped<IStaffRealEstateService, StaffRealEstateService>();
             services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IMoneyTransactionService, MoneyTransactionService>();
 
             services.AddScoped<IAuctionAccountingService, AuctionAccountingService>();
 
