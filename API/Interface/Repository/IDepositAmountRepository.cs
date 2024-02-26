@@ -9,5 +9,6 @@ namespace API.Interface.Repository
     {
         Task<PageList<DepositAmountDto>> GetDepositAmoutForMember(int id);
         Task<PageList<DepositAmountDto>> GetDepositAmoutForMemberBySearch(SearchDepositAmountParam searchDepositAmountDto, int id);
+        Task<PageList<DepositAmountDto>> GetDepositAmountsAsync(DepositAmountParam depositAmountParam);
     }
 }

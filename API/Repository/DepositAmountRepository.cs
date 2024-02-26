@@ -21,6 +21,39 @@ namespace API.Repository
             _mapper = mapper;
         }
 
+        public async Task<PageList<DepositAmountDto>> GetDepositAmountsAsync(DepositAmountParam depositAmountParam)
+        {
+            var query = _context.DepositAmount.AsQueryable();
+
+            if (!string.IsNullOrEmpty(depositAmountParam.AmountFrom) && !string.IsNullOrEmpty(depositAmountParam.AmountTo))
+            {
+                if (int.TryParse(depositAmountParam.AmountFrom, out var amountFrom) &&
+                    int.TryParse(depositAmountParam.AmountTo, out var amountTo))
+                {
+                    query = query.Where(a => string.Compare(a.Amount, depositAmountParam.AmountFrom) >= 0 &&
+                                             string.Compare(a.Amount, depositAmountParam.AmountTo) <= 0);
+                }
+            }
+
+            if (depositAmountParam.DepositDateFrom != default(DateTime) && depositAmountParam.DepositDateTo != default(DateTime))
+            {
+                query = query.Where(a => a.DepositDate >= depositAmountParam.DepositDateFrom
+                                        && a.DepositDate <= depositAmountParam.DepositDateTo);
+            }
+
+            if (depositAmountParam.Status != -1)
+            {
+                query = query.Where(a => a.Status == depositAmountParam.Status);
+            }
+
+            query = query.OrderByDescending(q => q.DepositDate);
+
+            return await PageList<DepositAmountDto>.CreateAsync(
+                query.AsNoTracking().ProjectTo<DepositAmountDto>(_mapper.ConfigurationProvider),
+                depositAmountParam.PageNumber,
+                depositAmountParam.PageSize);
+        }
+
         public async Task<PageList<DepositAmountDto>> GetDepositAmoutForMember(int id)
         {
             var getNameStaus = new GetStatusName();

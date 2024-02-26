@@ -25,6 +25,8 @@ namespace API.Helper
             CreateMap<Entity.Task, TaskDto>();
             CreateMap<MoneyTransaction, MoneyTransactionDto>();
             CreateMap<MoneyTransactionDetail, MoneyTransactionDetailDto>();
+            CreateMap<DepositAmount, DepositAmountDto>();
+
         }
     }
 

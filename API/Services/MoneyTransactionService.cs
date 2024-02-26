@@ -4,7 +4,7 @@ using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
 
-namespace API.Repository
+namespace API.Services
 {
     public class MoneyTransactionService : IMoneyTransactionService
     {
