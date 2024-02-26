@@ -103,7 +103,7 @@ namespace API.Controllers
                 bool result = await _auctionService.ToggleAuctionStatus(auctionDetailDto.AuctionId.ToString(), statusFinish.ToString());
 
                 //send email
-
+                await _auctionAccountingService.SendWinnerEmail(auctionAccounting);
 
             }
             catch (Exception ex)

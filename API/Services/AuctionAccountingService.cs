@@ -2,6 +2,7 @@
 using API.Entity;
 using API.Interface.Repository;
 using API.Interface.Service;
+using API.ThirdServices;
 
 namespace API.Services
 {
@@ -66,6 +67,16 @@ namespace API.Services
 
             return auctionAccounting;
 
+        }
+
+        public async System.Threading.Tasks.Task SendWinnerEmail(AuctionAccounting auctionAccounting)
+        {
+            Auction auction = _auctionRepository.GetAuction(auctionAccounting.AuctionId);
+            var realEstate = await _realEstateDetailRepository.GetRealEstateDetail(auction.ReasId);
+            Account accountWin = await _accountRepository.GetAccountByAccountIdAsync(auctionAccounting.AccountWinId);
+
+
+            SendMailAuctionSuccess.SendMailWhenAuctionSuccess(accountWin.AccountEmail, realEstate.ReasName, realEstate.ReasAddress, DateOnly.FromDateTime(auctionAccounting.EstimatedPaymentDate), auctionAccounting.MaxAmount, auctionAccounting.DepositAmount);
         }
     }
 }
