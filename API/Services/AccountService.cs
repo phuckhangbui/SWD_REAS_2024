@@ -4,19 +4,18 @@ using API.Interface.Repository;
 using API.Interface.Service;
 using API.Interfaces;
 using API.Param;
-using AutoMapper;
 using Google.Apis.Auth;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace API.Services
 {
-    public class AccountService : BaseService<Account>, IAccountService
+    public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
         private readonly ITokenService _tokenService;
 
-        public AccountService(IAccountRepository accountRepository, IRealEstateRepository realEstateRepository, IRealEstateDetailRepository realEstateDetailRepository, IRealEstatePhotoRepository realEstatePhotoRepository, INewsRepository newsRepository, IMoneyTransactionRepository moneyTransactionRepository, IMoneyTransactionDetailRepository moneyTransactionDetailRepository, IRuleRepository ruleRepository, ITypeReasRepository typeReasRepository, IAuctionRepository auctionRepository, IDepositAmountRepository depositAmountRepository, IMapper mapper, IPhotoService photoService, ITokenService tokenService) : base(accountRepository, realEstateRepository, realEstateDetailRepository, realEstatePhotoRepository, newsRepository, moneyTransactionRepository, moneyTransactionDetailRepository, ruleRepository, typeReasRepository, auctionRepository, depositAmountRepository, mapper, photoService, tokenService)
+        public AccountService(IAccountRepository accountRepository, ITokenService tokenService)
         {
             _accountRepository = accountRepository;
             _tokenService = tokenService;
@@ -45,6 +44,7 @@ namespace API.Services
                 {
                     Email = account.AccountEmail,
                     Token = _tokenService.CreateToken(account),
+                    RoleId = account.RoleId,
                     AccountName = account.AccountName,
                     Username = account.Username
                 };
@@ -66,6 +66,7 @@ namespace API.Services
                 {
                     Email = account.AccountEmail,
                     Token = _tokenService.CreateToken(account),
+                    RoleId = account.RoleId,
                     AccountName = account.AccountName,
                     Username = account.Username
                 };
@@ -92,6 +93,7 @@ namespace API.Services
                 {
                     Email = account.AccountEmail,
                     Token = _tokenService.CreateToken(account),
+                    RoleId = account.RoleId,
                     AccountName = account.AccountName,
                     Username = account.Username
                 };
