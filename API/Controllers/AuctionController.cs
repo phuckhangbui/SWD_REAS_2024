@@ -1,10 +1,12 @@
 using API.DTOs;
+using API.Entity;
 using API.Errors;
 using API.Extension;
 using API.Helper;
 using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
+using API.Param.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,15 +15,15 @@ namespace API.Controllers
     public class AuctionController : BaseApiController
     {
         private readonly IAuctionService _auctionService;
+        private readonly IAuctionAccountingService _auctionAccountingService;
 
-        public AuctionController(IAuctionService auctionService)
+        public AuctionController(IAuctionService auctionService, IAuctionAccountingService auctionAccountingService)
         {
             _auctionService = auctionService;
+            _auctionAccountingService = auctionAccountingService;
         }
 
-        private const string BaseUri = "/auctions";
-
-        [HttpGet(BaseUri)]
+        [HttpGet("auctions")]
         public async Task<IActionResult> GetRealEstates([FromQuery] AuctionParam auctionParam)
         {
             var auctions = await _auctionService.GetRealEstates(auctionParam);
@@ -64,14 +66,14 @@ namespace API.Controllers
         }
 
         [Authorize(policy: "AdminAndStaff")]
-        [HttpGet("/edit/status")]
+        [HttpGet("edit/status")]
         public async Task<ActionResult<ApiResponseMessage>> ToggleAuctionStatus([FromQuery] string auctionId, string statusCode)
         {
             try
             {
                 bool check = await _auctionService.ToggleAuctionStatus(auctionId, statusCode);
                 if (check) return new ApiResponseMessage("MSG03");
-                else return BadRequest(new ApiResponse(401, "Have any error when excute operation."));
+                else return BadRequest(new ApiResponse(401, "Have an error when excute operation."));
             }
             catch (Exception ex)
             {
@@ -81,6 +83,37 @@ namespace API.Controllers
             return Ok();
         }
 
+        //[Authorize(policy: "Customer")]
+        [HttpPost("success")]
+        public async Task<ActionResult<ConfirmAuctionSucessDto>> AuctionSuccess(AuctionDetailDto auctionDetailDto)
+        {
+            ConfirmAuctionSucessDto confirmAuctionSucessDto = new ConfirmAuctionSucessDto();
+            try
+            {
+                //update/add auction accounting
+                AuctionAccounting auctionAccounting = await _auctionAccountingService.UpdateAuctionAccounting(auctionDetailDto);
+
+                if (auctionAccounting == null)
+                {
+                    return BadRequest(new ApiResponse(404, "Update Auction Accounting fail"));
+                }
+
+                //update auction status
+                int statusFinish = (int)AuctionEnum.Finish;
+                bool result = await _auctionService.ToggleAuctionStatus(auctionDetailDto.AuctionId.ToString(), statusFinish.ToString());
+
+                //send email
+
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(404));
+            }
+            //return calculate result in auction accounting
+
+            return Ok(confirmAuctionSucessDto);
+        }
 
     }
 }
