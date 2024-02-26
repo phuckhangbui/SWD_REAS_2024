@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar/searchBar.tsx";
 import RealEstateList from "../../../components/RealEstate/realEstateList.tsx";
 import realEstate from "../../../interface/realEstate.ts";
-import { realEstatesList } from "../../../data/realEstate.ts";
+import { searchRealEstate } from "../../../api/realEstate.ts";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 const priceList = [
   5000, 6000, 7000, 8000, 10000, 11000, 12000, 15000, 20000, 50000, 100000,
   200000, 500000, 600000, 1000000,
 ];
+
+interface searchProps {
+  pageNumber: number;
+  pageSize: number;
+  reasName: string;
+  reasPriceFrom: string;
+  reasPriceTo: string;
+  reasStatus: number;
+}
 
 const RealEstatePage = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -15,11 +25,42 @@ const RealEstatePage = () => {
   const [maxPrice, setMaxPrice] = useState<number | null>(0);
   const [minPriceList, setMinPriceList] = useState(priceList);
   const [maxPriceList, setMaxPriceList] = useState(priceList);
-  const realEstates: realEstate[] = realEstatesList;
+  const [realEstateList, setRealEstateList] = useState<
+    realEstate[] | undefined
+  >([]);
+  const [searchParams, setSearchParams] = useState<searchProps | null>({
+    pageNumber: 0,
+    pageSize: 0,
+    reasName: "",
+    reasPriceFrom: "",
+    reasPriceTo: "",
+    reasStatus: 0,
+  });
+
+  useEffect(() => {
+    try {
+      const fetchRealEstates = async () => {
+        if (searchParams) {
+          const response = await searchRealEstate(searchParams);
+          setRealEstateList(response);
+        }
+      };
+      fetchRealEstates();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   // Function to toggle dropdown visibility
   const toggleDropdown = () => {
     setDropdownVisible((preDropdownVisible) => !preDropdownVisible);
+  };
+
+  const handleSearchBarChange = async (value: string) => {
+    setSearchParams((prevState) => ({
+      ...prevState!,
+      reasName: value,
+    }));
   };
 
   const handleChangeMinPriceList = async (
@@ -31,6 +72,11 @@ const RealEstatePage = () => {
       (price) => price > selectedPrice
     );
     setMaxPriceList(currentMaxPriceList);
+
+    setSearchParams((prevState: searchProps | null) => ({
+      ...prevState!,
+      reasPriceFrom: selectedPrice.toString(),
+    }));
   };
 
   const handleChangeMaxPriceList = async (
@@ -42,14 +88,33 @@ const RealEstatePage = () => {
       (price) => price < selectedPrice
     );
     setMinPriceList(currentMinPriceList);
+
+    setSearchParams((prevState: searchProps | null) => ({
+      ...prevState!,
+      reasPriceTo: selectedPrice.toString(),
+    }));
   };
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const fetchRealEstates = async () => {
+        if (searchParams) {
+          const response = await searchRealEstate(searchParams);
+          setRealEstateList(response);
+        }
+      };
+      fetchRealEstates();
+    } catch (error) {
+      console.log(error);
+    }
+    // console.log(searchParams);
+  };
 
   return (
     <>
       <div className="pt-20">
-        <form action="">
+        <form action="" onSubmit={handleSubmit}>
           <div className="w-full relative">
             <img
               src="../../public/Search-bar-bg.jpg"
@@ -59,9 +124,15 @@ const RealEstatePage = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="lg:max-w-lg sm:max-w-md mx-auto w-full">
                 <div className="text-center lg:text-4xl sm:text-3xl lg:mb-4 sm:mb-2 text-white font-bold">
-                  Find. Auction. Deposit. Own.
+                  Find. <span className="text-mainBlue">Auction.</span> Deposit.{" "}
+                  <span className="text-secondaryYellow">Own.</span>
                 </div>
-                <SearchBar />
+                <SearchBar
+                  placeHolder="Search for real estates that you want"
+                  inputName="reasName"
+                  nameValue={searchParams?.reasName || ""}
+                  onSearchChange={handleSearchBarChange}
+                />
                 <div className="flex px-3 py-1">
                   <div className="mt-1 flex items-center justify-end">
                     <label htmlFor="status" className="sr-only">
@@ -71,9 +142,7 @@ const RealEstatePage = () => {
                       id="status"
                       className=" text-gray-900 block py-1 pl-3 pr-5 w-36 text-sm border-2 border-gray-200 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 rounded-l-lg"
                     >
-                      <option value="" selected>
-                        All
-                      </option>
+                      <option defaultValue="-1">All</option>
                       <option value="2">Available</option>
                       <option value="5">Sold</option>
                       <option value="4">Auctioning</option>
@@ -101,12 +170,17 @@ const RealEstatePage = () => {
                       type="button"
                       onClick={toggleDropdown}
                     >
-                      Price: ${minPrice}{" "}
-                      {maxPrice !== null &&
-                      maxPrice !== 1000000000 &&
-                      maxPrice !== 0
-                        ? `- $${maxPrice}`
-                        : ""}
+                      <div>
+                        Price:{" "}
+                        <span className="font-bold">
+                          ${minPrice}{" "}
+                          {maxPrice !== null &&
+                          maxPrice !== 1000000000 &&
+                          maxPrice !== 0
+                            ? `- $${maxPrice}`
+                            : ""}
+                        </span>
+                      </div>
                       <svg
                         className="w-3 h-3 text-gray-900 mr-2"
                         aria-hidden="true"
@@ -140,6 +214,7 @@ const RealEstatePage = () => {
                                 id="minimum"
                                 className="text-gray-900 block py-1 pl-3 pr-5 lg:w-36 sm:w-28 text-sm border-2 border-gray-400 bg-gray-200 focus:outline-none appearance-none focus:ring-0 focus:border-gray-400 rounded-lg"
                                 onChange={handleChangeMinPriceList}
+                                name="reasPriceFrom"
                               >
                                 <option value="0">$0</option>
                                 {minPriceList.map((minPrice) => (
@@ -179,6 +254,7 @@ const RealEstatePage = () => {
                                 id="status"
                                 className=" text-gray-900 block py-1 pl-3 pr-5 lg:w-36 sm:w-28 text-sm border-2 border-gray-400 bg-gray-200 focus:outline-none appearance-none focus:ring-0 focus:border-gray-400 rounded-lg"
                                 onChange={handleChangeMaxPriceList}
+                                name="reasPriceTo"
                               >
                                 <option value="1000000000">Any Price</option>
                                 {maxPriceList.map((maxPrice) => (
@@ -224,7 +300,7 @@ const RealEstatePage = () => {
               Take a look at our various options and find your forever home
             </div>
           </div>
-          <RealEstateList realEstatesList={realEstates} />
+          <RealEstateList realEstatesList={realEstateList} />
         </div>
       </div>
     </>

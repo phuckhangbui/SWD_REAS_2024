@@ -113,20 +113,20 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to={"/sell"} className={getActiveLink("sell")}>
-                Sell
-              </Link>
-            </li>
-            <li>
               <Link to={"/news"} className={getActiveLink("news")}>
                 News
               </Link>
             </li>
             <li>
+              <Link to={"/sell"} className={getActiveLink("sell")}>
+                Sell
+              </Link>
+            </li>
+            {/* <li>
               <Link to={"/help"} className={getActiveLink("help")}>
                 Help
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>

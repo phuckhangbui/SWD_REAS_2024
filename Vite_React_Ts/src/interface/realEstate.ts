@@ -1,16 +1,13 @@
 interface realEstate {
-  id: number;
-  name: string;
-  address: string;
-  image: string;
-  price: string;
-  description: string;
-  status: number;
+  reasId: number;
+  reasName: string;
+  reasPrice: string;
+  reasArea: number;
+  reasTypeName: string;
+  reasStatus: number;
+  uriPhotoFirst: string
   dateStart: Date;
   dateEnd: Date;
-  message: string;
-  ownerId: number;
-  dateCreated: Date;
 }
 
 export default realEstate;

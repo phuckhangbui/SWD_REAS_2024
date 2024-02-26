@@ -1,10 +1,9 @@
 interface news {
   id: number;
-  accountCreated: string;
   newsTitle: string; 
-  newsImage: string;
-  newsContent: string; 
-  dateCreated: Date; 
+  thumbnailUri: string;
+  newsSumary: string; 
+  newsContent: Date; 
 }
 
 export default news;

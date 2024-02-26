@@ -23,34 +23,35 @@ const RealEstateDetailModal = ({
   address,
   index,
 }: RealEstateDetailModalProps) => {
-  const [center, setCenter] = useState<{
-    lat: number | null;
-    lng: number | null;
-  }>({ lat: null, lng: null });
   const [tabStatus, setTabStatus] = useState(index);
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string,
-  });
+  // const [center, setCenter] = useState<{
+  //   lat: number | null;
+  //   lng: number | null;
+  // }>({ lat: null, lng: null });
 
-  setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string);
+  // const { isLoaded } = useJsApiLoader({
+  //   googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string,
+  // });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const location = await handleGeoCode(address);
+  // setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string);
 
-        if (location) {
-          setCenter(location);
-          console.log(center);
-        }
-      } catch (error) {
-        console.error("Error geocoding:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const location = await handleGeoCode(address);
 
-    fetchData();
-  }, []);
+  //       if (location) {
+  //         setCenter(location);
+  //         console.log(center);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error geocoding:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   // Change the tab index
   const toggleTab = (index: string) => {
@@ -71,7 +72,7 @@ const RealEstateDetailModal = ({
     return `${index === tabStatus ? "" : "hidden"} mt-2 space-y-4 `;
   };
 
-  return isLoaded ? (
+  return  (
     <div className="relative w-full max-w-7xl max-h-full ">
       <div className="relative bg-white rounded-lg shadow md:px-10 md:pb-5 sm:px-0 sm:pb-0 ">
         <div className=" items-center justify-start md:py-5 md:px-0 sm:p-5 sm:fixed md:static z-10 top-0">
@@ -130,7 +131,7 @@ const RealEstateDetailModal = ({
               />
             </Carousel>
           </div>
-          <div className=" h-full rounded-lg">
+          {/* <div className=" h-full rounded-lg">
             <GoogleMap
               mapContainerStyle={{
                 width: "100%",
@@ -144,7 +145,7 @@ const RealEstateDetailModal = ({
             >
               <Marker position={{ lat: center.lat!, lng: center.lng! }} />
             </GoogleMap>
-          </div>
+          </div> */}
         </div>
         <div className=" md:mb-0  sm:px-4 md:px-0">
           <hr className="mt-8 mb-6 border-gray-200 sm:mx-auto " />
@@ -211,9 +212,7 @@ const RealEstateDetailModal = ({
         </footer>
       </div>
     </div>
-  ) : (
-    <></>
-  );
+  )
 };
 
 export default RealEstateDetailModal;

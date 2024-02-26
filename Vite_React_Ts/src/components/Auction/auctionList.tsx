@@ -4,10 +4,10 @@ import RealEstateDetailModal from "../RealEstateDetailModal/realEstateDetailModa
 import AuctionCard from "./auctionCard";
 
 interface RealEstateListProps {
-  realEstatesList: realEstate[];
+  realEstatesList?: realEstate[];
 }
 
-const AuctionList = ({ realEstatesList }: RealEstateListProps) => {
+const AuctionList = ({ realEstatesList =[] }: RealEstateListProps) => {
   const [realEstates, getRealEstates] = useState(realEstatesList);
   const [showModal, setShowModal] = useState(false);
   const [realEstateId, setRealEstateId] = useState<number>(-1);
@@ -47,7 +47,7 @@ const AuctionList = ({ realEstatesList }: RealEstateListProps) => {
       <div>
         <div className="mt-4 grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 md:gap-3 sm:grid-cols-1">
           {realEstates.map((realEstate) => (
-            <div key={realEstate.id} onClick={() => toggleModal(realEstate.id)}>
+            <div key={realEstate.reasId} onClick={() => toggleModal(realEstate.reasId)}>
               <AuctionCard realEstate={realEstate}/>
             </div>
           ))}

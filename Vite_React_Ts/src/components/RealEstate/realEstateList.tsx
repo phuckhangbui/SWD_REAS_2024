@@ -4,11 +4,11 @@ import RealEstateCard from "./realEstateCard";
 import RealEstateDetailModal from "../RealEstateDetailModal/realEstateDetailModal";
 
 interface RealEstateListProps {
-  realEstatesList: realEstate[];
+  realEstatesList?: realEstate[];
 }
 
 const RealEstateList = ({ realEstatesList }: RealEstateListProps) => {
-  const [realEstates, getRealEstates] = useState(realEstatesList);
+  const [realEstates, setRealEstates] = useState<realEstate[] | undefined>([]);
   const [showModal, setShowModal] = useState(false);
   const [realEstateId, setRealEstateId] = useState<number>(0);
 
@@ -16,6 +16,11 @@ const RealEstateList = ({ realEstatesList }: RealEstateListProps) => {
     setShowModal((prevShowModal) => !prevShowModal);
     setRealEstateId(realEstateId);
   };
+  useEffect(() => {
+    if (realEstatesList) {
+      setRealEstates(realEstatesList);
+    }
+  }, [realEstatesList]);
 
   useEffect(() => {
     // Disable scroll on body when modal is open
@@ -42,19 +47,19 @@ const RealEstateList = ({ realEstatesList }: RealEstateListProps) => {
     }
   };
 
-
   return (
     <div>
       <div>
         <div className="mt-4 grid lg:grid-cols-4 md:grid-cols-2 md:gap-3 sm:grid-cols-1">
-          {realEstates.map((realEstate) => (
-            <div
-              key={realEstate.id}
-              onClick={() => toggleModal(realEstate.id)}
-            >
-              <RealEstateCard realEstate={realEstate} />
-            </div>
-          ))}
+          {realEstates &&
+            realEstates.map((realEstate) => (
+              <div
+                key={realEstate.reasId}
+                onClick={() => toggleModal(realEstate.reasId)}
+              >
+                <RealEstateCard realEstate={realEstate} />
+              </div>
+            ))}
         </div>
       </div>
       {showModal && (

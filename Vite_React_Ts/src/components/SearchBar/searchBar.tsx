@@ -1,6 +1,23 @@
-import React from "react";
+import React, { useRef } from "react";
 
-const SearchBar = () => {
+interface SearchBarProp {
+  placeHolder: string;
+  inputName: string;
+  nameValue: string;
+  onSearchChange: (value: string) => void;
+}
+
+const SearchBar = ({
+  placeHolder,
+  inputName,
+  nameValue,
+  onSearchChange,
+}: SearchBarProp) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    onSearchChange(value);
+  };
+
   return (
     <div>
       <label
@@ -20,9 +37,9 @@ const SearchBar = () => {
           >
             <path
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
             />
           </svg>
@@ -31,7 +48,10 @@ const SearchBar = () => {
           type="search"
           id="default-search"
           className="block sm:w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-3xl bg-gray-50 focus:ring-mainBlue focus:border-mainBlue focus:outline-none"
-          placeholder="Search for real estates that you want"
+          placeholder={placeHolder}
+          value={nameValue}
+          name={inputName}
+          onChange={handleChange}
         />
       </div>
     </div>

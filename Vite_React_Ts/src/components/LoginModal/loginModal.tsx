@@ -38,7 +38,7 @@ const LoginModal = ({ closeModal }: LoginModalProps) => {
     <div className="relative p-4 w-full max-w-md max-h-full">
       <div className="relative bg-white rounded-lg shadow ">
         <div className="p-4 md:p-5 border-b rounded-t text-center ">
-          <h3 className="text-2xl  font-bold text-gray-900 ">Sign in</h3>
+          <h3 className="text-2xl  font-bold text-gray-900 ">{tabStatus !== "forgot" ? "Sign in" : "Forgot Password" }</h3>
         </div>
         <div className=" grid grid-cols-2 transition duration-300 group mb-8">
           <button
@@ -69,7 +69,7 @@ const LoginModal = ({ closeModal }: LoginModalProps) => {
                     type="text"
                     name="Username"
                     id="Username"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-mainBlue focus:border-mainBlue block w-full p-2.5 "
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-mainBlue focus:border-mainBlue block w-full p-2.5 "
                     placeholder="Type your username"
                   />
                 </div>
@@ -87,11 +87,11 @@ const LoginModal = ({ closeModal }: LoginModalProps) => {
                   name="password"
                   id="password"
                   placeholder="Type your password"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-mainBlue focus:border-mainBlue block w-full p-2.5"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-mainBlue focus:border-mainBlue block w-full p-2.5"
                 />
                 <button className="absolute mr-3" onClick={handleSeePassword}>
                   <svg
-                    className="w-6 h-6 text-gray-900 dark:text-white "
+                    className="w-6 h-6 text-gray-900 sm:hover:text-mainBlue "
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -111,9 +111,12 @@ const LoginModal = ({ closeModal }: LoginModalProps) => {
                 </button>
               </div>
               <div className="flex justify-end">
-                <a href="#" className="text-sm text-mainBlue hover:underline">
+                <button
+                  className="text-sm text-mainBlue hover:underline"
+                  onClick={() => toggleTab("forgot")}
+                >
                   Forgot Password?
-                </a>
+                </button>
               </div>
               <button
                 type="submit"
@@ -127,6 +130,51 @@ const LoginModal = ({ closeModal }: LoginModalProps) => {
         <div className={getActiveTabDetail("user")}>
           <div className="flex justify-center items-center p-8">
             <GoogleLogIn closeModal={closeModal} />
+          </div>
+        </div>
+        <div className={getActiveTabDetail("forgot")}>
+          <div className="p-4 md:p-5">
+            {/* <button onClick={() => toggleTab("staff")}>
+              <svg
+                className="w-6 h-6  sm:text-black sm:hover:text-mainBlue "
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 10"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M13 5H1m0 0 4 4M1 5l4-4"
+                />
+              </svg>
+              <span className="sr-only">Close modal</span>
+            </button> */}
+            <form action="" className="space-y-4" >
+              <label
+                htmlFor="email"
+                className="block mb-2 text-sm font-medium text-gray-900 "
+              >
+                Enter your email to reset your password
+              </label>
+              <div>
+                <input
+                  type="text"
+                  name="email"
+                  id="email"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-mainBlue focus:border-mainBlue focus:outline-none block w-full p-2.5 "
+                  placeholder="Type your email"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full text-white bg-mainBlue hover:bg-darkerMainBlue focus:ring-4 focus:outline-none focus:ring-mainBlue font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              >
+                Send
+              </button>
+            </form>
           </div>
         </div>
       </div>
