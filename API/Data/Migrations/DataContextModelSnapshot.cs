@@ -342,10 +342,12 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MoneyTransactionDetailId"));
 
-                    b.Property<int>("AccountReceiveId")
+                    b.Property<int?>("AccountReceiveId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<int>("AuctionId")
+                    b.Property<int?>("AuctionId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateExecution")
@@ -374,6 +376,9 @@ namespace API.Data.Migrations
                     b.HasIndex("AccountReceiveId");
 
                     b.HasIndex("AuctionId")
+                        .IsUnique();
+
+                    b.HasIndex("MoneyTransactionId")
                         .IsUnique();
 
                     b.HasIndex("ReasId")
@@ -426,10 +431,6 @@ namespace API.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NewsTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Thumbnail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -847,7 +848,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Entity.MoneyTransaction", "MoneyTransaction")
                         .WithOne("MoneyTransactionDetail")
-                        .HasForeignKey("API.Entity.MoneyTransactionDetail", "MoneyTransactionDetailId")
+                        .HasForeignKey("API.Entity.MoneyTransactionDetail", "MoneyTransactionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

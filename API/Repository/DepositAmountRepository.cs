@@ -106,6 +106,8 @@ namespace API.Repository
         }
 
 
+        public List<DepositAmount> GetDepositAmounts(int accountSignId, int reasId) => _context.DepositAmount.Where(d => d.AccountSignId == accountSignId && d.ReasId == reasId).ToList();
+
         public DepositAmount GetDepositAmount(int accountSignId, int reasId) => _context.DepositAmount.FirstOrDefault(d => d.AccountSignId == accountSignId && d.ReasId == reasId);
     }
 }

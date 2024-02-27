@@ -6,6 +6,5 @@ namespace API.Interface.Service
     {
         Task<AuctionAccountingDto> UpdateAuctionAccounting(AuctionDetailDto auctionDetailDto);
         System.Threading.Tasks.Task SendWinnerEmail(AuctionAccountingDto auctionAccounting);
-        Task<DepositAmountDto> CreateAuctionAccounting(int customerId, int reasId);
     }
 }

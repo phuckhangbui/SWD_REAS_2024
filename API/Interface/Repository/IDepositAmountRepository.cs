@@ -11,6 +11,7 @@ namespace API.Interface.Repository
         Task<PageList<DepositAmountDto>> GetDepositAmoutForMemberBySearch(SearchDepositAmountParam searchDepositAmountDto, int id);
         Task<PageList<DepositAmountDto>> GetDepositAmountsAsync(DepositAmountParam depositAmountParam);
 
+        List<DepositAmount> GetDepositAmounts(int accountSignId, int reasId);
         DepositAmount GetDepositAmount(int accountSignId, int reasId);
     }
 }
