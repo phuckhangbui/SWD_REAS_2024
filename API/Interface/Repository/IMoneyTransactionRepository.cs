@@ -10,5 +10,7 @@ namespace API.Interface.Repository
         Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idAccount);
         Task<int> GetIdTransactionWhenCreateNewTransaction();
         Task<PageList<MoneyTransactionDto>> GetMoneyTransactionsAsync(MoneyTransactionParam moneyTransactionParam);
+
+        System.Threading.Tasks.Task CreateMoneyTransactionAndMoneyTransactionDetail(MoneyTransaction moneyTransaction, MoneyTransactionDetail moneyTransactionDetail);
     }
 }

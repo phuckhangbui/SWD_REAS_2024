@@ -34,7 +34,7 @@ namespace API.Repository
                 bool check = await CreateAsync(moneyTransaction);
                 if (check)
                 {
-                    return true; 
+                    return true;
                 }
                 else return false;
             }
@@ -69,6 +69,26 @@ namespace API.Repository
             query.AsNoTracking().ProjectTo<MoneyTransactionDto>(_mapper.ConfigurationProvider),
             moneyTransactionParam.PageNumber,
             moneyTransactionParam.PageSize);
+        }
+
+        public async System.Threading.Tasks.Task CreateMoneyTransactionAndMoneyTransactionDetail(MoneyTransaction moneyTransaction, MoneyTransactionDetail moneyTransactionDetail)
+        {
+            try
+            {
+                //_dataContext.MoneyTransaction.Add(moneyTransaction);
+                //_dataContext.SaveChanges();
+                moneyTransactionDetail.MoneyTransaction = moneyTransaction;
+
+
+                _dataContext.MoneyTransactionDetail.Add(moneyTransactionDetail);
+                _dataContext.SaveChanges();
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.Entity;
 using API.Errors;
 using API.Exceptions;
 using API.Extension;
@@ -16,11 +17,15 @@ namespace API.Controllers
     {
         private readonly IAuctionService _auctionService;
         private readonly IAuctionAccountingService _auctionAccountingService;
+        private readonly IDepositAmountService _depositAmountService;
+        private readonly IMoneyTransactionService _moneyTransactionService;
 
-        public AuctionController(IAuctionService auctionService, IAuctionAccountingService auctionAccountingService)
+        public AuctionController(IAuctionService auctionService, IAuctionAccountingService auctionAccountingService, IDepositAmountService depositAmountService, IMoneyTransactionService moneyTransactionService)
         {
             _auctionService = auctionService;
             _auctionAccountingService = auctionAccountingService;
+            _depositAmountService = depositAmountService;
+            _moneyTransactionService = moneyTransactionService;
         }
 
         [HttpGet("auctions")]
@@ -83,7 +88,7 @@ namespace API.Controllers
             return Ok();
         }
 
-        //[Authorize(policy: "Customer")]
+        [Authorize(policy: "Customer")]
         [HttpPost("success")]
         public async Task<ActionResult<AuctionAccountingDto>> AuctionSuccess(AuctionDetailDto auctionDetailDto)
         {
@@ -95,16 +100,18 @@ namespace API.Controllers
 
                 if (auctionAccountingDto == null)
                 {
-                    return BadRequest(new ApiResponse(404, "Update Auction Accounting fail"));
+                    return BadRequest(new ApiResponse(404, "Real estate is not auctioning"));
                 }
 
                 //update auction status
                 int statusFinish = (int)AuctionEnum.Finish;
                 bool result = await _auctionService.ToggleAuctionStatus(auctionDetailDto.AuctionId.ToString(), statusFinish.ToString());
 
-                //send email
-                //await _auctionAccountingService.SendWinnerEmail(auctionAccountingDto);
-
+                if (result)
+                {
+                    //send email
+                    await _auctionAccountingService.SendWinnerEmail(auctionAccountingDto);
+                }
             }
             catch (Exception ex)
             {
@@ -176,6 +183,78 @@ namespace API.Controllers
             {
                 return StatusCode(500, new ApiResponse(500, ex.Message));
             }
+        }
+
+        [Authorize(policy: "Customer")]
+        [HttpGet("register")]
+        public async Task<ActionResult<DepositAmountDto>> RegisterAuction([FromQuery] string customerId, string reasId)
+        {
+            if (GetLoginAccountId() != int.Parse(customerId))
+            {
+                return BadRequest(new ApiResponse(404));
+            }
+            DepositAmountDto depositAmountDto = new DepositAmountDto();
+
+            try
+            {
+                depositAmountDto = await _depositAmountService.CreateDepositAmount(int.Parse(customerId), int.Parse(reasId));
+                if (depositAmountDto == null)
+                {
+                    return BadRequest(new ApiResponse(404, "Real estate is not selling"));
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(404));
+            }
+
+
+            return Ok(depositAmountDto);
+        }
+
+        //[Authorize(policy: "Customer")]
+        [HttpPost("pay/deposit")]
+        public async Task<ActionResult> PayAuctionDeposit(DepositPaymentDto paymentDto)
+        {
+            //if (GetLoginAccountId() != paymentDto.CustomerId)
+            //{
+            //    return BadRequest(new ApiResponse(404));
+            //}
+            try
+            {
+                //Get depositAmountDto
+
+                DepositAmount depositAmount = _depositAmountService.GetDepositAmount(paymentDto.CustomerId, paymentDto.ReasId);
+
+                if (depositAmount == null)
+                {
+                    return BadRequest(new ApiResponse(404, "Customer has not registered to bid in this real estate"));
+                }
+
+                if (depositAmount.Status != (int)UserDepositEnum.Pending)
+                {
+                    return BadRequest(new ApiResponse(404, "Customer has already paid the deposit"));
+
+                }
+
+                //create transaction and transaction detail
+
+                if (paymentDto.Money != float.Parse(depositAmount.Amount))
+                {
+                    return BadRequest(new ApiResponse(404, "Amount of money is not matched"));
+                }
+
+                MoneyTransaction moneyTransaction = await _moneyTransactionService.CreateMoneyTransactionFromDepositPayment(paymentDto);
+
+                //update depositAmount status
+                DepositAmountDto depositAmountDto = await _depositAmountService.UpdateStatusToDeposited(paymentDto.CustomerId, paymentDto.ReasId, paymentDto.PaymentTime);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(404));
+            }
+
+            return Ok("Payment Success!");
         }
     }
 }

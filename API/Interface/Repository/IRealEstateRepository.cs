@@ -17,5 +17,6 @@ namespace API.Interface.Repository
         Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoing();
         Task<PageList<RealEstateDto>> SearchRealEstateByKey(SearchRealEstateParam searchRealEstateDto);
         Task<PageList<RealEstateDto>> GetAllRealEstateOnRealEstatePage();
+        RealEstate GetRealEstate(int id);
     }
 }
