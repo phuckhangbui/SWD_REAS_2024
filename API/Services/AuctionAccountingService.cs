@@ -1,9 +1,13 @@
 ﻿using API.DTOs;
 using API.Entity;
+using API.Exceptions;
+using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
+using API.Param;
 using API.ThirdServices;
 using AutoMapper;
+using System.Threading.Tasks;
 
 namespace API.Services
 {
@@ -84,6 +88,17 @@ namespace API.Services
 
 
             SendMailAuctionSuccess.SendMailWhenAuctionSuccess(accountWin.AccountEmail, realEstate.ReasName, realEstate.ReasAddress, DateOnly.FromDateTime(auctionAccounting.EstimatedPaymentDate), auctionAccounting.MaxAmount, auctionAccounting.DepositAmount);
+        }
+
+        public async Task<AuctionAccountingDto> GetAuctionAccounting(int auctionId)
+        {
+            var auctionAccouting = _auctionAccountingRepository.GetAuctionAccountingByAuctionId(auctionId);
+            if (auctionAccouting == null) 
+            {
+                throw new BaseNotFoundException($"AuctionAccounting with auction ID {auctionId} not found.");
+            }
+            
+            return _mapper.Map<AuctionAccountingDto>(auctionAccouting);
         }
     }
 }
