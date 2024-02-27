@@ -22,6 +22,7 @@
         public const string MSG18 = "MSG18";
         public const string MSG19 = "MSG19";
         public const string MSG20 = "MSG20";
+        public const string MSG21 = "MSG21";
 
 
         public string MessageCode { get; set; }
@@ -54,6 +55,7 @@
             MSG18 => "Create new rule successfully",
             MSG19 => "Your real estate has uploaded on website.",
             MSG20 => "The amount you entered to pay does not match the suggested amount.",
+            MSG21 => "Create new news successfully",
             _ => null
         };
     }
