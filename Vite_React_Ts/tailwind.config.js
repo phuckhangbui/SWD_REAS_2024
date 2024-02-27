@@ -23,6 +23,7 @@ module.exports = withMT({
         '86': '21.5rem',
         '30': '7.5rem',
         '69': '17.25rem',
+        '120': '30rem',
       }
     },
   },

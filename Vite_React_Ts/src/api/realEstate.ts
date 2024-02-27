@@ -49,3 +49,15 @@ export const searchRealEstate = async ({
     console.log("Error: " + error);
   }
 };
+
+export const getRealEstateById = async (id: number) => {
+  try {
+    const fetchData = await axios.get<realEstateDetail>(
+      `${baseUrl}/api/home/real_estate/detail/${id}`
+    );
+    const response = fetchData.data;
+    return response;
+  } catch (error) {
+    console.log("Error: " + error);
+  }
+};
