@@ -252,7 +252,7 @@ public class DataContext : DbContext
         modelBuilder.Entity<MoneyTransactionDetail>()
             .HasOne(mtd => mtd.MoneyTransaction)
             .WithOne(mt => mt.MoneyTransactionDetail)
-            .HasForeignKey<MoneyTransactionDetail>(mtd => mtd.MoneyTransactionDetailId)
+            .HasForeignKey<MoneyTransactionDetail>(mtd => mtd.MoneyTransactionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         //one money transaction detail has one auction
