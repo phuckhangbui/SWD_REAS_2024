@@ -22,6 +22,12 @@ namespace API.Helper
             CreateMap<RealEstatePhoto, RealEstatePhotoDto>();
             CreateMap<Auction, AuctionDto>()
                 .ForMember(dest => dest.AccountCreateName, opt => opt.MapFrom(src => src.AccountCreateName));
+            CreateMap<Entity.Task, TaskDto>();
+            CreateMap<MoneyTransaction, MoneyTransactionDto>();
+            CreateMap<MoneyTransactionDetail, MoneyTransactionDetailDto>();
+            CreateMap<DepositAmount, DepositAmountDto>();
+            CreateMap<AuctionAccounting, AuctionAccountingDto>();
+
         }
     }
 

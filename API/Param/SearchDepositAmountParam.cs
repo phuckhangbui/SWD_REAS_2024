@@ -6,7 +6,7 @@ namespace API.Param
     {
         public string AmountFrom { get; set; }
         public string AmountTo { get; set; }
-        public DateTime DateSignFrom { get; set; }
-        public DateTime DateSignTo { get; set; }
+        public DateTime DepositDateFrom { get; set; }
+        public DateTime DepositDateTo { get; set; }
     }
 }

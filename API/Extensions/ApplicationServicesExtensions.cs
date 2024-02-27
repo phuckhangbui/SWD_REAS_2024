@@ -8,7 +8,6 @@ using API.Repository;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
 
 namespace API.Extensions
 {
@@ -28,6 +27,8 @@ namespace API.Extensions
             services.AddScoped<IMoneyTransactionRepository, MoneyTransactionRepository>();
             services.AddScoped<IDepositAmountRepository, DepositAmountRepository>();
             services.AddScoped<ITypeReasRepository, TypeReasRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<IAuctionAccountingRepository, AuctionAccountingRepository>();
             services.AddScoped<IRealEstateService, RealEstateService>();
             services.AddScoped<IRuleService, RuleService>();
             services.AddScoped<IAccountService, AccountService>();
@@ -40,6 +41,11 @@ namespace API.Extensions
             services.AddScoped<IMemberRealEstateService, MemberRealEstateService>();
             services.AddScoped<IMemberRuleService, MemberRuleService>();
             services.AddScoped<IStaffRealEstateService, StaffRealEstateService>();
+            services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IMoneyTransactionService, MoneyTransactionService>();
+            services.AddScoped<IDepositAmountService, DepositAmountService>();
+
+            services.AddScoped<IAuctionAccountingService, AuctionAccountingService>();
 
             services.AddDbContext<DataContext>(opt =>
             {

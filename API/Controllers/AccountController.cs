@@ -20,7 +20,7 @@ namespace API.Controllers
         {
             try
             {
-                var account = await _accountService.LoginGoogleByMember(loginGoogleDto); 
+                var account = await _accountService.LoginGoogleByMember(loginGoogleDto);
                 return Ok(account);
             }
             catch (Exception ex)
@@ -34,9 +34,9 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> LoginAdminOrStaff(LoginDto loginDto)
         {
             var accountLogin = await _accountService.LoginByAdminOrStaff(loginDto);
-            if(accountLogin != null)
+            if (accountLogin != null)
             {
-                return accountLogin;
+                return Ok(accountLogin);
             }
             else
             {

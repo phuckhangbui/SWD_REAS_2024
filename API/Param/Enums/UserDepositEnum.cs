@@ -2,8 +2,9 @@
 {
     public enum UserDepositEnum
     {
-        Deposited = 0,
-        Waiting_for_refund = 1,
-        Refunded = 2,
+        Pending = 0,
+        Deposited = 1,
+        Waiting_for_refund = 2,
+        Refunded = 3,
     }
 }

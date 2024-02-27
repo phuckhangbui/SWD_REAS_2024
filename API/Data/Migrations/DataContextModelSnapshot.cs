@@ -73,9 +73,11 @@ namespace API.Data.Migrations
                     b.HasKey("AccountId");
 
                     b.HasIndex("MajorId")
+                        .IsUnique()
                         .HasFilter("[MajorId] IS NOT NULL");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleId")
+                        .IsUnique();
 
                     b.ToTable("Account");
                 });
@@ -111,7 +113,8 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountCreateId");
 
-                    b.HasIndex("ReasId");
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
                     b.ToTable("Auction");
                 });
@@ -138,27 +141,23 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AmountOwnerReceived")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<float>("AmountOwnerReceived")
+                        .HasColumnType("real");
 
                     b.Property<int>("AuctionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CommissionAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<float>("CommissionAmount")
+                        .HasColumnType("real");
 
-                    b.Property<string>("DepositAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<float>("DepositAmount")
+                        .HasColumnType("real");
 
                     b.Property<DateTime>("EstimatedPaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("MaxAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<float>("MaxAmount")
+                        .HasColumnType("real");
 
                     b.Property<int>("ReasId")
                         .HasColumnType("int");
@@ -169,9 +168,11 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountWinId");
 
-                    b.HasIndex("AuctionId");
+                    b.HasIndex("AuctionId")
+                        .IsUnique();
 
-                    b.HasIndex("ReasId");
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
                     b.ToTable("AuctionsAccounting");
                 });
@@ -191,7 +192,7 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateSign")
+                    b.Property<DateTime>("DepositDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ReasId")
@@ -207,9 +208,11 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountSignId");
 
-                    b.HasIndex("ReasId");
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
-                    b.HasIndex("RuleId");
+                    b.HasIndex("RuleId")
+                        .IsUnique();
 
                     b.ToTable("DepositAmount");
                 });
@@ -325,7 +328,8 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountSendId");
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("TypeId")
+                        .IsUnique();
 
                     b.ToTable("MoneyTransaction");
                 });
@@ -338,10 +342,12 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MoneyTransactionDetailId"));
 
-                    b.Property<int>("AccountReceiveId")
+                    b.Property<int?>("AccountReceiveId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<int>("AuctionId")
+                    b.Property<int?>("AuctionId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateExecution")
@@ -369,9 +375,14 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountReceiveId");
 
-                    b.HasIndex("AuctionId");
+                    b.HasIndex("AuctionId")
+                        .IsUnique();
 
-                    b.HasIndex("ReasId");
+                    b.HasIndex("MoneyTransactionId")
+                        .IsUnique();
+
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
                     b.ToTable("MoneyTransactionDetail");
                 });
@@ -412,6 +423,10 @@ namespace API.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NewsContent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewsSumary")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -458,6 +473,9 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ReasArea")
+                        .HasColumnType("int");
+
                     b.Property<string>("ReasDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -480,7 +498,8 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AccountOwnerId");
 
-                    b.HasIndex("Type_Reas");
+                    b.HasIndex("Type_Reas")
+                        .IsUnique();
 
                     b.ToTable("RealEstate");
                 });
@@ -522,7 +541,8 @@ namespace API.Data.Migrations
 
                     b.HasKey("ReasDetailId");
 
-                    b.HasIndex("ReasId");
+                    b.HasIndex("ReasId")
+                        .IsUnique();
 
                     b.ToTable("RealEstateDetail");
                 });
@@ -682,7 +702,7 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entity.Auction", b =>
                 {
-                    b.HasOne("API.Entity.Account", "AcountCreate")
+                    b.HasOne("API.Entity.Account", "AccountCreate")
                         .WithMany("Auctions")
                         .HasForeignKey("AccountCreateId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -695,7 +715,7 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("AcountCreate");
+                    b.Navigation("AccountCreate");
 
                     b.Navigation("RealEstate");
                 });
@@ -828,7 +848,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Entity.MoneyTransaction", "MoneyTransaction")
                         .WithOne("MoneyTransactionDetail")
-                        .HasForeignKey("API.Entity.MoneyTransactionDetail", "MoneyTransactionDetailId")
+                        .HasForeignKey("API.Entity.MoneyTransactionDetail", "MoneyTransactionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
