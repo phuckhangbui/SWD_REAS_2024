@@ -15,21 +15,21 @@ namespace API.Repository
     public class RealEstateRepository : BaseRepository<RealEstate>, IRealEstateRepository
     {
         private readonly DataContext _context;
-		private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public RealEstateRepository(DataContext context, IMapper mapper) : base(context)
         {
             _context = context;
-			_mapper = mapper;
+            _mapper = mapper;
         }
 
-		public async Task<bool> UpdateRealEstateStatusAsync(ReasStatusParam reasStatusDto)
-		{
-			var realEstate = await _context.RealEstate.Where(r => r.ReasId == reasStatusDto.Id).FirstOrDefaultAsync();
-			if (realEstate != null)
-			{
-				realEstate.ReasStatus = reasStatusDto.status;
-				realEstate.Message = reasStatusDto.statusMessage;
+        public async Task<bool> UpdateRealEstateStatusAsync(ReasStatusParam reasStatusDto)
+        {
+            var realEstate = await _context.RealEstate.Where(r => r.ReasId == reasStatusDto.Id).FirstOrDefaultAsync();
+            if (realEstate != null)
+            {
+                realEstate.ReasStatus = reasStatusDto.status;
+                realEstate.Message = reasStatusDto.statusMessage;
                 try
                 {
                     bool check = await UpdateAsync(realEstate);
@@ -38,14 +38,15 @@ namespace API.Repository
                     {
                         return false;
                     }
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     return false;
                 }
-			}
+            }
 
-			return false;
-		}
+            return false;
+        }
 
         public async Task<bool> CheckRealEstateExist(int reasId)
         {
@@ -57,7 +58,7 @@ namespace API.Repository
             var statusName = new GetStatusName();
             var page = new PaginationParams();
             var query = _context.RealEstate.Where(a => a.ReasStatus == (int)RealEstateEnum.In_progress).Select(x => new RealEstateDto
-			{
+            {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
@@ -72,7 +73,7 @@ namespace API.Repository
             query.AsNoTracking().ProjectTo<RealEstateDto>(_mapper.ConfigurationProvider),
             page.PageNumber,
             page.PageSize);
-        } 
+        }
 
         public async Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoing()
         {
@@ -107,7 +108,7 @@ namespace API.Repository
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
                 UriPhotoFirst = _context.RealEstatePhoto.Where(x => x.ReasId == x.ReasId).Select(x => x.ReasPhotoUrl).FirstOrDefault(),
-            ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
+                ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
                 DateEnd = x.DateEnd,
@@ -146,7 +147,8 @@ namespace API.Repository
                 string maxPriceStr = maxPrice.ToString();
                 query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{maxPriceStr}%"));
             }
-            var result = query.Select(x => new RealEstateDto { 
+            var result = query.Select(x => new RealEstateDto
+            {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
@@ -311,21 +313,26 @@ namespace API.Repository
                 query = query.Where(x => EF.Functions.Like(x.ReasPrice.Replace(",", ""), $"%{maxPriceStr}%"));
             }
             var result = query.Select(x => new RealEstateDto
-                {
-                    ReasId = x.ReasId,
-                    ReasName = x.ReasName,
-                    ReasPrice = x.ReasPrice,
-                    ReasArea = x.ReasArea,
-                    ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
-                    ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
-                    DateStart = x.DateStart,
-                    DateEnd = x.DateEnd,
-                }).ToList();
+            {
+                ReasId = x.ReasId,
+                ReasName = x.ReasName,
+                ReasPrice = x.ReasPrice,
+                ReasArea = x.ReasArea,
+                ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
+                ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
+                DateStart = x.DateStart,
+                DateEnd = x.DateEnd,
+            }).ToList();
             query = query.OrderByDescending(a => a.DateStart);
             return await PageList<RealEstateDto>.CreateAsync(
             query.AsNoTracking().ProjectTo<RealEstateDto>(_mapper.ConfigurationProvider),
             page.PageNumber,
             page.PageSize);
+        }
+
+        public RealEstate GetRealEstate(int id)
+        {
+            return _context.RealEstate.Find(id);
         }
     }
 }

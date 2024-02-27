@@ -1,7 +1,9 @@
 ﻿using API.DTOs;
 using API.Entity;
+using API.Enums;
 using API.Interface.Repository;
 using API.Interface.Service;
+using API.Param.Enums;
 using API.ThirdServices;
 using AutoMapper;
 
@@ -14,13 +16,15 @@ namespace API.Services
         public readonly IAccountRepository _accountRepository;
         private readonly IRealEstateDetailRepository _realEstateDetailRepository;
         private readonly IDepositAmountRepository _depositAmountRepository;
+        private readonly IRealEstateRepository _realEstateRepository;
+
         private readonly IMapper _mapper;
 
-        readonly float DEPOSIT_PERCENT = 0.1f;
+        readonly float DEPOSIT_PERCENT = 0.05f;
         readonly float COMMISSION_PERCENT = 0.02f;
         readonly int DATE_UNTIL_PAY = 3;
 
-        public AuctionAccountingService(IAuctionAccountingRepository auctionAccountingRepository, IAuctionRepository auctionRepository, IAccountRepository accountRepository, IRealEstateDetailRepository realEstateDetailRepository, IDepositAmountRepository depositAmountRepository, IMapper mapper)
+        public AuctionAccountingService(IAuctionAccountingRepository auctionAccountingRepository, IAuctionRepository auctionRepository, IAccountRepository accountRepository, IRealEstateDetailRepository realEstateDetailRepository, IDepositAmountRepository depositAmountRepository, IMapper mapper, IRealEstateRepository realEstateRepository)
         {
             _auctionAccountingRepository = auctionAccountingRepository;
             _auctionRepository = auctionRepository;
@@ -28,6 +32,7 @@ namespace API.Services
             _realEstateDetailRepository = realEstateDetailRepository;
             _depositAmountRepository = depositAmountRepository;
             _mapper = mapper;
+            _realEstateRepository = realEstateRepository;
         }
 
         public async System.Threading.Tasks.Task<AuctionAccountingDto> UpdateAuctionAccounting(AuctionDetailDto auctionDetailDto)
@@ -41,11 +46,16 @@ namespace API.Services
                 list.Add(auctionAccountingOld);
                 await _auctionAccountingRepository.DeleteAsync(list);
             }
-
-            //create new auction accounting base on input
             AuctionAccounting auctionAccounting = new AuctionAccounting();
             Auction auction = _auctionRepository.GetAuction(auctionDetailDto.AuctionId);
             var realEstate = await _realEstateDetailRepository.GetRealEstateDetail(auction.ReasId);
+
+            if (realEstate.ReasStatus != (int)RealEstateStatus.Auctioning)
+            {
+                return null;
+            }
+
+            //create new auction accounting base on input
             Account accountWin = await _accountRepository.GetAccountByAccountIdAsync(auctionDetailDto.AccountWinId);
             DepositAmount depositAmount = _depositAmountRepository.GetDepositAmount(auctionDetailDto.AccountWinId, auction.ReasId);
 
@@ -58,18 +68,11 @@ namespace API.Services
             auctionAccounting.EstimatedPaymentDate = DateTime.Now.AddDays(DATE_UNTIL_PAY);
 
             auctionAccounting.MaxAmount = auctionDetailDto.WinAmount;
-            //auctionAccounting.DepositAmount = float.Parse(depositAmount.Amount);
+            auctionAccounting.DepositAmount = float.Parse(depositAmount.Amount);
             auctionAccounting.CommissionAmount = auctionDetailDto.WinAmount * COMMISSION_PERCENT;
             auctionAccounting.AmountOwnerReceived = auctionDetailDto.WinAmount - auctionAccounting.CommissionAmount;
 
-            try
-            {
-                await _auctionAccountingRepository.CreateAsync(auctionAccounting);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            await _auctionAccountingRepository.CreateAsync(auctionAccounting);
 
             AuctionAccountingDto auctionAccountingDto = _mapper.Map<AuctionAccounting, AuctionAccountingDto>(auctionAccounting);
             return auctionAccountingDto;
@@ -84,6 +87,40 @@ namespace API.Services
 
 
             SendMailAuctionSuccess.SendMailWhenAuctionSuccess(accountWin.AccountEmail, realEstate.ReasName, realEstate.ReasAddress, DateOnly.FromDateTime(auctionAccounting.EstimatedPaymentDate), auctionAccounting.MaxAmount, auctionAccounting.DepositAmount);
+        }
+
+        public async Task<DepositAmountDto> CreateAuctionAccounting(int customerId, int reasId)
+        {
+            DepositAmountDto depositAmountDto = new DepositAmountDto();
+            RealEstate realEstate = _realEstateRepository.GetRealEstate(reasId);
+
+            if (realEstate.ReasStatus != (int)RealEstateStatus.Selling)
+            {
+                return null;
+            }
+
+
+            DepositAmount depositAmount = _depositAmountRepository.GetDepositAmount(customerId, reasId);
+            if (depositAmount != null)
+            {
+                ICollection<DepositAmount> list = new List<DepositAmount>();
+                list.Add(depositAmount);
+                await _depositAmountRepository.DeleteAsync(list);
+            }
+
+            depositAmount = new DepositAmount();
+            depositAmount.RuleId = 1; //fix later if needed
+            depositAmount.AccountSignId = customerId;
+            depositAmount.ReasId = reasId;
+            depositAmount.Amount = (float.Parse(realEstate.ReasPrice) * DEPOSIT_PERCENT).ToString();
+            depositAmount.Status = (int)UserDepositEnum.Pending;
+
+
+            await _depositAmountRepository.CreateAsync(depositAmount);
+
+            depositAmountDto = _mapper.Map<DepositAmount, DepositAmountDto>(depositAmount);
+
+            return depositAmountDto;
         }
     }
 }

@@ -82,7 +82,7 @@ namespace API.Controllers
             return Ok();
         }
 
-        //[Authorize(policy: "Customer")]
+        [Authorize(policy: "Customer")]
         [HttpPost("success")]
         public async Task<ActionResult<AuctionAccountingDto>> AuctionSuccess(AuctionDetailDto auctionDetailDto)
         {
@@ -94,16 +94,18 @@ namespace API.Controllers
 
                 if (auctionAccountingDto == null)
                 {
-                    return BadRequest(new ApiResponse(404, "Update Auction Accounting fail"));
+                    return BadRequest(new ApiResponse(404, "Real estate is not auctioning"));
                 }
 
                 //update auction status
                 int statusFinish = (int)AuctionEnum.Finish;
                 bool result = await _auctionService.ToggleAuctionStatus(auctionDetailDto.AuctionId.ToString(), statusFinish.ToString());
 
-                //send email
-                //await _auctionAccountingService.SendWinnerEmail(auctionAccountingDto);
-
+                if (result)
+                {
+                    //send email
+                    await _auctionAccountingService.SendWinnerEmail(auctionAccountingDto);
+                }
             }
             catch (Exception ex)
             {
@@ -112,6 +114,47 @@ namespace API.Controllers
             //return calculate result in auction accounting
 
             return Ok(auctionAccountingDto);
+        }
+
+        [Authorize(policy: "Customer")]
+        [HttpGet("register")]
+        public async Task<ActionResult<DepositAmountDto>> RegisterAuction([FromQuery] string customerId, string reasId)
+        {
+            if (GetLoginAccountId() != int.Parse(customerId))
+            {
+                return BadRequest(new ApiResponse(404));
+            }
+            DepositAmountDto depositAmountDto = new DepositAmountDto();
+
+            try
+            {
+                depositAmountDto = await _auctionAccountingService.CreateAuctionAccounting(int.Parse(customerId), int.Parse(reasId));
+                if (depositAmountDto == null)
+                {
+                    return BadRequest(new ApiResponse(404, "Real estate is not selling"));
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(404));
+            }
+
+
+            return Ok(depositAmountDto);
+        }
+
+        [HttpPost("pay/deposit")]
+        public async Task<ActionResult> PayAuctionDeposit(PaymentDto paymentDto)
+        {
+            //update depositAmount
+
+
+            //create transaction and transaction detail
+
+
+
+
+            return Ok();
         }
 
     }
