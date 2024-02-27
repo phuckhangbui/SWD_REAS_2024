@@ -3,6 +3,7 @@ using API.Entity;
 using API.Interface.Repository;
 using API.Interface.Service;
 using API.ThirdServices;
+using AutoMapper;
 
 namespace API.Services
 {
@@ -12,20 +13,24 @@ namespace API.Services
         public readonly IAuctionRepository _auctionRepository;
         public readonly IAccountRepository _accountRepository;
         private readonly IRealEstateDetailRepository _realEstateDetailRepository;
+        private readonly IDepositAmountRepository _depositAmountRepository;
+        private readonly IMapper _mapper;
 
         readonly float DEPOSIT_PERCENT = 0.1f;
         readonly float COMMISSION_PERCENT = 0.02f;
         readonly int DATE_UNTIL_PAY = 3;
 
-        public AuctionAccountingService(IAuctionAccountingRepository auctionAccountingRepository, IAuctionRepository auctionRepository, IAccountRepository accountRepository, IRealEstateDetailRepository realEstateDetailRepository)
+        public AuctionAccountingService(IAuctionAccountingRepository auctionAccountingRepository, IAuctionRepository auctionRepository, IAccountRepository accountRepository, IRealEstateDetailRepository realEstateDetailRepository, IDepositAmountRepository depositAmountRepository, IMapper mapper)
         {
             _auctionAccountingRepository = auctionAccountingRepository;
             _auctionRepository = auctionRepository;
             _accountRepository = accountRepository;
             _realEstateDetailRepository = realEstateDetailRepository;
+            _depositAmountRepository = depositAmountRepository;
+            _mapper = mapper;
         }
 
-        public async System.Threading.Tasks.Task<AuctionAccounting> UpdateAuctionAccounting(AuctionDetailDto auctionDetailDto)
+        public async System.Threading.Tasks.Task<AuctionAccountingDto> UpdateAuctionAccounting(AuctionDetailDto auctionDetailDto)
         {
             //get auction accounting
             AuctionAccounting auctionAccountingOld = _auctionAccountingRepository.GetAuctionAccountingByAuctionId(auctionDetailDto.AuctionId);
@@ -42,6 +47,7 @@ namespace API.Services
             Auction auction = _auctionRepository.GetAuction(auctionDetailDto.AuctionId);
             var realEstate = await _realEstateDetailRepository.GetRealEstateDetail(auction.ReasId);
             Account accountWin = await _accountRepository.GetAccountByAccountIdAsync(auctionDetailDto.AccountWinId);
+            DepositAmount depositAmount = _depositAmountRepository.GetDepositAmount(auctionDetailDto.AccountWinId, auction.ReasId);
 
             auctionAccounting.AuctionId = auctionDetailDto.AuctionId;
             auctionAccounting.ReasId = auction.ReasId;
@@ -52,7 +58,7 @@ namespace API.Services
             auctionAccounting.EstimatedPaymentDate = DateTime.Now.AddDays(DATE_UNTIL_PAY);
 
             auctionAccounting.MaxAmount = auctionDetailDto.WinAmount;
-            auctionAccounting.DepositAmount = float.Parse(realEstate.ReasPrice) * DEPOSIT_PERCENT;
+            //auctionAccounting.DepositAmount = float.Parse(depositAmount.Amount);
             auctionAccounting.CommissionAmount = auctionDetailDto.WinAmount * COMMISSION_PERCENT;
             auctionAccounting.AmountOwnerReceived = auctionDetailDto.WinAmount - auctionAccounting.CommissionAmount;
 
@@ -65,11 +71,12 @@ namespace API.Services
                 return null;
             }
 
-            return auctionAccounting;
+            AuctionAccountingDto auctionAccountingDto = _mapper.Map<AuctionAccounting, AuctionAccountingDto>(auctionAccounting);
+            return auctionAccountingDto;
 
         }
 
-        public async System.Threading.Tasks.Task SendWinnerEmail(AuctionAccounting auctionAccounting)
+        public async System.Threading.Tasks.Task SendWinnerEmail(AuctionAccountingDto auctionAccounting)
         {
             Auction auction = _auctionRepository.GetAuction(auctionAccounting.AuctionId);
             var realEstate = await _realEstateDetailRepository.GetRealEstateDetail(auction.ReasId);

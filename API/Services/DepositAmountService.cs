@@ -19,5 +19,7 @@ namespace API.Services
         {
             return await _depositAmountRepository.GetDepositAmountsAsync(depositAmountParam);
         }
+
+
     }
 }

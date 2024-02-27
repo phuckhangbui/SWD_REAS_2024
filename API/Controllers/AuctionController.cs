@@ -1,5 +1,4 @@
 using API.DTOs;
-using API.Entity;
 using API.Errors;
 using API.Extension;
 using API.Helper;
@@ -85,15 +84,15 @@ namespace API.Controllers
 
         //[Authorize(policy: "Customer")]
         [HttpPost("success")]
-        public async Task<ActionResult<ConfirmAuctionSucessDto>> AuctionSuccess(AuctionDetailDto auctionDetailDto)
+        public async Task<ActionResult<AuctionAccountingDto>> AuctionSuccess(AuctionDetailDto auctionDetailDto)
         {
-            ConfirmAuctionSucessDto confirmAuctionSucessDto = new ConfirmAuctionSucessDto();
+            AuctionAccountingDto auctionAccountingDto = new AuctionAccountingDto();
             try
             {
                 //update/add auction accounting
-                AuctionAccounting auctionAccounting = await _auctionAccountingService.UpdateAuctionAccounting(auctionDetailDto);
+                auctionAccountingDto = await _auctionAccountingService.UpdateAuctionAccounting(auctionDetailDto);
 
-                if (auctionAccounting == null)
+                if (auctionAccountingDto == null)
                 {
                     return BadRequest(new ApiResponse(404, "Update Auction Accounting fail"));
                 }
@@ -103,7 +102,7 @@ namespace API.Controllers
                 bool result = await _auctionService.ToggleAuctionStatus(auctionDetailDto.AuctionId.ToString(), statusFinish.ToString());
 
                 //send email
-                await _auctionAccountingService.SendWinnerEmail(auctionAccounting);
+                //await _auctionAccountingService.SendWinnerEmail(auctionAccountingDto);
 
             }
             catch (Exception ex)
@@ -112,7 +111,7 @@ namespace API.Controllers
             }
             //return calculate result in auction accounting
 
-            return Ok(confirmAuctionSucessDto);
+            return Ok(auctionAccountingDto);
         }
 
     }

@@ -104,5 +104,8 @@ namespace API.Repository
             paginationParams.PageNumber,
             paginationParams.PageSize);
         }
+
+
+        public DepositAmount GetDepositAmount(int accountSignId, int reasId) => _context.DepositAmount.FirstOrDefault(d => d.AccountSignId == accountSignId && d.ReasId == reasId);
     }
 }
