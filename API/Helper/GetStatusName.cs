@@ -6,18 +6,9 @@ namespace API.Helper
     {
         public string GetRealEstateStatusName(int status)
         {
-            int getStatus = 0;
-            RealEstateEnum realEstateStatus = (RealEstateEnum)getStatus;
-
-            if (getStatus == status)
-            {
+            RealEstateEnum realEstateStatus = (RealEstateEnum)status;
                 string statusName = realEstateStatus.ToString();
                 return statusName;
-            }
-            else
-            {
-                return null;
-            }
         }
 
         public string GetDepositAmountStatusName(int status)
