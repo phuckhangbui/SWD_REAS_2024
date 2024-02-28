@@ -27,7 +27,7 @@ const NewsPage = () => {
   const handleSearchBarChange = async (value: string) => {
     setSearchParams((prevState) => ({
       ...prevState!,
-      keyWork: value,
+      keyWord: value,
     }));
   };
 
@@ -65,7 +65,7 @@ const NewsPage = () => {
                 </div>
                 <SearchBar
                   placeHolder="Search for the news you want to read"
-                  inputName="keyWork"
+                  inputName="keyWord"
                   nameValue={searchParams?.keyWord || ""}
                   onSearchChange={handleSearchBarChange}
                 />
