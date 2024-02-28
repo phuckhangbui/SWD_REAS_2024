@@ -10,4 +10,3 @@ interface realEstate {
   dateEnd: Date;
 }
 
-export default realEstate;

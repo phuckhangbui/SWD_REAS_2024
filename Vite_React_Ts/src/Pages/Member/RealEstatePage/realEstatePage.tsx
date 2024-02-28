@@ -1,23 +1,12 @@
 import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar/searchBar.tsx";
 import RealEstateList from "../../../components/RealEstate/realEstateList.tsx";
-import realEstate from "../../../interface/realEstate.ts";
 import { searchRealEstate } from "../../../api/realEstate.ts";
-import { useForm, SubmitHandler } from "react-hook-form";
 
 const priceList = [
   5000, 6000, 7000, 8000, 10000, 11000, 12000, 15000, 20000, 50000, 100000,
   200000, 500000, 600000, 1000000,
 ];
-
-interface searchProps {
-  pageNumber: number;
-  pageSize: number;
-  reasName: string;
-  reasPriceFrom: string;
-  reasPriceTo: string;
-  reasStatus: number;
-}
 
 const RealEstatePage = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -28,7 +17,7 @@ const RealEstatePage = () => {
   const [realEstateList, setRealEstateList] = useState<
     realEstate[] | undefined
   >([]);
-  const [searchParams, setSearchParams] = useState<searchProps | null>({
+  const [searchParams, setSearchParams] = useState<searchRealEstate | null>({
     pageNumber: 0,
     pageSize: 0,
     reasName: "",
@@ -73,7 +62,7 @@ const RealEstatePage = () => {
     );
     setMaxPriceList(currentMaxPriceList);
 
-    setSearchParams((prevState: searchProps | null) => ({
+    setSearchParams((prevState: searchRealEstate | null) => ({
       ...prevState!,
       reasPriceFrom: selectedPrice.toString(),
     }));
@@ -89,7 +78,7 @@ const RealEstatePage = () => {
     );
     setMinPriceList(currentMinPriceList);
 
-    setSearchParams((prevState: searchProps | null) => ({
+    setSearchParams((prevState: searchRealEstate | null) => ({
       ...prevState!,
       reasPriceTo: selectedPrice.toString(),
     }));

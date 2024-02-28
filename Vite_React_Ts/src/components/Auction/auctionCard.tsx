@@ -1,4 +1,4 @@
-import realEstate from "../../interface/realEstate";
+import realEstate from "../../interface/RealEstate/realEstate";
 
 interface RealEstateProps {
   realEstate: realEstate;
