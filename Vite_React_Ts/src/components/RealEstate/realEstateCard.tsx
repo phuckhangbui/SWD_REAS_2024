@@ -48,7 +48,7 @@ const RealEstateCard = ({ realEstate }: RealEstateProps) => {
 
         <div className="flex xl:justify-between sm:justify-between xl:items-center sm:items-center md:items-start xl:flex-row sm:flex-row md:flex-col text-gray-700">
           <div className="text-xl font-bold tracking-tight text-gray-900 ">
-            ${estate?.reasPrice}
+            {estate?.reasPrice},000 VND
           </div>
           <div className=" tracking-tight">
             Due:{" "}

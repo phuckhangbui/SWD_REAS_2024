@@ -31,3 +31,14 @@ export const searchNews = async ({
     console.log("Error: " + error);
   }
 };
+export const getNewsById = async (id: number) => {
+  try {
+    const fetchData = await axios.get<newsDetail>(
+      `${baseUrl}/api/home/news/detail/${id}`
+    );
+    const response = fetchData.data;
+    return response;
+  } catch (error) {
+    console.log("Error: " + error);
+  }
+};
