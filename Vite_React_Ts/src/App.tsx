@@ -17,6 +17,9 @@ import NewsPage from "./pages/Member/NewsPage/newsPage";
 import SellPage from "./pages/Member/SellPage/sellPage";
 
 function App() {
+
+  
+
   return (
     <div className="App">
       <Router>

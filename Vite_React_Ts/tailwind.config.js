@@ -16,7 +16,15 @@ module.exports = withMT({
       colors: {
         mainBlue: "#2482c2",
         darkerMainBlue: "#2075ae",
+        secondaryYellow: '#fda720'
       },
+      spacing: {
+        '17': '4.25rem',
+        '86': '21.5rem',
+        '30': '7.5rem',
+        '69': '17.25rem',
+        '120': '30rem',
+      }
     },
   },
   plugins: [require("@tailwindcss/line-clamp")],

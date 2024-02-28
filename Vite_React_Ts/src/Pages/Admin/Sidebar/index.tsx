@@ -33,16 +33,16 @@ function getItem(
 const items: MenuItem[] = [
   getItem("Dashboard", "1", <PieChartOutlined />),
   getItem("Auction", "sub1", <DesktopOutlined />, [
-    getItem("Ongoing Auctions", "2"),
-    getItem("Completed Auctions", "3"),
+    getItem("Ongoing", "2"),
+    getItem("Completed", "3"),
   ]),
   getItem("User", "sub2", <UserOutlined />, [
     getItem("Staffs", "4"),
     getItem("Members", "5"),
   ]),
   getItem("Real Estate", "sub3", <TeamOutlined />, [
-    getItem("Confirmed", "6"),
-    getItem("Pending Confirmation", "7"),
+    getItem("All", "6"),
+    getItem("Pending", "7"),
   ]),
   getItem("Reporting and Statistics", "8", <FileOutlined />),
   getItem("System setting", "9", <FileOutlined />),
@@ -74,7 +74,7 @@ const Sidebar: React.FC = () => {
         navigate("/admin/user/member");
         break;
       case "6":
-        navigate("/admin/real-estate/confirmed");
+        navigate("/admin/real-estate/all");
         break;
       case "7":
         navigate("/admin/real-estate/pending");
