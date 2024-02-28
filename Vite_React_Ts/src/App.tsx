@@ -23,7 +23,7 @@ import NewsPage from "./pages/Member/NewsPage/newsPage";
 import SellPage from "./pages/Member/SellPage/sellPage";
 import { useContext } from "react";
 import { UserContext } from "./context/userContext";
-import { Redirect } from "react-router-dom";
+// import { Redirect } from "react-router-dom";
 
 // function PrivateRoute({ element: Component, ...rest }) {
 //   const { user } = useContext(UserContext);
@@ -54,7 +54,7 @@ function App() {
             <Route path="/auction" element={<AuctionPage />} />
             <Route path="/help" element={<HelpPage />} />
             <Route path="/news" element={<NewsPage />} />
-            <PrivateRoute path="/sell" element={<SellPage />} role={3} />
+            {/* <PrivateRoute path="/sell" element={<SellPage />} role={3} /> */}
             {/* {user && user.roleId === 3 && (
               <Route path="/sell" element={<SellPage />} />
             )} */}
