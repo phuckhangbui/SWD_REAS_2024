@@ -160,7 +160,7 @@ const RealEstateDetailModal = ({
                 </div>
                 <div>
                   <div className="text-xl font-bold ">
-                    {realEstateDetail?.reasPrice}
+                    {realEstateDetail?.reasPrice},000 VND
                   </div>
                   <div className="text-xs text-gray-700">Starting Price</div>
                 </div>

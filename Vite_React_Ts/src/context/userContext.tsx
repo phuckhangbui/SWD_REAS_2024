@@ -8,12 +8,14 @@ interface UserContextType {
   user: loginUser | undefined;
   login: (user: loginUser, token: string) => void;
   logout: () => void;
+  isAuth: () => boolean;
 }
 
 export const UserContext = createContext<UserContextType>({
   user: undefined,
   login: () => {},
   logout: () => {},
+  isAuth: () => false,
 });
 
 const UserProvider = ({ children }: UserProviderProps) => {
@@ -42,8 +44,17 @@ const UserProvider = ({ children }: UserProviderProps) => {
     localStorage.removeItem("token");
   };
 
+  const isAuth = () => {
+    const storageUser = localStorage.getItem("user");
+    if (storageUser && storageUser !== undefined) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, login, logout, isAuth }}>
       {children}
     </UserContext.Provider>
   );

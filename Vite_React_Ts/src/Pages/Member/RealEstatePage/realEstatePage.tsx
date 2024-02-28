@@ -23,7 +23,7 @@ const RealEstatePage = () => {
     reasName: "",
     reasPriceFrom: "",
     reasPriceTo: "",
-    reasStatus: 0,
+    reasStatus: -1,
   });
 
   useEffect(() => {
@@ -84,6 +84,14 @@ const RealEstatePage = () => {
     }));
   };
 
+  const handleChangeType = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedStatus = parseInt(e.target.value);
+    setSearchParams((prevState: searchRealEstate | null) => ({
+      ...prevState!,
+      reasStatus: selectedStatus,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -130,8 +138,9 @@ const RealEstatePage = () => {
                     <select
                       id="status"
                       className=" text-gray-900 block py-1 pl-3 pr-5 w-36 text-sm border-2 border-gray-200 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 rounded-l-lg"
+                      onChange={handleChangeType}
                     >
-                      <option defaultValue="-1">All</option>
+                      <option value="-1">All</option>
                       <option value="2">Available</option>
                       <option value="5">Sold</option>
                       <option value="4">Auctioning</option>
