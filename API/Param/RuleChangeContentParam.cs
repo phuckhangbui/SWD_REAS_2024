@@ -1,0 +1,9 @@
+﻿namespace API.Param
+{
+    public class RuleChangeContentParam
+    {
+        public int idRule { get; set; }
+        public string content { get; set; }
+        public DateTime DateUpdate { get; set; }
+    }
+}

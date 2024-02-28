@@ -1,85 +1,47 @@
 ﻿using API.DTOs;
-using API.Entity.Identity;
 using API.Errors;
-using API.Interfaces;
-using AutoMapper;
-
-using Microsoft.AspNetCore.Identity;
+using API.Interface.Service;
+using API.Param;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly ITokenService _tokenService;
-        private readonly IMapper _mapper;
-
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
-        ITokenService tokenService, IMapper mapper)
+        private readonly IAccountService _accountService;
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager; //get user from db
-            _signInManager = signInManager; //check user password
-            _tokenService = tokenService;
-            _mapper = mapper;
+            _accountService = accountService;
         }
 
-        [HttpGet("emailexists")]
-        public async Task<ActionResult<bool>> CheckEmailExistAsync([FromQuery] string email)
+        [HttpPost("login/google")]
+        public async Task<ActionResult<UserDto>> LoginGoogle([FromBody] LoginGoogleParam loginGoogleDto)
         {
-            return await _userManager.FindByEmailAsync(email) != null;
+            try
+            {
+                var account = await _accountService.LoginGoogleByMember(loginGoogleDto);
+                return Ok(account);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiException(400));
+
+            }
         }
 
-
-        [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+        [HttpPost("login/admin")]
+        public async Task<ActionResult<UserDto>> LoginAdminOrStaff(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
-
-            if (user == null)
+            var accountLogin = await _accountService.LoginByAdminOrStaff(loginDto);
+            if (accountLogin != null)
+            {
+                return Ok(accountLogin);
+            }
+            else
             {
                 return Unauthorized(new ApiResponse(401));
             }
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-
-            if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
-
-            return new UserDto
-            {
-                Email = user.Email,
-                Token = _tokenService.CreateToken(user),
-                DisplayName = user.DisplayName
-            };
-        }
-
-        [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
-        {
-            if (CheckEmailExistAsync(registerDto.Email).Result.Value)
-            {
-                return new BadRequestObjectResult(new ApiValidationErrorResponse
-                { Errors = new[] { "Email address is in use" } });
-            }
-
-            var user = new AppUser
-            {
-                DisplayName = registerDto.DisplayName,
-                Email = registerDto.Email,
-                UserName = registerDto.Email,
-            };
-
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-
-            if (!result.Succeeded) return BadRequest(new ApiResponse(400));
-
-            return new UserDto
-            {
-                Email = user.Email,
-                DisplayName = user.DisplayName,
-                Token = _tokenService.CreateToken(user)
-            };
         }
     }
 }
