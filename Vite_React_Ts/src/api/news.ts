@@ -23,7 +23,7 @@ export const searchNews = async ({
     };
     const fetchData = await axios.post<news[]>(
       `${baseUrl}/api/home/news/search`,
-      { params: param }
+      param
     );
     const response = fetchData.data;
     return response;

@@ -78,10 +78,10 @@ const NewsPage = () => {
         <div className="container w-full mx-auto">
           <div className="text-center">
             <div className="text-gray-900  text-4xl font-bold">
-              Explore Our Real Estate Options
+              What's New Today
             </div>
             <div className="mt-2">
-              Take a look at our various options and find your forever home
+              See the latest news about the current real estates market
             </div>
           </div>
           {newsList !== null ? (

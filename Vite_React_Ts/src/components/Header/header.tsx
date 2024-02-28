@@ -8,7 +8,6 @@ const Header = () => {
   const currentUrl = useLocation();
   const [showModal, setShowModal] = useState(false);
   const { user, logout } = useContext(UserContext);
-  console.log(user);
 
   const getActiveLink = (url: string) => {
     return `${
