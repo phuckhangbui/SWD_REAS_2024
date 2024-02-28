@@ -1,8 +1,6 @@
 import RealEstateList from "../../../components/RealEstate/realEstateList";
-import realEstate from "../../../interface/realEstate";
 
 import NewsList from "../../../components/News/newsList.tsx";
-import news from "../../../interface/news.ts";
 import AuctionList from "../../../components/Auction/auctionList.tsx";
 import Banner from "../../../components/Banner/banner.tsx";
 import { useEffect, useState } from "react";
@@ -10,9 +8,7 @@ import { getRealEstateHome } from "../../../api/realEstate.ts";
 import { getNewsHome } from "../../../api/news.ts";
 
 const HomePage = () => {
-  const [realEstateList, setRealEstateList] = useState<
-    realEstate[] | undefined
-  >([]);
+  const [realEstateList, setRealEstateList] = useState<realEstate[] | undefined>([]);
   const [newsList, setNewsList] = useState<news[] | undefined>([]);
 
   useEffect(() => {
@@ -48,7 +44,6 @@ const HomePage = () => {
               See the latest news about the current real estates market
             </div>
           </div>
-
           <NewsList newsList={newsList} />
         </div>
       </div>

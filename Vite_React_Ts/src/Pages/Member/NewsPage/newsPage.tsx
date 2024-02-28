@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import NewsList from "../../../components/News/newsList";
 import SearchBar from "../../../components/SearchBar/searchBar";
-import news from "../../../interface/news";
 import { searchNews } from "../../../api/news";
 
 const NewsPage = () => {
   const [newsList, setNewsList] = useState<news[] | undefined>([]);
+  const [searchParams, setSearchParams] = useState<searchNews | null>({
+    pageNumber: 0,
+    pageSize: 0,
+    keyWord: "",
+  });
   useEffect(() => {
     try {
       const fetchNews = async () => {
-        const response = await searchNews(1, 1, "");
-        setNewsList(response);
+        if (searchParams) {
+          const response = await searchNews(searchParams);
+          setNewsList(response);
+        }
       };
       fetchNews();
     } catch (error) {
@@ -18,10 +24,33 @@ const NewsPage = () => {
     }
   }, []);
 
+  const handleSearchBarChange = async (value: string) => {
+    setSearchParams((prevState) => ({
+      ...prevState!,
+      keyWork: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const fetchRealEstates = async () => {
+        if (searchParams) {
+          const response = await searchNews(searchParams);
+          setNewsList(response);
+        }
+      };
+      fetchRealEstates();
+    } catch (error) {
+      console.log(error);
+    }
+    // console.log(searchParams);
+  };
+
   return (
     <>
       <div className="pt-20">
-        <form action="">
+        <form action="" onSubmit={handleSubmit}>
           <div className="w-full relative">
             <img
               src="../../public/Search-bar-bg.jpg"
@@ -34,7 +63,12 @@ const NewsPage = () => {
                   Find. <span className="text-mainBlue">Auction.</span> Deposit.{" "}
                   <span className="text-secondaryYellow">Own.</span>
                 </div>
-                <SearchBar placeHolder="Search for the news you want to read" />
+                <SearchBar
+                  placeHolder="Search for the news you want to read"
+                  inputName="keyWork"
+                  nameValue={searchParams?.keyWord || ""}
+                  onSearchChange={handleSearchBarChange}
+                />
               </div>
             </div>
           </div>
@@ -44,10 +78,10 @@ const NewsPage = () => {
         <div className="container w-full mx-auto">
           <div className="text-center">
             <div className="text-gray-900  text-4xl font-bold">
-              Explore Our Real Estate Options
+              What's New Today
             </div>
             <div className="mt-2">
-              Take a look at our various options and find your forever home
+              See the latest news about the current real estates market
             </div>
           </div>
           {newsList !== null ? (

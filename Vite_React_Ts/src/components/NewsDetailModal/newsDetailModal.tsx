@@ -1,9 +1,12 @@
+import { useState } from "react";
+
 interface NewsDetailModalProps {
   newsId: number;
   closeModal: () => void;
 }
 
 const NewsDetailModal = ({ closeModal, newsId }: NewsDetailModalProps) => {
+  // const [newsDetail, setNewsDetail] = useState<news>()
   return (
     <div className="relative w-full max-w-7xl max-h-full ">
       <div className="relative bg-white rounded-lg shadow md:px-10 md:pb-5 sm:px-0 sm:pb-0 ">

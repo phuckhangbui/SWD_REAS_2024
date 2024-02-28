@@ -1,15 +1,5 @@
 import axios from "axios";
-import realEstate from "../interface/realEstate";
 const baseUrl = process.env.REACT_APP_BACK_END_URL;
-
-interface searchProps {
-  pageNumber: number;
-  pageSize: number;
-  reasName: string;
-  reasPriceFrom: string;
-  reasPriceTo: string;
-  reasStatus: number;
-}
 
 export const getRealEstateHome = async () => {
   try {
@@ -29,7 +19,7 @@ export const searchRealEstate = async ({
   reasPriceFrom,
   reasPriceTo,
   reasStatus,
-}: searchProps) => {
+}: searchRealEstate) => {
   try {
     const param = {
       pageNumber,

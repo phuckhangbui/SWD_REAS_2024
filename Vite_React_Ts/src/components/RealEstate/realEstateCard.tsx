@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
-import realEstate from "../../interface/realEstate";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 interface RealEstateProps {
   realEstate: realEstate;
 }
-
 
 const RealEstateCard = ({ realEstate }: RealEstateProps) => {
   const [estate, setEstate] = useState<realEstate | undefined>(realEstate);
@@ -15,14 +12,13 @@ const RealEstateCard = ({ realEstate }: RealEstateProps) => {
     if (realEstate?.dateEnd) {
       const dateObject = new Date(realEstate.dateEnd);
       const formattedDate = dateObject
-        .toDateString().split(" ").slice(1).join(" ")
+        .toDateString()
+        .split(" ")
+        .slice(1)
+        .join(" ");
       setFormattedDateEnd(formattedDate);
-      console.log(formattedDate);
     }
   }, []);
-  // useEffect(() => {
-  //   console.log(realEstate);
-  // },[realEstate])
   return (
     <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow mx-auto sm:my-2 md:my-0">
       <div className="">

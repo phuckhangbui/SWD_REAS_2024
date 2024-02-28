@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import news from "../../interface/news";
 import NewsCard from "./newsCard";
 import NewsDetailModal from "../NewsDetailModal/newsDetailModal";
 
@@ -52,8 +51,8 @@ const NewsList = ({ newsList }: NewsListProp) => {
       <div>
         <div className="mt-4 grid lg:grid-cols-2 md:grid-cols-2 md:gap-3 sm:grid-cols-1">
           {news &&
-            news.map((news) => (
-              <div key={news.id} onClick={() => toggleModal(news.id)}>
+            news.slice(0, 4).map((news) => (
+              <div key={news.newsId} onClick={() => toggleModal(news.newsId)}>
                 <NewsCard news={news} />
               </div>
             ))}

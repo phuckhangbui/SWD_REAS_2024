@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import realEstate from "../../interface/realEstate";
+import realEstate from "../../interface/RealEstate/realEstate";
 import RealEstateDetailModal from "../RealEstateDetailModal/realEstateDetailModal";
 import AuctionCard from "./auctionCard";
 
