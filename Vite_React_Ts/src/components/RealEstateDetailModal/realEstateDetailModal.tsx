@@ -1,10 +1,11 @@
 import { Button, Carousel, Input, Typography } from "@material-tailwind/react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { getRealEstateById } from "../../api/realEstate";
 import { NumberFormat } from "../../utils/numbetFormat";
 import { InputNumber, Modal, Statistic } from "antd";
 import { Button as ButtonAnt } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
+import { UserContext } from "../../context/userContext";
 
 interface RealEstateDetailModalProps {
   realEstateId: number;
@@ -27,6 +28,10 @@ const RealEstateDetailModal = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [isInputValid, setIsInputValid] = useState(false);
+  const { isAuth } = useContext(UserContext);
+
+  // Use the isAuth function to determine if the user is authenticated
+  const isAuthenticated = isAuth();
 
   const deadline = Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30; // Dayjs is also OK
 
@@ -359,102 +364,143 @@ const RealEstateDetailModal = ({
               Current bid: {NumberFormat(currentBid)}
             </Typography>
             <div className="grid grid-cols-5 gap-4">
-              <div className="col-span-3">
-                <Typography variant="h5">
-                  Auction ends: {formattedDeadline}
-                </Typography>
-                <div className="font-semibold flex items-center">
-                  <ButtonAnt
-                    type="default"
-                    shape="circle"
-                    icon={<EyeOutlined />}
-                  ></ButtonAnt>
-                  Add to watch list
-                </div>
-                <Countdown
-                  value={deadline}
-                  format="D [days] H [hours] m [minutes] s [secs]"
-                />
-              </div>
-              <div className="col-span-2 flex flex-col space-y-4">
-                <div className="flex space-x-4">
-                  <div className="flex">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setCurrentInputBid(currentInputBid - 1000);
-                      }}
-                    >
-                      -
-                    </Button>
-                    <InputNumber
-                      style={{
-                        width: "auto",
-                      }}
-                      value={NumberFormat(currentInputBid)}
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setCurrentInputBid(currentInputBid + 1000);
-                      }}
-                    >
-                      +
-                    </Button>
-                  </div>
-
-                  <Button
-                    onClick={() => {
-                      setCurrentBid(currentInputBid);
-                    }}
-                  >
-                    Bid
-                  </Button>
-                </div>
-                <div className="flex flex-row justify-center w-full items-center space-x-4">
-                  <Button onClick={showModal}>Set auto bid</Button>
-                  <Typography variant="h6">
-                    {NumberFormat(currentAutoBidValue)}
+              {isAuthenticated ? (
+                <div className="col-span-3">
+                  <Typography variant="h5">
+                    Auction ends: {formattedDeadline}
                   </Typography>
-                  <Modal
-                    title="Auto Bid"
-                    open={isModalOpen}
-                    onOk={handleOk}
-                    okType={"default"}
-                    onCancel={handleCancel}
-                    width={300}
-                  >
-                    <div className="space-y-4">
+                  <div className="font-semibold flex items-center">
+                    <ButtonAnt
+                      type="default"
+                      shape="circle"
+                      icon={<EyeOutlined />}
+                    ></ButtonAnt>
+                    Add to watch list
+                  </div>
+                  <Countdown
+                    value={deadline}
+                    format="D [days] H [hours] m [minutes] s [secs]"
+                  />
+                </div>
+              ) : null}
+              {!isAuthenticated ? (
+                <div className="col-span-3">
+                  <Typography variant="h5">
+                    Auction ends: {formattedDeadline}
+                  </Typography>
+                  <div className="font-semibold flex items-center">
+                    <ButtonAnt
+                      type="default"
+                      shape="circle"
+                      icon={<EyeOutlined />}
+                    ></ButtonAnt>
+                    Add to watch list
+                  </div>
+                  <Countdown
+                    value={deadline}
+                    format="D [days] H [hours] m [minutes] s [secs]"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="col-span-3">
+                    <Typography variant="h5">
+                      Auction ends: {formattedDeadline}
+                    </Typography>
+                    <div className="font-semibold flex items-center">
+                      <ButtonAnt
+                        type="default"
+                        shape="circle"
+                        icon={<EyeOutlined />}
+                      ></ButtonAnt>
+                      Add to watch list
+                    </div>
+                    <Countdown
+                      value={deadline}
+                      format="D [days] H [hours] m [minutes] s [secs]"
+                    />
+                  </div>
+                  <div className="col-span-2 flex flex-col space-y-4">
+                    <div className="flex space-x-4">
                       <div className="flex">
-                        <Button size="sm" onClick={handleDecrease}>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setCurrentInputBid(currentInputBid - 1000);
+                          }}
+                        >
                           -
                         </Button>
                         <InputNumber
-                          className="w-full"
-                          value={NumberFormat(currentAutoBidValue)}
+                          style={{
+                            width: "auto",
+                          }}
+                          value={NumberFormat(currentInputBid)}
                         />
-                        <Button size="sm" onClick={handleIncrease}>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setCurrentInputBid(currentInputBid + 1000);
+                          }}
+                        >
                           +
                         </Button>
                       </div>
-                      <div>
-                        <ButtonAnt
-                          type="default"
-                          size="small"
-                          onClick={toggleChecked}
-                        >
-                          {!checked ? "Enable" : "Unable"}
-                        </ButtonAnt>
-                      </div>
-                      {!isInputValid && (
-                        <div className="text-red-500">
-                          Input must be larger than 0!
-                        </div>
-                      )}
+
+                      <Button
+                        onClick={() => {
+                          setCurrentBid(currentInputBid);
+                        }}
+                      >
+                        Bid
+                      </Button>
                     </div>
-                  </Modal>
-                </div>
-              </div>
+                    <div className="flex flex-row justify-center w-full items-center space-x-4">
+                      <Button onClick={showModal}>Set auto bid</Button>
+                      <Typography variant="h6">
+                        {NumberFormat(currentAutoBidValue)}
+                      </Typography>
+                      <Modal
+                        title="Auto Bid"
+                        open={isModalOpen}
+                        onOk={handleOk}
+                        okType={"default"}
+                        onCancel={handleCancel}
+                        width={300}
+                      >
+                        <div className="space-y-4">
+                          <div className="flex">
+                            <Button size="sm" onClick={handleDecrease}>
+                              -
+                            </Button>
+                            <InputNumber
+                              className="w-full"
+                              value={NumberFormat(currentAutoBidValue)}
+                            />
+                            <Button size="sm" onClick={handleIncrease}>
+                              +
+                            </Button>
+                          </div>
+                          <div>
+                            <ButtonAnt
+                              type="default"
+                              size="small"
+                              onClick={toggleChecked}
+                            >
+                              {!checked ? "Enable" : "Unable"}
+                            </ButtonAnt>
+                          </div>
+                          {!isInputValid && (
+                            <div className="text-red-500">
+                              Input must be larger than 0!
+                            </div>
+                          )}
+                        </div>
+                      </Modal>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
