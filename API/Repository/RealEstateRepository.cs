@@ -107,7 +107,7 @@ namespace API.Repository
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
-                UriPhotoFirst = _context.RealEstatePhoto.Where(x => x.ReasId == x.ReasId).Select(x => x.ReasPhotoUrl).FirstOrDefault(),
+                UriPhotoFirst = _context.RealEstatePhoto.Where(y => y.ReasId == x.ReasId).Select(z => z.ReasPhotoUrl).FirstOrDefault(),
                 ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
@@ -153,7 +153,7 @@ namespace API.Repository
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
-                UriPhotoFirst = _context.RealEstatePhoto.Where(x => x.ReasId == x.ReasId).Select(x => x.ReasPhotoUrl).FirstOrDefault(),
+                UriPhotoFirst = _context.RealEstatePhoto.Where(y => y.ReasId == x.ReasId).Select(z => z.ReasPhotoUrl).FirstOrDefault(),
                 ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
@@ -206,15 +206,15 @@ namespace API.Repository
                     ReasName = x.ReasName,
                     ReasPrice = x.ReasPrice,
                     ReasArea = x.ReasArea,
-                    UriPhotoFirst = _context.RealEstatePhoto.Where(y => y.ReasId == x.ReasId).Select(y => y.ReasPhotoUrl).FirstOrDefault(),
+                    UriPhotoFirst = _context.RealEstatePhoto.Where(y => y.ReasId == x.ReasId).Select(z => z.ReasPhotoUrl).FirstOrDefault(),
                     ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                     ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                     DateStart = x.DateStart,
                     DateEnd = x.DateEnd
                 })
-                .ToList();
+                .AsQueryable();
             return await PageList<RealEstateDto>.CreateAsync(
-            query.AsNoTracking().ProjectTo<RealEstateDto>(_mapper.ConfigurationProvider),
+            result.AsNoTracking().ProjectTo<RealEstateDto>(_mapper.ConfigurationProvider),
             page.PageNumber,
             page.PageSize);
         }
@@ -229,7 +229,7 @@ namespace API.Repository
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
-                UriPhotoFirst = _context.RealEstatePhoto.Where(x => x.ReasId == x.ReasId).Select(x => x.ReasPhotoUrl).FirstOrDefault(),
+                UriPhotoFirst = _context.RealEstatePhoto.Where(y => y.ReasId == x.ReasId).Select(z => z.ReasPhotoUrl).FirstOrDefault(),
                 ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
@@ -273,6 +273,7 @@ namespace API.Repository
                 ReasName = x.ReasName,
                 ReasPrice = x.ReasPrice,
                 ReasArea = x.ReasArea,
+                UriPhotoFirst = _context.RealEstatePhoto.Where(y => y.ReasId == x.ReasId).Select(z => z.ReasPhotoUrl).FirstOrDefault(),
                 ReasTypeName = _context.type_REAS.Where(y => y.Type_ReasId == x.Type_Reas).Select(z => z.Type_Reas_Name).FirstOrDefault(),
                 ReasStatus = statusName.GetRealEstateStatusName(x.ReasStatus),
                 DateStart = x.DateStart,
