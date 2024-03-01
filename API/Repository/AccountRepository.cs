@@ -39,7 +39,7 @@ namespace API.Repository
                 .SingleOrDefaultAsync(x => x.AccountId == accountId);
 
         public async Task<Account> GetAccountByEmailAsync(string email) => await _context.Account
-                .SingleOrDefaultAsync(x => x.AccountEmail == email);
+                .SingleOrDefaultAsync(x => x.AccountEmail == email && x.RoleId == 3);
 
         public async Task<PageList<AccountMemberDto>> GetMemberAccountsBySearch(AccountParams accountParams)
         {
