@@ -1,4 +1,4 @@
-import OngoingList from "./AutionList";
+import OngoingList from "./AutionList/index";
 
 const AuctionOngoing: React.FC = () => {
   return (

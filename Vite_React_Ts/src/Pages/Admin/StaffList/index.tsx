@@ -1,5 +1,9 @@
+import AdminStaffList from "./StaffList/index";
+
 const StaffList: React.FC = () => {
-  return <></>;
+  return <>
+  <AdminStaffList />
+  </>;
 };
 
 export default StaffList

@@ -6,21 +6,24 @@ import {
   Navigate,
   redirect,
 } from "react-router-dom";
-import PageNotFound from "./pages/PageNotFound";
-import { AdminLayout } from "./pages/Admin/AdminLayout";
-import AdminDashboard from "./pages/Admin/AdminDashboard";
-import AuctionOngoing from "./pages/Admin/AdminAuctionOngoing";
-import StaffList from "./pages/Admin/StaffList";
-import MemberList from "./pages/Admin/MemberList";
-import AuctionComplete from "./pages/Admin/AdminAuctionComplete";
-import AuctionDetail from "./pages/Admin/AdminAuctionDetail";
-import HomePage from "./pages/Member/HomePage/homePage";
-import RealEstatePage from "./pages/Member/RealEstatePage/realEstatePage";
-import HelpPage from "./pages/Member/HelpPage/helpPage";
-import MemberLayout from "./pages/Member/memberLayout";
-import AuctionPage from "./pages/Member/AuctionPage/auctionPage";
-import NewsPage from "./pages/Member/NewsPage/newsPage";
-import SellPage from "./pages/Member/SellPage/sellPage";
+import PageNotFound from "./Pages/PageNotFound";
+import { AdminLayout } from "./Pages/Admin/AdminLayout";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
+import AuctionOngoing from "./Pages/Admin/AdminAuctionOngoing";
+import AdminStaffList from "../src/Pages/Admin/StaffList/StaffList/index";
+import AdminMemberList from "../src/Pages/Admin/MemberList/MemberList/index";
+import AdminAddStaff from "../src/Pages/Admin/AdminCreateStaff/AdminCreateStaff";
+import PendingList from "../src/Pages/Admin/AdminRealEstatePending";
+import AllList from "../src/Pages/Admin/AdminRealEstateAll"
+import AuctionComplete from "../src/Pages/Admin/AdminAuctionComplete";
+import AuctionDetail from "./Pages/Admin/AdminAuctionDetail";
+import HomePage from "./Pages/Member/HomePage/homePage";
+import RealEstatePage from "./Pages/Member/RealEstatePage/realEstatePage";
+import HelpPage from "./Pages/Member/HelpPage/helpPage";
+import MemberLayout from "./Pages/Member/memberLayout";
+import AuctionPage from "./Pages/Member/AuctionPage/auctionPage";
+import NewsPage from "./Pages/Member/NewsPage/newsPage";
+import SellPage from "./Pages/Member/SellPage/sellPage";
 import { useContext } from "react";
 import { UserContext } from "./context/userContext";
 // import { Redirect } from "react-router-dom";
@@ -80,8 +83,11 @@ function App() {
               <Route path="auction/ongoing" element={<AuctionOngoing />} />
               <Route path="auction/complete" element={<AuctionComplete />} />
               <Route path="auction/detail/:key" element={<AuctionDetail />} />
-              <Route path="user/staff" element={<StaffList />} />
-              <Route path="user/member" element={<MemberList />} />
+              <Route path="user/staff" element={<AdminStaffList />} />
+              <Route path="user/member" element={<AdminMemberList />} />
+              <Route path="user/create" element={<AdminAddStaff/>}/>
+              <Route path="real-estate/pending" element={<PendingList/>}/>
+              <Route path="real-estate/all" element={<AllList/>}/>
               <Route path="*" element={<PageNotFound />} />
             </Route>
           {/* )} */}
