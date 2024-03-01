@@ -1,5 +1,9 @@
+import AdminMemberList from "./MemberList/index";
+
 const MemberList: React.FC = () => {
-    return <></>;
+    return <>
+    < AdminMemberList/>
+    </>;
   };
   
   export default MemberList
