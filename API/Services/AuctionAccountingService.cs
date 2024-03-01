@@ -64,7 +64,7 @@ namespace API.Services
             auctionAccounting.EstimatedPaymentDate = DateTime.Now.AddDays(DATE_UNTIL_PAY);
 
             auctionAccounting.MaxAmount = auctionDetailDto.WinAmount;
-            auctionAccounting.DepositAmount = float.Parse(depositAmount.Amount);
+            auctionAccounting.DepositAmount = depositAmount.Amount;
             auctionAccounting.CommissionAmount = auctionDetailDto.WinAmount * COMMISSION_PERCENT;
             auctionAccounting.AmountOwnerReceived = auctionDetailDto.WinAmount - auctionAccounting.CommissionAmount;
 

@@ -2,9 +2,7 @@ using API.Helper;
 
 namespace API.Param;
 
-public class AccountParams : PaginationParams
+public class AccountParams 
 {
-    public string AccountEmail { get; set; }
-    public int RoleId { get; set; }
-
+    public string? KeyWord { get; set; }
 }

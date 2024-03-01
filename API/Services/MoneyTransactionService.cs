@@ -43,15 +43,15 @@ namespace API.Services
             moneyTransaction.TypeId = 1;
             moneyTransaction.AccountSendId = paymentDto.CustomerId;
             moneyTransaction.TransactionStatus = (int)TransactionEnum.Received;
-            moneyTransaction.Money = paymentDto.Money.ToString();
+            moneyTransaction.Money = paymentDto.Money;
             moneyTransaction.DateExecution = paymentDto.PaymentTime;
 
 
             MoneyTransactionDetail moneyTransactionDetail = new MoneyTransactionDetail();
             moneyTransactionDetail.ReasId = paymentDto.ReasId;
-            moneyTransactionDetail.TotalAmmount = paymentDto.Money.ToString();
-            moneyTransactionDetail.PaidAmount = paymentDto.Money.ToString();
-            moneyTransactionDetail.RemainingAmount = "0";
+            moneyTransactionDetail.TotalAmmount = paymentDto.Money;
+            moneyTransactionDetail.PaidAmount = paymentDto.Money;
+            moneyTransactionDetail.RemainingAmount = 0;
             moneyTransactionDetail.DateExecution = paymentDto.PaymentTime;
             moneyTransactionDetail.AccountReceiveId = null;
             moneyTransactionDetail.AuctionId = null;

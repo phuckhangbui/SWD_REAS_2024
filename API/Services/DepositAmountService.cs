@@ -53,7 +53,7 @@ namespace API.Services
             depositAmount.RuleId = 1; //fix later if needed
             depositAmount.AccountSignId = customerId;
             depositAmount.ReasId = reasId;
-            depositAmount.Amount = (float.Parse(realEstate.ReasPrice) * DEPOSIT_PERCENT).ToString();
+            depositAmount.Amount = ((Int64)(realEstate.ReasPrice * DEPOSIT_PERCENT));
             depositAmount.Status = (int)UserDepositEnum.Pending;
 
 

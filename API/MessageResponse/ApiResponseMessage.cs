@@ -23,14 +23,16 @@
         public const string MSG19 = "MSG19";
         public const string MSG20 = "MSG20";
         public const string MSG21 = "MSG21";
+        public const string MSG22 = "MSG22";
+        public const string MSG23 = "MSG23";
 
 
-        public string MessageCode { get; set; }
+        public string StatusCode { get; set; }
         public string Message { get; set; }
-        public ApiResponseMessage(string messageCode, string message = null)
+        public ApiResponseMessage(string statusCode, string message = null)
         {
-            MessageCode = messageCode;
-            Message = message ?? GetMessageForMessageCode(messageCode);
+            StatusCode = statusCode;
+            Message = message ?? GetMessageForMessageCode(statusCode);
         }
 
         private string GetMessageForMessageCode(string messageCode) => messageCode switch
@@ -56,6 +58,8 @@
             MSG19 => "Your real estate has uploaded on website.",
             MSG20 => "The amount you entered to pay does not match the suggested amount.",
             MSG21 => "Create new news successfully",
+            MSG22 => "Username already exist",
+            MSG23 => "Email already exist",
             _ => null
         };
     }

@@ -26,19 +26,18 @@ namespace API.Controllers
             if (idStaff != 0)
             {
                 var reals = await _staffRealEstateService.GetRealEstateOnGoingByStaff();
-
-                Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
-                reals.TotalCount, reals.TotalPages));
-                if (reals.PageSize == 0)
+                if (reals != null)
                 {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
                     var apiResponseMessage = new ApiResponseMessage("MSG01");
                     return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
                 else
                 {
-                    if (!ModelState.IsValid)
-                        return BadRequest(ModelState);
-                    return Ok(reals);
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
             }
             else
@@ -48,24 +47,24 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "real-estate/pending/search")]
-        public async Task<IActionResult> GetRealEstateOnGoingByStaffBySearch(SearchRealEstateParam searchRealEstateDto)
+        public async Task<IActionResult> GetRealEstateOnGoingByStaffBySearch(SearchRealEsateAdminParam searchRealEstateDto)
         {
             int idStaff = GetIdStaff(_staffRealEstateService.AccountRepository);
             if (idStaff != 0)
             {
                 var reals = await _staffRealEstateService.GetRealEstateOnGoingByStaffBySearch(searchRealEstateDto);
-                Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
-                reals.TotalCount, reals.TotalPages));
-                if (reals.PageSize == 0)
+                if (reals != null)
                 {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
                     var apiResponseMessage = new ApiResponseMessage("MSG01");
                     return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
                 else
                 {
-                    if (!ModelState.IsValid)
-                        return BadRequest(ModelState);
-                    return Ok(reals);
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
             }
             else
@@ -99,18 +98,18 @@ namespace API.Controllers
             {
                 var reals = await _staffRealEstateService.GetAllRealEstateExceptOnGoingByStaff();
 
-                Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
-                reals.TotalCount, reals.TotalPages));
-                if (reals.PageSize == 0)
+                if (reals != null)
                 {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
                     var apiResponseMessage = new ApiResponseMessage("MSG01");
                     return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
                 else
                 {
-                    if (!ModelState.IsValid)
-                        return BadRequest(ModelState);
-                    return Ok(reals);
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
             }
             else
@@ -120,24 +119,24 @@ namespace API.Controllers
         }
 
         [HttpPost(BaseUri + "real-estate/all/search")]
-        public async Task<IActionResult> GetRealEstateExceptOnGoingByStaffBySearch(SearchRealEstateParam searchRealEstateDto)
+        public async Task<IActionResult> GetRealEstateExceptOnGoingByStaffBySearch(SearchRealEsateAdminParam searchRealEstateDto)
         {
             int idStaff = GetIdStaff(_staffRealEstateService.AccountRepository);
             if (idStaff != 0)
             {
                 var reals = await _staffRealEstateService.GetRealEstateExceptOnGoingByStaffBySearch(searchRealEstateDto);
-                Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
-                reals.TotalCount, reals.TotalPages));
-                if (reals.PageSize == 0)
+                if (reals != null)
                 {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(reals);
                     var apiResponseMessage = new ApiResponseMessage("MSG01");
                     return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
                 else
                 {
-                    if (!ModelState.IsValid)
-                        return BadRequest(ModelState);
-                    return Ok(reals);
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
             }
             else

@@ -5,7 +5,7 @@ public class RealEstate
     public int ReasId { get; set; }
     public string ReasName { get; set; }
     public string ReasAddress { get; set; }
-    public string ReasPrice { get; set; }
+    public double ReasPrice { get; set; }
     public int ReasArea { get; set; }
     public string ReasDescription { get; set; }
     public int ReasStatus { get; set; }
