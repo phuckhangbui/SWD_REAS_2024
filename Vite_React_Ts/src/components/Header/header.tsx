@@ -8,7 +8,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentUrl = useLocation();
   const [showModal, setShowModal] = useState(false);
-  const { user, logout } = useContext(UserContext);
+  const { userRole, logout } = useContext(UserContext);
 
   const getActiveLink = (url: string) => {
     return `${
@@ -68,7 +68,7 @@ const Header = () => {
           </span>
         </Link>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          {user ? (
+          {userRole ? (
             <>
               {/* <span className="text-mainBlue">{user.username}</span>
               <button
@@ -135,7 +135,7 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              {user ? (
+              {userRole === 3 ? (
                 <Link to={"/sell"} className={getActiveLink("sell")}>
                   Sell
                 </Link>

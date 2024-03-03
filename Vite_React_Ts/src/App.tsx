@@ -14,7 +14,7 @@ import AdminStaffList from "../src/Pages/Admin/StaffList/StaffList/index";
 import AdminMemberList from "../src/Pages/Admin/MemberList/MemberList/index";
 import AdminAddStaff from "../src/Pages/Admin/AdminCreateStaff/AdminCreateStaff";
 import PendingList from "../src/Pages/Admin/AdminRealEstatePending";
-import AllList from "../src/Pages/Admin/AdminRealEstateAll"
+import AllList from "../src/Pages/Admin/AdminRealEstateAll";
 import StaffList from "./Pages/Admin/StaffList";
 import MemberList from "./Pages/Admin/MemberList";
 import AuctionComplete from "./Pages/Admin/AdminAuctionComplete";
@@ -28,26 +28,16 @@ import NewsPage from "./Pages/Member/NewsPage/newsPage";
 import SellPage from "./Pages/Member/SellPage/sellPage";
 import { useContext } from "react";
 import { UserContext } from "./context/userContext";
-// import { Redirect } from "react-router-dom";
+import RequiredAuth from "./components/RequiredAuth/requiredAuth";
 
-// function PrivateRoute({ element: Component, ...rest }) {
-//   const { user } = useContext(UserContext);
-
-//   // Check if user is authenticated and their role
-//   if (!user) {
-//     // If user is not logged in, redirect to login page
-//     return redirect("/");
-//   } else if (rest.role && user.roleId !== rest.role) {
-//     // If user's role does not match the required role, redirect to homepage
-//     return redirect("/");
-//   } else {
-//     // If user is authenticated and has correct role, render the component
-//     return <Route {...rest} element={<Component />} />;
-//   }
-// }
+const roles = {
+  Admin: 1,
+  Staff: 2,
+  Member: 3,
+};
 
 function App() {
-  const { user } = useContext(UserContext);
+  const { userRole } = useContext(UserContext);
 
   return (
     <div className="App">
@@ -59,27 +49,14 @@ function App() {
             <Route path="/auction" element={<AuctionPage />} />
             <Route path="/help" element={<HelpPage />} />
             <Route path="/news" element={<NewsPage />} />
-            {/* <PrivateRoute path="/sell" element={<SellPage />} role={3} /> */}
-            {/* {user && user.roleId === 3 && (
+            <Route element={<RequiredAuth allowedRoles={[roles.Member]} />}>
               <Route path="/sell" element={<SellPage />} />
-            )} */}
-            {/* {if(user && user.roleId === 3) {
-              return <Route path="/sell" element={<SellPage />} />
-            } else {
-              return (
-                <Redirect
-                   to={{
-                    path: "/",
-                      state: {
-                         from: props.location,
-                      },
-                   }}
-                />
-            }} */}
-            <Route path="*" element={<PageNotFound />} />
+            </Route>
           </Route>
 
-          {/* {user && (user.roleId === 1 || user.roleId === 2) && ( */}
+          <Route
+            element={<RequiredAuth allowedRoles={[roles.Admin, roles.Staff]} />}
+          >
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="auction/ongoing" element={<AuctionOngoing />} />
@@ -87,13 +64,13 @@ function App() {
               <Route path="auction/detail/:key" element={<AuctionDetail />} />
               <Route path="user/staff" element={<AdminStaffList />} />
               <Route path="user/member" element={<AdminMemberList />} />
-              <Route path="user/create" element={<AdminAddStaff/>}/>
-              <Route path="real-estate/pending" element={<PendingList/>}/>
-              <Route path="real-estate/all" element={<AllList/>}/>
-              <Route path="*" element={<PageNotFound />} />
+              <Route path="user/create" element={<AdminAddStaff />} />
+              <Route path="real-estate/pending" element={<PendingList />} />
+              <Route path="real-estate/all" element={<AllList />} />
             </Route>
-          {/* )} */}
-          <Route path="*" element={<PageNotFound />} />
+          </Route>
+
+          <Route path="/unauthorized" element={<PageNotFound />} />
         </Routes>
       </Router>
     </div>

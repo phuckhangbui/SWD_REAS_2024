@@ -10,6 +10,7 @@ export const getNewsHome = async () => {
     console.log("Error: " + error);
   }
 };
+
 export const searchNews = async ({
   pageNumber,
   pageSize,
