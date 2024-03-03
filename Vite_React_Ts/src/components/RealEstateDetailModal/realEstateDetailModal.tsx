@@ -1,6 +1,11 @@
-import { Carousel } from "@material-tailwind/react";
-import { useEffect, useRef, useState } from "react";
+import { Button, Carousel, Input, Typography } from "@material-tailwind/react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { getRealEstateById } from "../../api/realEstate";
+import { NumberFormat } from "../../utils/numbetFormat";
+import { InputNumber, Modal, Statistic } from "antd";
+import { Button as ButtonAnt } from "antd";
+import { EyeOutlined } from "@ant-design/icons";
+import { UserContext } from "../../context/userContext";
 
 interface RealEstateDetailModalProps {
   realEstateId: number;
@@ -9,12 +14,27 @@ interface RealEstateDetailModalProps {
   index: string;
 }
 
+const { Countdown } = Statistic;
+
 const RealEstateDetailModal = ({
   closeModal,
   realEstateId,
   index,
 }: RealEstateDetailModalProps) => {
   const [tabStatus, setTabStatus] = useState(index);
+  const [currentBid, setCurrentBid] = useState(100000);
+  const [currentInputBid, setCurrentInputBid] = useState(currentBid);
+  const [currentAutoBidValue, setCurrentAutoBidValue] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [isInputValid, setIsInputValid] = useState(false);
+  const { isAuth } = useContext(UserContext);
+
+  // Use the isAuth function to determine if the user is authenticated
+  const isAuthenticated = isAuth();
+
+  const deadline = Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30; // Dayjs is also OK
+
   const [realEstateDetail, setRealEstateDetail] = useState<
     realEstateDetail | undefined
   >();
@@ -68,6 +88,48 @@ const RealEstateDetailModal = ({
     return `${index === tabStatus ? "" : "hidden"} mt-2 space-y-4 `;
   };
 
+  const formattedDeadline = new Date(deadline).toLocaleString("en-US", {
+    weekday: "long", // Display full weekday name
+    year: "numeric", // Display full year
+    month: "long", // Display full month name
+    day: "numeric", // Display day of the month
+    hour: "numeric", // Display hour
+    minute: "numeric", // Display minute
+    second: "numeric", // Display second
+  });
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleDecrease = () => {
+    setCurrentAutoBidValue(currentAutoBidValue - 1000); // Decrease currentBid by 1
+  };
+
+  const handleIncrease = () => {
+    setCurrentAutoBidValue(currentAutoBidValue + 1000); // Increase currentBid by 1
+  };
+
+  const toggleChecked = () => {
+    if (checked == true) {
+      setChecked(!checked);
+    } else {
+      if (currentAutoBidValue > 0) {
+        setIsInputValid(true); // Set validation state to true if input value is larger than 0
+        setChecked(!checked);
+      } else {
+        setIsInputValid(false); // Set validation state to false otherwise
+      }
+    }
+  };
   return (
     <div className="relative w-full max-w-7xl max-h-full ">
       <div className="relative bg-white rounded-lg shadow md:px-10 md:pb-5 sm:px-0 sm:pb-0 ">
@@ -292,26 +354,154 @@ const RealEstateDetailModal = ({
               <div
                 dangerouslySetInnerHTML={{
                   __html: realEstateDetail?.reasDescription || "",
-                }} className="mt-1"
+                }}
+                className="mt-1"
               ></div>
             </div>
           </div>
           <div className={getActiveTabDetail("auction")}>
-            <p className="text-base leading-relaxed text-gray-900">
-              With less than a month to go before the European Union enacts new
-              consumer privacy laws for its citizens, companies around the world
-              are updating their terms of service agreements to comply.
-            </p>
-            <p className="text-base leading-relaxed text-gray-900">
-              With less than a month to go before the European Union enacts new
-              consumer privacy laws for its citizens, companies around the world
-              are updating their terms of service agreements to comply.
-            </p>
-            <p className="text-base leading-relaxed text-gray-900">
-              With less than a month to go before the European Union enacts new
-              consumer privacy laws for its citizens, companies around the world
-              are updating their terms of service agreements to comply.
-            </p>
+            <Typography variant="h3" className="text-center">
+              Current bid: {NumberFormat(currentBid)}
+            </Typography>
+            <div className="grid grid-cols-5 gap-4">
+              {isAuthenticated ? (
+                <div className="col-span-3">
+                  <Typography variant="h5">
+                    Auction ends: {formattedDeadline}
+                  </Typography>
+                  <div className="font-semibold flex items-center">
+                    <ButtonAnt
+                      type="default"
+                      shape="circle"
+                      icon={<EyeOutlined />}
+                    ></ButtonAnt>
+                    Add to watch list
+                  </div>
+                  <Countdown
+                    value={deadline}
+                    format="D [days] H [hours] m [minutes] s [secs]"
+                  />
+                </div>
+              ) : null}
+              {!isAuthenticated ? (
+                <div className="col-span-3">
+                  <Typography variant="h5">
+                    Auction ends: {formattedDeadline}
+                  </Typography>
+                  <div className="font-semibold flex items-center">
+                    <ButtonAnt
+                      type="default"
+                      shape="circle"
+                      icon={<EyeOutlined />}
+                    ></ButtonAnt>
+                    Add to watch list
+                  </div>
+                  <Countdown
+                    value={deadline}
+                    format="D [days] H [hours] m [minutes] s [secs]"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="col-span-3">
+                    <Typography variant="h5">
+                      Auction ends: {formattedDeadline}
+                    </Typography>
+                    <div className="font-semibold flex items-center">
+                      <ButtonAnt
+                        type="default"
+                        shape="circle"
+                        icon={<EyeOutlined />}
+                      ></ButtonAnt>
+                      Add to watch list
+                    </div>
+                    <Countdown
+                      value={deadline}
+                      format="D [days] H [hours] m [minutes] s [secs]"
+                    />
+                  </div>
+                  <div className="col-span-2 flex flex-col space-y-4">
+                    <div className="flex space-x-4">
+                      <div className="flex">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setCurrentInputBid(currentInputBid - 1000);
+                          }}
+                        >
+                          -
+                        </Button>
+                        <InputNumber
+                          style={{
+                            width: "auto",
+                          }}
+                          value={NumberFormat(currentInputBid)}
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setCurrentInputBid(currentInputBid + 1000);
+                          }}
+                        >
+                          +
+                        </Button>
+                      </div>
+
+                      <Button
+                        onClick={() => {
+                          setCurrentBid(currentInputBid);
+                        }}
+                      >
+                        Bid
+                      </Button>
+                    </div>
+                    <div className="flex flex-row justify-center w-full items-center space-x-4">
+                      <Button onClick={showModal}>Set auto bid</Button>
+                      <Typography variant="h6">
+                        {NumberFormat(currentAutoBidValue)}
+                      </Typography>
+                      <Modal
+                        title="Auto Bid"
+                        open={isModalOpen}
+                        onOk={handleOk}
+                        okType={"default"}
+                        onCancel={handleCancel}
+                        width={300}
+                      >
+                        <div className="space-y-4">
+                          <div className="flex">
+                            <Button size="sm" onClick={handleDecrease}>
+                              -
+                            </Button>
+                            <InputNumber
+                              className="w-full"
+                              value={NumberFormat(currentAutoBidValue)}
+                            />
+                            <Button size="sm" onClick={handleIncrease}>
+                              +
+                            </Button>
+                          </div>
+                          <div>
+                            <ButtonAnt
+                              type="default"
+                              size="small"
+                              onClick={toggleChecked}
+                            >
+                              {!checked ? "Enable" : "Unable"}
+                            </ButtonAnt>
+                          </div>
+                          {!isInputValid && (
+                            <div className="text-red-500">
+                              Input must be larger than 0!
+                            </div>
+                          )}
+                        </div>
+                      </Modal>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
         <hr className="my-6 border-gray-200 sm:mx-auto lg:my-8 " />
