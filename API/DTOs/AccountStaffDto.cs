@@ -6,7 +6,7 @@ public class AccountStaffDto
     public string AccountName { get; set; }
     public string Username { get; set; }
     public string AccountEmail { get; set; }
-    public int Account_Status { get; set; }
+    public string Account_Status { get; set; }
     public DateTime Date_Created { get; set; }
     public DateTime Date_End { get; set; }
 }

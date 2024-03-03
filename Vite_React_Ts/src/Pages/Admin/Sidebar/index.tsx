@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   DesktopOutlined,
   FileOutlined,
@@ -11,6 +11,7 @@ import {
 import type { MenuProps } from "antd";
 import { Button, Col, Layout, Menu, Row, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
+import { UserContext } from "../../../context/userContext";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -39,17 +40,20 @@ const items: MenuItem[] = [
   getItem("User", "sub2", <UserOutlined />, [
     getItem("Staffs", "4"),
     getItem("Members", "5"),
+    getItem("Create New Staff", "6"),
   ]),
   getItem("Real Estate", "sub3", <TeamOutlined />, [
-    getItem("All", "6"),
-    getItem("Pending", "7"),
+    getItem("All Real Estate", "7"),
+    getItem("Pending Real Estate", "8"),
   ]),
-  getItem("Reporting and Statistics", "8", <FileOutlined />),
-  getItem("System setting", "9", <FileOutlined />),
+  getItem("Reporting and Statistics", "9", <FileOutlined />),
+  getItem("System setting", "10", <FileOutlined />),
+  getItem("Logout", 11),
 ];
 
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { user, logout } = useContext(UserContext);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -74,17 +78,24 @@ const Sidebar: React.FC = () => {
         navigate("/admin/user/member");
         break;
       case "6":
-        navigate("/admin/real-estate/all");
+        navigate("/admin/user/create");
         break;
       case "7":
-        navigate("/admin/real-estate/pending");
+        navigate("/admin/real-estate/all");
         break;
       case "8":
-        navigate("/admin/reporting-statistics");
+        navigate("/admin/real-estate/pending");
         break;
       case "9":
+        navigate("/admin/reporting-statistics");
+        break;
+      case "10":
         navigate("/admin/system-setting");
         break;
+        case"11":
+        logout();
+        navigate("/");
+        break
       default:
         break;
     }

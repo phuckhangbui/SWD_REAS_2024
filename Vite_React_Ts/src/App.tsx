@@ -10,6 +10,11 @@ import PageNotFound from "./Pages/PageNotFound";
 import { AdminLayout } from "./Pages/Admin/AdminLayout";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import AuctionOngoing from "./Pages/Admin/AdminAuctionOngoing";
+import AdminStaffList from "../src/Pages/Admin/StaffList/StaffList/index";
+import AdminMemberList from "../src/Pages/Admin/MemberList/MemberList/index";
+import AdminAddStaff from "../src/Pages/Admin/AdminCreateStaff/AdminCreateStaff";
+import PendingList from "../src/Pages/Admin/AdminRealEstatePending";
+import AllList from "../src/Pages/Admin/AdminRealEstateAll"
 import StaffList from "./Pages/Admin/StaffList";
 import MemberList from "./Pages/Admin/MemberList";
 import AuctionComplete from "./Pages/Admin/AdminAuctionComplete";
@@ -80,8 +85,11 @@ function App() {
               <Route path="auction/ongoing" element={<AuctionOngoing />} />
               <Route path="auction/complete" element={<AuctionComplete />} />
               <Route path="auction/detail/:key" element={<AuctionDetail />} />
-              <Route path="user/staff" element={<StaffList />} />
-              <Route path="user/member" element={<MemberList />} />
+              <Route path="user/staff" element={<AdminStaffList />} />
+              <Route path="user/member" element={<AdminMemberList />} />
+              <Route path="user/create" element={<AdminAddStaff/>}/>
+              <Route path="real-estate/pending" element={<PendingList/>}/>
+              <Route path="real-estate/all" element={<AllList/>}/>
               <Route path="*" element={<PageNotFound />} />
             </Route>
           {/* )} */}

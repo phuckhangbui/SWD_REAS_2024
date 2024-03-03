@@ -27,9 +27,9 @@ namespace API.Services
         public async Task<bool> BlockRealEstate(int reasId)
         {
             ReasStatusParam reasStatus = new ReasStatusParam();
-            reasStatus.Id = reasId;
-            reasStatus.status = (int)RealEstateEnum.Block;
-            reasStatus.statusMessage = "";
+            reasStatus.reasId = reasId;
+            reasStatus.reasStatus = (int)RealEstateEnum.Block;
+            reasStatus.messageString = "";
 
             bool check = await _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);
             if (check)
@@ -39,19 +39,19 @@ namespace API.Services
             else { return false; }
         }
 
-        public async Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoingByAdmin()
+        public async Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstateExceptOnGoingByAdmin()
         {
             var reals = await _realEstateRepository.GetAllRealEstateExceptOnGoing();
             return reals;
         }
 
-        public async Task<PageList<RealEstateDto>> GetAllRealEstatesBySearch(SearchRealEstateParam searchRealEstateParam)
+        public async Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstatesBySearch(SearchRealEsateAdminParam searchRealEstateParam)
         {
             var reals = await _realEstateRepository.GetAllRealEstateExceptOnGoingBySearch(searchRealEstateParam);
             return reals;
         }
 
-        public async Task<PageList<RealEstateDto>> GetAllRealEstatesPendingBySearch(SearchRealEstateParam searchRealEstateParam)
+        public async Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstatesPendingBySearch(SearchRealEsateAdminParam searchRealEstateParam)
         {
             var reals = await _realEstateRepository.GetRealEstateOnGoingBySearch(searchRealEstateParam);
             return reals;
@@ -59,11 +59,11 @@ namespace API.Services
 
         public async Task<RealEstateDetailDto> GetRealEstateAllDetail(int reasId)
         {
-            var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetail(reasId);
+            var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetailByAdminOrStaff(reasId);
             return realEstateDetailDto;
         }
 
-        public async Task<PageList<RealEstateDto>> GetRealEstateOnGoingByAdmin()
+        public async Task<IEnumerable<ManageRealEstateDto>> GetRealEstateOnGoingByAdmin()
         {
             var reals = await _realEstateRepository.GetRealEstateOnGoing();
             return reals;
@@ -71,16 +71,16 @@ namespace API.Services
 
         public  async Task<RealEstateDetailDto> GetRealEstatePendingDetail(int reasId)
         {
-            var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetail(reasId);
+            var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetailByAdminOrStaff(reasId);
             return realEstateDetailDto;
         }
 
         public async Task<bool> UnblockRealEstate(int reasId)
         {
             ReasStatusParam reasStatus = new ReasStatusParam();
-            reasStatus.Id = reasId;
-            reasStatus.status = (int)RealEstateEnum.Selling;
-            reasStatus.statusMessage = "";
+            reasStatus.reasId = reasId;
+            reasStatus.reasStatus = (int)RealEstateEnum.Selling;
+            reasStatus.messageString = "";
 
             bool check = await _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);
             if (check)

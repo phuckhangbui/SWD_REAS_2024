@@ -14,7 +14,7 @@ namespace API.DTOs
         public DateTime PaymentTime { get; set; }
 
         [Required]
-        public float Money { get; set; }
+        public int Money { get; set; }
 
     }
 }

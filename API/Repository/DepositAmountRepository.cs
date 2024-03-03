@@ -30,8 +30,8 @@ namespace API.Repository
                 if (int.TryParse(depositAmountParam.AmountFrom, out var amountFrom) &&
                     int.TryParse(depositAmountParam.AmountTo, out var amountTo))
                 {
-                    query = query.Where(a => string.Compare(a.Amount, depositAmountParam.AmountFrom) >= 0 &&
-                                             string.Compare(a.Amount, depositAmountParam.AmountTo) <= 0);
+                    query = query.Where(a => a.Amount >= 0 &&
+                                             a.Amount <= 0);
                 }
             }
 
@@ -78,12 +78,11 @@ namespace API.Repository
         public async Task<PageList<DepositAmountDto>> GetDepositAmoutForMemberBySearch(SearchDepositAmountParam searchDepositAmountDto, int id)
         {
             var getNameStaus = new GetStatusName();
-            var parseValidate = new ParseValidate();
             PaginationParams paginationParams = new PaginationParams();
             var depositAmountBySearch = _context.DepositAmount.Where(x => x.AccountSignId == id &&
-            ((string.IsNullOrEmpty(searchDepositAmountDto.AmountFrom) && string.IsNullOrEmpty(searchDepositAmountDto.AmountTo)) ||
-            ((parseValidate.ParseStringToInt(x.Amount) >= parseValidate.ParseStringToInt(searchDepositAmountDto.AmountFrom)) &&
-            (parseValidate.ParseStringToInt(x.Amount) <= parseValidate.ParseStringToInt(searchDepositAmountDto.AmountTo))) &&
+            ((searchDepositAmountDto.AmountFrom == 0 && searchDepositAmountDto.AmountTo == 0) ||
+            ((x.Amount >= searchDepositAmountDto.AmountFrom) &&
+            (x.Amount <= searchDepositAmountDto.AmountTo)) &&
             ((searchDepositAmountDto.DepositDateFrom == null && searchDepositAmountDto.DepositDateTo == null) ||
             (x.DepositDate >= searchDepositAmountDto.DepositDateFrom &&
             x.DepositDate <= searchDepositAmountDto.DepositDateTo))))

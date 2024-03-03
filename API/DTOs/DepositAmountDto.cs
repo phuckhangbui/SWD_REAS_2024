@@ -6,7 +6,7 @@
         public int RuleId { get; set; }
         public int AccountSignId { get; set; }
         public int ReasId { get; set; }
-        public string Amount { get; set; }
+        public double Amount { get; set; }
         public DateTime DepositDate { get; set; }
         public string Status { get; set; }
     }

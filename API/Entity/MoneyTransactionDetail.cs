@@ -11,8 +11,8 @@ public class MoneyTransactionDetail
     public int ReasId { get; set; }
     public Auction Auction { get; set; }
     public int? AuctionId { get; set; }
-    public string TotalAmmount { get; set; }
-    public string PaidAmount { get; set; }
-    public string RemainingAmount { get; set; }
+    public double TotalAmmount { get; set; }
+    public double PaidAmount { get; set; }
+    public double RemainingAmount { get; set; }
     public DateTime DateExecution { get; set; }
 }

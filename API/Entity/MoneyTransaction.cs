@@ -8,7 +8,7 @@ public class MoneyTransaction
     public Account AccountSend { get; set; }
     public int AccountSendId { get; set; }
     public int TransactionStatus { get; set; }
-    public string Money { get; set; }
+    public double Money { get; set; }
     public DateTime DateExecution { get; set; }
     
     public MoneyTransactionDetail MoneyTransactionDetail { get; set; }
