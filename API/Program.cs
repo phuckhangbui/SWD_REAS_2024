@@ -2,6 +2,9 @@ using API.Extensions;
 using Microsoft.OpenApi.Models;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
+using Hangfire;
+using API.Interface.Service;
+using API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,16 @@ builder.Services.AddDbContext<DataContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Hangfire client
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Hangfire server
+builder.Services.AddHangfireServer();
+builder.Services.AddScoped<IBackgroundTaskService, BackgroundTaskService>();
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -63,5 +76,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHangfireDashboard();
+app.MapHangfireDashboard("/hangfire");
+
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var backgroundTaskService = serviceProvider.GetRequiredService<IBackgroundTaskService>();
+
+    RecurringJob.AddOrUpdate("ChangeAuctionStatusToOnGoing", () => backgroundTaskService.ScheduleAuctionStatus(), Cron.MinuteInterval(1));
+    //BackgroundJob.Schedule(() => backgroundTaskService.ChangeAuctionStatusToOnGoing(), TimeSpan.FromSeconds(30));
+}
 
 app.Run();

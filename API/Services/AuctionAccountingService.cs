@@ -1,8 +1,8 @@
 ﻿using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Interface.Repository;
 using API.Interface.Service;
+using API.Param.Enums;
 using API.ThirdServices;
 using AutoMapper;
 
@@ -46,7 +46,7 @@ namespace API.Services
             Auction auction = _auctionRepository.GetAuction(auctionDetailDto.AuctionId);
             var realEstate = await _realEstateDetailRepository.GetRealEstateDetail(auction.ReasId);
 
-            if (realEstate.ReasStatus != (int)RealEstateStatus.Auctioning)
+            if (realEstate.ReasStatus != (int)RealEstateEnum.Auctioning)
             {
                 return null;
             }
