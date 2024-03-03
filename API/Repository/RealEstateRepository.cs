@@ -32,11 +32,11 @@ namespace API.Repository
             var accountOwner = await _context.Account.Where(x => x.AccountId == realEstate.AccountOwnerId).FirstOrDefaultAsync();
             if (realEstate != null)
             {
-                if(reasStatusDto.reasStatus == 3 || reasStatusDto.reasStatus == 9)
+                if (reasStatusDto.reasStatus == 3 || reasStatusDto.reasStatus == 9)
                 {
                     SendMailWhenRejectRealEstate.SendEmailWhenRejectRealEstate(accountOwner.AccountEmail, accountOwner.AccountName, reasStatusDto.messageString);
                 }
-                else if(reasStatusDto.reasStatus == 1)
+                else if (reasStatusDto.reasStatus == 1)
                 {
                     SendMailWhenApproveRealEstate.SendEmailWhenApproveRealEstate(accountOwner.AccountEmail, accountOwner.AccountName);
                 }
@@ -159,8 +159,7 @@ namespace API.Repository
         {
             var statusName = new GetStatusName();
             var page = new PaginationParams();
-            var query = _context.RealEstate.AsQueryable();
-            query = (IQueryable<RealEstate>)query.Where(x =>
+            var query = _context.RealEstate.Where(x =>
                 ((new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Auctioning, (int)RealEstateEnum.Re_up }.Contains(x.ReasStatus) && searchRealEstateDto.ReasStatus == -1)
                 || searchRealEstateDto.ReasStatus == x.ReasStatus) &&
                 (searchRealEstateDto.ReasName == null || x.ReasName.Contains(searchRealEstateDto.ReasName)) &&

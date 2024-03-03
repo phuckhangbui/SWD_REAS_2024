@@ -21,8 +21,8 @@ const RealEstatePage = () => {
     pageNumber: 0,
     pageSize: 0,
     reasName: "",
-    reasPriceFrom: "",
-    reasPriceTo: "",
+    reasPriceFrom: 0,
+    reasPriceTo: 0,
     reasStatus: -1,
   });
 
@@ -64,7 +64,7 @@ const RealEstatePage = () => {
 
     setSearchParams((prevState: searchRealEstate | null) => ({
       ...prevState!,
-      reasPriceFrom: selectedPrice.toString(),
+      reasPriceFrom: selectedPrice,
     }));
   };
 
@@ -80,7 +80,7 @@ const RealEstatePage = () => {
 
     setSearchParams((prevState: searchRealEstate | null) => ({
       ...prevState!,
-      reasPriceTo: selectedPrice.toString(),
+      reasPriceTo: selectedPrice,
     }));
   };
 
