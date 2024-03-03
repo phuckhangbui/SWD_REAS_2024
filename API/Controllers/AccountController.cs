@@ -36,6 +36,7 @@ namespace API.Controllers
             var accountLogin = await _accountService.LoginByAdminOrStaff(loginDto);
             if (accountLogin != null)
             {
+                //HttpContext.Session.SetString("token", accountLogin.Token);
                 return Ok(accountLogin);
             }
             else

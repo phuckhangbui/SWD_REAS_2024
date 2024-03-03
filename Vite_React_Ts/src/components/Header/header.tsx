@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import LoginModal from "../LoginModal/loginModal";
+import { UserContext } from "../../context/userContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentUrl = useLocation();
   const [showModal, setShowModal] = useState(false);
+  const { user, logout } = useContext(UserContext);
 
   const getActiveLink = (url: string) => {
     return `${
@@ -65,12 +67,25 @@ const Header = () => {
           </span>
         </Link>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <button
-            onClick={() => toggleModal()}
-            className="text-white bg-mainBlue hover:bg-darkerMainBlue focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Sign In
-          </button>
+          {user ? (
+            <>
+              <span className="text-mainBlue">{user.username}</span>
+              <button
+                onClick={() => logout()} // Call logout function from UserContext
+                className="text-white bg-mainBlue hover:bg-darkerMainBlue focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => toggleModal()}
+              className="text-white bg-mainBlue hover:bg-darkerMainBlue focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Sign In
+            </button>
+          )}
+
           <button
             onClick={toggleMenu}
             type="button"
@@ -113,20 +128,24 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to={"/sell"} className={getActiveLink("sell")}>
-                Sell
-              </Link>
-            </li>
-            <li>
               <Link to={"/news"} className={getActiveLink("news")}>
                 News
               </Link>
             </li>
             <li>
+              {user ? (
+                <Link to={"/sell"} className={getActiveLink("sell")}>
+                  Sell
+                </Link>
+              ) : (
+                <></>
+              )}
+            </li>
+            {/* <li>
               <Link to={"/help"} className={getActiveLink("help")}>
                 Help
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>

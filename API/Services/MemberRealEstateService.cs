@@ -130,9 +130,9 @@ namespace API.Services
         public async Task<bool> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam, int userMember)
         {
             ReasStatusParam reasStatusDto = new ReasStatusParam();
-            reasStatusDto.Id = transactionMoneyCreateParam.IdReas;
-            reasStatusDto.status = (int)RealEstateEnum.Selling;
-            reasStatusDto.statusMessage = "";
+            reasStatusDto.reasId = transactionMoneyCreateParam.IdReas;
+            reasStatusDto.reasStatus = (int)RealEstateEnum.Selling;
+            reasStatusDto.messageString = "";
             bool check = await _real_estate_repository.UpdateRealEstateStatusAsync(reasStatusDto);
             if (check)
             {

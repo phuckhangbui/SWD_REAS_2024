@@ -1,6 +1,5 @@
 ﻿using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
@@ -35,7 +34,7 @@ namespace API.Services
             DepositAmountDto depositAmountDto = new DepositAmountDto();
             RealEstate realEstate = _realEstateRepository.GetRealEstate(reasId);
 
-            if (realEstate.ReasStatus != (int)RealEstateStatus.Selling)
+            if (realEstate.ReasStatus != (int)RealEstateEnum.Selling)
             {
                 return null;
             }
@@ -53,7 +52,7 @@ namespace API.Services
             depositAmount.RuleId = 1; //fix later if needed
             depositAmount.AccountSignId = customerId;
             depositAmount.ReasId = reasId;
-            depositAmount.Amount = (float.Parse(realEstate.ReasPrice) * DEPOSIT_PERCENT).ToString();
+            depositAmount.Amount = ((Int64)(realEstate.ReasPrice * DEPOSIT_PERCENT));
             depositAmount.Status = (int)UserDepositEnum.Pending;
 
 

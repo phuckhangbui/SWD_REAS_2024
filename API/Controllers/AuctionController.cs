@@ -239,7 +239,7 @@ namespace API.Controllers
 
                 //create transaction and transaction detail
 
-                if (paymentDto.Money != float.Parse(depositAmount.Amount))
+                if (paymentDto.Money != depositAmount.Amount)
                 {
                     return BadRequest(new ApiResponse(404, "Amount of money is not matched"));
                 }

@@ -1,14 +1,11 @@
 ﻿using API.DTOs;
 using API.Entity;
 using API.Exceptions;
-using API.Helper;
-using API.Enums;
 using API.Interface.Repository;
 using API.Interface.Service;
-using API.Param;
+using API.Param.Enums;
 using API.ThirdServices;
 using AutoMapper;
-using System.Threading.Tasks;
 
 namespace API.Services
 {
@@ -50,7 +47,7 @@ namespace API.Services
             Auction auction = _auctionRepository.GetAuction(auctionDetailDto.AuctionId);
             var realEstate = await _realEstateDetailRepository.GetRealEstateDetail(auction.ReasId);
 
-            if (realEstate.ReasStatus != (int)RealEstateStatus.Auctioning)
+            if (realEstate.ReasStatus != (int)RealEstateEnum.Auctioning)
             {
                 return null;
             }
@@ -68,7 +65,7 @@ namespace API.Services
             auctionAccounting.EstimatedPaymentDate = DateTime.Now.AddDays(DATE_UNTIL_PAY);
 
             auctionAccounting.MaxAmount = auctionDetailDto.WinAmount;
-            auctionAccounting.DepositAmount = float.Parse(depositAmount.Amount);
+            auctionAccounting.DepositAmount = depositAmount.Amount;
             auctionAccounting.CommissionAmount = auctionDetailDto.WinAmount * COMMISSION_PERCENT;
             auctionAccounting.AmountOwnerReceived = auctionDetailDto.WinAmount - auctionAccounting.CommissionAmount;
 

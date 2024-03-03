@@ -1,12 +1,10 @@
-﻿using API.Entity;
-
-namespace API.DTOs
+﻿namespace API.DTOs
 {
     public class RealEstateDto
     {
         public int ReasId { get; set; }
         public string ReasName { get; set; }
-        public string ReasPrice { get; set; }
+        public double ReasPrice { get; set; }
         public int ReasArea { get; set; }
         public string ReasTypeName { get; set; }
         public string ReasStatus { get; set; }

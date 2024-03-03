@@ -6,7 +6,7 @@ namespace API.Param
     {
         public int IdReas { get; set; }
         public int TransactionStatus { get; set; }
-        public string Money { get; set; }
-        public string MoneyPaid { get; set; }
+        public int Money { get; set; }
+        public int MoneyPaid { get; set; }
     }
 }

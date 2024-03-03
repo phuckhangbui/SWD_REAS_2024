@@ -12,5 +12,6 @@
         Re_up = 7,
         Decline_after_auction = 8,
         Block = 9,
+        Waiting_for_set_auction = 10
     }
 }

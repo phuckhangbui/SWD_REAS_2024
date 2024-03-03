@@ -105,7 +105,7 @@ namespace API.Controllers
                 bool check = await _adminNewsService.AddNewNews(newCreate, idAdmin);
                 if (check)
                 {
-                    return new ApiResponseMessage("MSG18");
+                    return new ApiResponseMessage("MSG21");
                 }
                 else
                 {

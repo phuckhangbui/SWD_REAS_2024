@@ -70,6 +70,7 @@ namespace API.Repository
             NewsDetailDto newsDetailDto = new NewsDetailDto();
             var newsDetail = await _dataContext.News.Where(x => x.NewsId == id).FirstOrDefaultAsync();
             newsDetailDto.NewsId = id;
+            newsDetailDto.Thumbnail = newsDetail.Thumbnail;
             newsDetailDto.NewsTitle = newsDetail.NewsTitle;
             newsDetailDto.NewsSumary = newsDetail.NewsSumary;
             newsDetailDto.NewsContent = newsDetail.NewsContent;
@@ -81,9 +82,9 @@ namespace API.Repository
         {
             PaginationParams paginationParams = new PaginationParams();
             var newsList = _dataContext.News.AsQueryable();
-            newsList = newsList.Where(x => x.NewsTitle.Contains(searchNewsParam.KeyWork) || 
-            x.NewsSumary.Contains(searchNewsParam.KeyWork) ||
-            x.NewsContent.Contains(searchNewsParam.KeyWork));
+            newsList = newsList.Where(x => x.NewsTitle.Contains(searchNewsParam.KeyWord) || 
+            x.NewsSumary.Contains(searchNewsParam.KeyWord) ||
+            x.NewsContent.Contains(searchNewsParam.KeyWord));
             newsList = newsList.OrderByDescending(x => x.DateCreated);
             if (newsList != null)
             {

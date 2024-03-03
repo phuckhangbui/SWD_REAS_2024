@@ -80,10 +80,7 @@ namespace API.Services
                 account.AccountEmail = userEmail;
                 account.Username = payload.Name;
                 account.AccountName = payload.Name;
-                account.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("FixThislater123@"));
-                account.PasswordSalt = hmac.Key;
                 account.RoleId = 3;
-                account.MajorId = 1;
                 account.Date_Created = DateTime.UtcNow;
                 account.Date_End = DateTime.MaxValue;
 

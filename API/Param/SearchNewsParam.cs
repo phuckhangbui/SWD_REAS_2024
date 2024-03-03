@@ -4,6 +4,6 @@ namespace API.Param
 {
     public class SearchNewsParam : PaginationParams
     {
-        public string? KeyWork { get; set; }
+        public string? KeyWord { get; set; }
     }
 }

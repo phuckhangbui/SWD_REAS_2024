@@ -6,7 +6,6 @@ using API.Interface.Repository;
 using API.Param;
 using API.Param.Enums;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository
@@ -24,7 +23,12 @@ namespace API.Repository
 
         public async Task<bool> isEmailExisted(string email)
         {
-            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == email.ToLower());
+            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == email.ToLower() && x.RoleId == 3);
+        }
+
+        public async Task<bool> isEmailExistedCreateAccount(string email)
+        {
+            return await _context.Account.AnyAsync(x => x.AccountEmail.ToLower() == email.ToLower() && x.RoleId == 2);
         }
 
         public async Task<bool> isUserNameExisted(string userName)
@@ -39,40 +43,58 @@ namespace API.Repository
                 .SingleOrDefaultAsync(x => x.AccountId == accountId);
 
         public async Task<Account> GetAccountByEmailAsync(string email) => await _context.Account
-                .SingleOrDefaultAsync(x => x.AccountEmail == email);
+                .SingleOrDefaultAsync(x => x.AccountEmail == email && x.RoleId == 3);
 
-        public async Task<PageList<AccountMemberDto>> GetMemberAccountsBySearch(AccountParams accountParams)
+        public async Task<IEnumerable<AccountMemberDto>> GetMemberAccountsBySearch(AccountParams accountParams)
         {
+            var getName = new GetStatusName();
             var query = _context.Account.AsQueryable();
 
-            query = query.Where(a => a.RoleId == accountParams.RoleId &&
-            (accountParams.AccountEmail == null || a.AccountEmail.Contains(accountParams.AccountEmail)));
+            query = query.Where(a => a.RoleId == (int)RoleEnum.Member &&
+            (accountParams.KeyWord == null || a.AccountEmail.ToLower().Contains(accountParams.KeyWord.ToLower()) ||
+            a.AccountName.ToLower().Contains(accountParams.KeyWord.ToLower())));
+            var result  = query.Select(x => new AccountMemberDto
+            {
+                AccountId = x.AccountId,
+                AccountName = x.AccountName,
+                AccountEmail = x.AccountEmail,
+                Account_Status = getName.GetStatusAccountName(x.Account_Status),
+                Date_Created = x.Date_Created,
+            });
 
-            query = query.OrderByDescending(a => a.Date_Created);
+            result = result.OrderByDescending(a => a.Date_Created);
 
-            return await PageList<AccountMemberDto>.CreateAsync(
-                query.AsNoTracking().ProjectTo<AccountMemberDto>(_mapper.ConfigurationProvider),
-                accountParams.PageNumber,
-                accountParams.PageSize);
+            return result.ToList();
         }
 
-        public async Task<PageList<AccountStaffDto>> GetStaffAccountsBySearch(AccountParams accountParams)
+        public async Task<IEnumerable<AccountStaffDto>> GetStaffAccountsBySearch(AccountParams accountParams)
         {
+            var getName = new GetStatusName();
             var query = _context.Account.AsQueryable();
 
-            query = query.Where(a => a.RoleId == accountParams.RoleId &&
-            (accountParams.AccountEmail == null || a.AccountEmail.Contains(accountParams.AccountEmail)));
+            query = query.Where(a => a.RoleId == (int)RoleEnum.Staff &&
+            (accountParams.KeyWord == null || a.AccountEmail.ToLower().Contains(accountParams.KeyWord.ToLower()) ||
+            a.AccountName.ToLower().Contains(accountParams.KeyWord.ToLower())));
 
-            query = query.OrderByDescending(a => a.Date_Created);
+            var result = query.Select(x => new AccountStaffDto
+            {
+                AccountId = x.AccountId,
+                Username = x.Username,
+                AccountName = x.AccountName,
+                AccountEmail = x.AccountEmail,
+                Account_Status = getName.GetStatusAccountName(x.Account_Status),
+                Date_Created = x.Date_Created,
+                Date_End = x.Date_End,
+            });
 
-            return await PageList<AccountStaffDto>.CreateAsync(
-                query.AsNoTracking().ProjectTo<AccountStaffDto>(_mapper.ConfigurationProvider),
-                accountParams.PageNumber,
-                accountParams.PageSize);
+            result = result.OrderByDescending(a => a.Date_Created);
+
+            return result.ToList();
         }
 
-        public async Task<PageList<AccountStaffDto>> GetAllStaffAccounts()
+        public async Task<IEnumerable<AccountStaffDto>> GetAllStaffAccounts()
         {
+            var getName = new GetStatusName();
             PaginationParams paginationParams = new PaginationParams();
             var query = _context.Account.Where(x => x.RoleId.Equals((int)RoleEnum.Staff)).OrderByDescending(x => x.AccountId).Select(x => new AccountStaffDto
             {
@@ -80,35 +102,31 @@ namespace API.Repository
                 Username = x.Username,
                 AccountName = x.AccountName,
                 AccountEmail = x.AccountEmail,
-                Account_Status = x.Account_Status,
+                Account_Status = getName.GetStatusAccountName(x.Account_Status),
                 Date_Created = x.Date_Created,
                 Date_End = x.Date_End,
-            });
-            return await PageList<AccountStaffDto>.CreateAsync(
-                query.AsNoTracking().ProjectTo<AccountStaffDto>(_mapper.ConfigurationProvider),
-                paginationParams.PageNumber,
-                paginationParams.PageSize);
+            }).OrderByDescending(x =>x.Date_Created);
+            return query.ToList();
         }
 
-        public async Task<PageList<AccountMemberDto>> GetAllMemberAccounts()
+        public async Task<IEnumerable<AccountMemberDto>> GetAllMemberAccounts()
         {
+            var getName = new GetStatusName();
             PaginationParams paginationParams = new PaginationParams();
             var query = _context.Account.Where(x => x.RoleId.Equals((int)RoleEnum.Member)).OrderByDescending(x => x.AccountId).Select(x => new AccountMemberDto
             {
                 AccountId = x.AccountId,
                 AccountName = x.AccountName,
                 AccountEmail = x.AccountEmail,
-                Account_Status = x.Account_Status,
+                Account_Status = getName.GetStatusAccountName(x.Account_Status),
                 Date_Created = x.Date_Created
-            });
-            return await PageList<AccountMemberDto>.CreateAsync(
-                query.AsNoTracking().ProjectTo<AccountMemberDto>(_mapper.ConfigurationProvider),
-                paginationParams.PageNumber,
-                paginationParams.PageSize);
+            }).OrderByDescending(x => x.Date_Created);
+            return query.ToList();
         }
 
         public async Task<MemberInformationDto> GetMemberAccountDetail(int id)
         {
+            var getName = new GetStatusName();
             var account = _context.Account.Where(x => x.AccountId == id).Select(x => new MemberInformationDto
             {
                 AccountId = x.AccountId,
@@ -120,7 +138,7 @@ namespace API.Repository
                 Date_Created = x.Date_Created,
                 Date_End = x.Date_End,
                 Major = _context.Major.Where(y => y.MajorId == x.MajorId).Select(x => x.MajorName).FirstOrDefault(),
-                Account_Status = x.Account_Status
+                Account_Status = getName.GetStatusAccountName(x.Account_Status)
             }).FirstOrDefault();
 
             return account;
@@ -128,6 +146,7 @@ namespace API.Repository
 
         public async Task<StaffInformationDto> GetStaffAccountDetail(int id)
         {
+            var getName = new GetStatusName();
             var account = _context.Account.Where(x => x.AccountId == id).Select(x => new StaffInformationDto
             {
                 AccountId = x.AccountId,
@@ -139,7 +158,7 @@ namespace API.Repository
                 Username = x.Username,
                 Date_Created = x.Date_Created,
                 Date_End = x.Date_End,
-                Account_Status = x.Account_Status
+                Account_Status = getName.GetStatusAccountName(x.Account_Status)
             }).FirstOrDefault();
 
             return account;

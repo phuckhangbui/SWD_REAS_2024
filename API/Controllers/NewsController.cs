@@ -40,8 +40,8 @@ namespace API.Controllers
         [HttpGet(BaseUri + "news/detail/{id}")]
         public async Task<IActionResult> GetNewsDetail(int id)
         {
-            var newsDetail = _newsService.GetNewsDetail(id);
-            if (newsDetail.Result != null)
+            var newsDetail = await _newsService.GetNewsDetail(id);
+            if (newsDetail != null)
             {
                 return Ok(newsDetail);
             }
