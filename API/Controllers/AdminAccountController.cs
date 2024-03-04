@@ -27,19 +27,16 @@ public class AdminAccountController : BaseApiController
         if (adminAccount != 0)
         {
             var accounts = await _adminAccountService.GetStaffAccountBySearch(accountParams);
-
-            Response.AddPaginationHeader(new PaginationHeader(accounts.CurrentPage, accounts.PageSize,
-                accounts.TotalCount, accounts.TotalPages));
-            if (accounts.PageSize == 0)
-            {
-                var apiResponseMessage = new ApiResponseMessage("MSG01");
-                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
-            }
-            else
+            if (accounts != null)
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(accounts);
+            }
+            else
+            {
+                var apiResponseMessage = new ApiResponseMessage("MSG01");
+                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
             }
         }
         else
@@ -56,18 +53,16 @@ public class AdminAccountController : BaseApiController
         {
             var accounts = await _adminAccountService.GetMemberAccountBySearch(accountParams);
 
-            Response.AddPaginationHeader(new PaginationHeader(accounts.CurrentPage, accounts.PageSize,
-                accounts.TotalCount, accounts.TotalPages));
-            if (accounts.PageSize == 0)
-            {
-                var apiResponseMessage = new ApiResponseMessage("MSG01");
-                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
-            }
-            else
+            if (accounts != null)
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(accounts);
+            }
+            else
+            {
+                var apiResponseMessage = new ApiResponseMessage("MSG01");
+                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
             }
         }
         else
@@ -85,23 +80,14 @@ public class AdminAccountController : BaseApiController
             var list_account = await _adminAccountService.GetStaffAccounts();
             if (list_account != null)
             {
-                return BadRequest(new ApiResponse(404, "No data with your search"));
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                return Ok(list_account);
             }
             else
             {
-                Response.AddPaginationHeader(new PaginationHeader(list_account.CurrentPage, list_account.PageSize,
-                list_account.TotalCount, list_account.TotalPages));
-                if (list_account.PageSize == 0)
-                {
-                    var apiResponseMessage = new ApiResponseMessage("MSG01");
-                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
-                }
-                else
-                {
-                    if (!ModelState.IsValid)
-                        return BadRequest(ModelState);
-                    return Ok(list_account);
-                }
+                var apiResponseMessage = new ApiResponseMessage("MSG01");
+                return Ok(new List<ApiResponseMessage> { apiResponseMessage });
             }
         }
         else
@@ -119,23 +105,14 @@ public class AdminAccountController : BaseApiController
             var list_account = await _adminAccountService.GetMemberAccounts();
             if (list_account != null)
             {
-                return BadRequest(new ApiResponse(404, "No data with your search"));
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                return Ok(list_account);
             }
             else
             {
-                Response.AddPaginationHeader(new PaginationHeader(list_account.CurrentPage, list_account.PageSize,
-                list_account.TotalCount, list_account.TotalPages));
-                if (list_account.PageSize == 0)
-                {
-                    var apiResponseMessage = new ApiResponseMessage("MSG01");
-                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
-                }
-                else
-                {
-                    if (!ModelState.IsValid)
-                        return BadRequest(ModelState);
-                    return Ok(list_account);
-                }
+            var apiResponseMessage = new ApiResponseMessage("MSG01");
+            return Ok(new List<ApiResponseMessage> { apiResponseMessage });
             }
         }
         else
@@ -150,7 +127,7 @@ public class AdminAccountController : BaseApiController
         var adminAccount = GetIdAdmin(_adminAccountService.AccountRepository);
         if (adminAccount != 0)
         {
-            var accountStaff = await _adminAccountService.GetMemberDetail(id);
+            var accountStaff = await _adminAccountService.GetStaffDetail(id);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             return Ok(accountStaff);
@@ -179,7 +156,7 @@ public class AdminAccountController : BaseApiController
     }
 
 
-    [HttpPost(BaseUri + "user/member/change")]
+    [HttpPost(BaseUri + "user/change")]
     public async Task<ActionResult<ApiResponseMessage>> ChangeStatusAccount(ChangeStatusAccountParam changeStatusAccountDto)
     {
         var accountAdmin = GetIdAdmin(_adminAccountService.AccountRepository);
@@ -209,11 +186,11 @@ public class AdminAccountController : BaseApiController
         {
             if (await _adminAccountService.AccountRepository.isUserNameExisted(account.Username))
             {
-                return BadRequest(new ApiResponse(400, "Username already exist"));
+                return new ApiResponseMessage("MSG22");
             }
-            if (await _adminAccountService.AccountRepository.isEmailExisted(account.AccountEmail))
+            if (await _adminAccountService.AccountRepository.isEmailExistedCreateAccount(account.AccountEmail))
             {
-                return BadRequest(new ApiResponse(400, "Email already exist"));
+                return new ApiResponseMessage("MSG23");
             }
             bool check = await _adminAccountService.CreateNewAccountForStaff(account);
             if (check)

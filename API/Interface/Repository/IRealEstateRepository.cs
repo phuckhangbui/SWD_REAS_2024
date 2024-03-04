@@ -11,10 +11,10 @@ namespace API.Interface.Repository
         Task<bool> CheckRealEstateExist(int reasId);
         Task<PageList<RealEstateDto>> GetOwnerRealEstate(int idOwner);
         Task<PageList<RealEstateDto>> GetOwnerRealEstateBySearch(int idOwner, SearchRealEstateParam searchRealEstateDto);
-        Task<PageList<RealEstateDto>> GetRealEstateOnGoing();
-        Task<PageList<RealEstateDto>> GetRealEstateOnGoingBySearch(SearchRealEstateParam searchRealEstateDto);
-        Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoingBySearch(SearchRealEstateParam searchRealEstateDto);
-        Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoing();
+        Task<IEnumerable<ManageRealEstateDto>> GetRealEstateOnGoing();
+        Task<IEnumerable<ManageRealEstateDto>> GetRealEstateOnGoingBySearch(SearchRealEsateAdminParam searchRealEstateDto);
+        Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstateExceptOnGoingBySearch(SearchRealEsateAdminParam searchRealEstateDto);
+        Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstateExceptOnGoing();
         Task<PageList<RealEstateDto>> SearchRealEstateByKey(SearchRealEstateParam searchRealEstateDto);
         Task<PageList<RealEstateDto>> GetAllRealEstateOnRealEstatePage();
         RealEstate GetRealEstate(int id);

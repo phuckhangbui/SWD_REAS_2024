@@ -2,8 +2,8 @@
 {
     public class ReasStatusParam
     {
-        public int Id { get; set; }
-        public int status { get; set; }
-        public string statusMessage { get; set; }
+        public int reasId { get; set; }
+        public int reasStatus { get; set; }
+        public string? messageString { get; set; }
     }
 }

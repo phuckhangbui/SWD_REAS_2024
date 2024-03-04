@@ -3,7 +3,6 @@ using API.DTOs;
 using API.Entity;
 using API.Interface.Repository;
 using API.Param;
-using API.Validate;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +12,6 @@ namespace API.Repository
     {
         private readonly DataContext _dataContext;
         private readonly IAccountRepository _accountRepository;
-        private ParseValidate parseValidate = new ParseValidate();
         private readonly IMapper _mapper;
         public MoneyTransactionDetailRepository(DataContext context, 
             IAccountRepository accountRepository,
@@ -33,8 +31,8 @@ namespace API.Repository
             moneyTransactionDetail.ReasId = transactionMoneyCreateDto.IdReas;
             moneyTransactionDetail.TotalAmmount = transactionMoneyCreateDto.Money;
             moneyTransactionDetail.PaidAmount = transactionMoneyCreateDto.MoneyPaid;
-            int kq = (int)(parseValidate.ParseStringToInt(transactionMoneyCreateDto.Money) - parseValidate.ParseStringToInt(transactionMoneyCreateDto.MoneyPaid));
-            moneyTransactionDetail.RemainingAmount = kq.ToString();
+            int kq = (int)(transactionMoneyCreateDto.Money - transactionMoneyCreateDto.MoneyPaid);
+            moneyTransactionDetail.RemainingAmount = kq;
             try
             {
                 bool check = await CreateAsync(moneyTransactionDetail);

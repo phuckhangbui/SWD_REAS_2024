@@ -28,6 +28,7 @@ namespace API.Repository
                 news.NewsTitle = newsDto.NewsTitle;
                 news.NewsSumary = newsDto.NewsSumary;
                 news.NewsContent = newsDto.NewsContent;
+                news.Thumbnail = newsDto.ThumbnailUri;
                 news.AccountCreateId = id;
                 news.DateCreated = DateTime.UtcNow;
                 news.AccountName = name;
@@ -65,6 +66,19 @@ namespace API.Repository
             }
         }
 
+        public async Task<IEnumerable<NewsAdminDto>> GetAllInNewsAdmin()
+        { 
+            var newsList = _dataContext.News.OrderByDescending(x => x.DateCreated).Select(x => new NewsAdminDto
+            {
+                NewsId = x.NewsId,
+                NewsTitle = x.NewsTitle,
+                NewsSumary = x.NewsSumary,
+                Thumbnail = x.Thumbnail,
+                DateCreated = x.DateCreated,
+            });
+            return await newsList.ToListAsync();
+        }
+
         public async Task<NewsDetailDto> GetDetailOfNews(int id)
         {
             NewsDetailDto newsDetailDto = new NewsDetailDto();
@@ -97,6 +111,22 @@ namespace API.Repository
             {
                 return null;
             }
+        }
+
+        public async Task<IEnumerable<NewsAdminDto>> SearchNewsAdminByKey(SearchNewsAdminParam searchNewsParam)
+        {
+            var newsList = _dataContext.News.Where(x => x.NewsTitle.ToLower().Contains(searchNewsParam.KeyWord.ToLower()) ||
+            x.NewsSumary.ToLower().Contains(searchNewsParam.KeyWord.ToLower()) ||
+            x.NewsContent.ToLower().Contains(searchNewsParam.KeyWord.ToLower())).Select(x => new NewsAdminDto
+            {
+                NewsId = x.NewsId,
+                NewsTitle = x.NewsTitle,
+                NewsSumary = x.NewsSumary,
+                Thumbnail = x.Thumbnail,
+                DateCreated = x.DateCreated,
+            }); ;
+            newsList = newsList.OrderByDescending(x => x.DateCreated);
+            return await newsList.ToListAsync();
         }
 
         public async Task<bool> UpdateNewsByAdmin(NewsDetailDto news)

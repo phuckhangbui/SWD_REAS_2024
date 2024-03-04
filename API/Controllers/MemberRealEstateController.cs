@@ -77,7 +77,7 @@ namespace API.Controllers
             int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
             if (userMember != 0)
             {
-                var list_type_reas = _memberRealEstateService.ViewCreateNewRealEstatePage();
+                var list_type_reas = await _memberRealEstateService.ViewCreateNewRealEstatePage();
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 return Ok(list_type_reas);

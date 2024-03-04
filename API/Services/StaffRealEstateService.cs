@@ -24,13 +24,13 @@ namespace API.Services
 
         public IAccountRepository AccountRepository => _accountRepository;
 
-        public async Task<PageList<RealEstateDto>> GetAllRealEstateExceptOnGoingByStaff()
+        public async Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstateExceptOnGoingByStaff()
         {
             var reals = await _realEstateRepository.GetAllRealEstateExceptOnGoing();
             return reals;
         }
 
-        public async Task<PageList<RealEstateDto>> GetRealEstateExceptOnGoingByStaffBySearch(SearchRealEstateParam searchRealEstateDto)
+        public async Task<IEnumerable<ManageRealEstateDto>> GetRealEstateExceptOnGoingByStaffBySearch(SearchRealEsateAdminParam searchRealEstateDto)
         {
             var reals = await _realEstateRepository.GetAllRealEstateExceptOnGoingBySearch(searchRealEstateDto);
             return reals;
@@ -42,13 +42,13 @@ namespace API.Services
             return real_estate_detail;
         }
 
-        public async Task<PageList<RealEstateDto>> GetRealEstateOnGoingByStaff()
+        public async Task<IEnumerable<ManageRealEstateDto>> GetRealEstateOnGoingByStaff()
         {
             var reals = await _realEstateRepository.GetRealEstateOnGoing();
             return reals;
         }
 
-        public async Task<PageList<RealEstateDto>> GetRealEstateOnGoingByStaffBySearch(SearchRealEstateParam searchRealEstateDto)
+        public async Task<IEnumerable<ManageRealEstateDto>> GetRealEstateOnGoingByStaffBySearch(SearchRealEsateAdminParam searchRealEstateDto)
         {
             var reals = await _realEstateRepository.GetRealEstateOnGoingBySearch(searchRealEstateDto);
             return reals;

@@ -1,10 +1,8 @@
 ﻿using API.DTOs;
-using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
 using API.Interfaces;
 using API.Param;
-using API.Param.Enums;
 using AutoMapper;
 using System.Security.Cryptography;
 using System.Text;
@@ -75,13 +73,12 @@ namespace API.Services
                 return false;
             }
         }
-        public async Task<PageList<AccountMemberDto>> GetMemberAccountBySearch(AccountParams accountParams)
+        public async Task<IEnumerable<AccountMemberDto>> GetMemberAccountBySearch(AccountParams accountParams)
         {
-            accountParams.RoleId = (int)RoleEnum.Member;
             var accounts = await _accountRepository.GetMemberAccountsBySearch(accountParams);
             return accounts;
         }
-        public async Task<PageList<AccountMemberDto>> GetMemberAccounts()
+        public async Task<IEnumerable<AccountMemberDto>> GetMemberAccounts()
         {
             var list_account = await _accountRepository.GetAllMemberAccounts();
             return list_account;
@@ -93,14 +90,13 @@ namespace API.Services
             return accountMember;
         }
 
-        public async Task<PageList<AccountStaffDto>> GetStaffAccountBySearch(AccountParams accountParams)
+        public async Task<IEnumerable<AccountStaffDto>> GetStaffAccountBySearch(AccountParams accountParams)
         {
-            accountParams.RoleId = (int)RoleEnum.Staff;
             var accounts = await _accountRepository.GetStaffAccountsBySearch(accountParams);
             return accounts;
         }
 
-        public async Task<PageList<AccountStaffDto>> GetStaffAccounts()
+        public async Task<IEnumerable<AccountStaffDto>> GetStaffAccounts()
         {
             var list_account = await _accountRepository.GetAllStaffAccounts();
             return list_account;

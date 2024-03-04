@@ -9,7 +9,7 @@
         public string Citizen_identification { get; set; }
         public string Address { get; set; }
         public string Major {  get; set; }
-        public int Account_Status { get; set; }
+        public string Account_Status { get; set; }
         public DateTime Date_Created { get; set; }
         public DateTime Date_End { get; set; }
     }
