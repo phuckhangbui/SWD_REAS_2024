@@ -3,12 +3,14 @@ using API.Entity;
 using API.Errors;
 using API.Extension;
 using API.Helper;
+using API.Helper.VnPay;
 using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
 using API.Param.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace API.Controllers
 {
@@ -18,13 +20,17 @@ namespace API.Controllers
         private readonly IAuctionAccountingService _auctionAccountingService;
         private readonly IDepositAmountService _depositAmountService;
         private readonly IMoneyTransactionService _moneyTransactionService;
+        private readonly VnPayProperties _vnPayProperties;
+        private readonly IVnPayService _vnPayService;
 
-        public AuctionController(IAuctionService auctionService, IAuctionAccountingService auctionAccountingService, IDepositAmountService depositAmountService, IMoneyTransactionService moneyTransactionService)
+        public AuctionController(IAuctionService auctionService, IAuctionAccountingService auctionAccountingService, IDepositAmountService depositAmountService, IMoneyTransactionService moneyTransactionService, IOptions<VnPayProperties> vnPayProperties, IVnPayService vnPayService)
         {
             _auctionService = auctionService;
             _auctionAccountingService = auctionAccountingService;
             _depositAmountService = depositAmountService;
             _moneyTransactionService = moneyTransactionService;
+            _vnPayProperties = vnPayProperties.Value;
+            _vnPayService = vnPayService;
         }
 
         [HttpGet("auctions")]
@@ -127,29 +133,35 @@ namespace API.Controllers
 
         [Authorize(policy: "Customer")]
         [HttpGet("register")]
-        public async Task<ActionResult<DepositAmountDto>> RegisterAuction([FromQuery] string customerId, string reasId)
+        public async Task<ActionResult<DepositAmountDtoWithPaymentUrl>> RegisterAuction([FromQuery] string customerId, string reasId, string returnUrl)
         {
             if (GetLoginAccountId() != int.Parse(customerId))
             {
                 return BadRequest(new ApiResponse(404));
             }
-            DepositAmountDto depositAmountDto = new DepositAmountDto();
 
             try
             {
-                depositAmountDto = await _depositAmountService.CreateDepositAmount(int.Parse(customerId), int.Parse(reasId));
+                var depositAmountDto = await _depositAmountService.CreateDepositAmount(int.Parse(customerId), int.Parse(reasId));
                 if (depositAmountDto == null)
                 {
                     return BadRequest(new ApiResponse(404, "Real estate is not selling"));
                 }
+
+                //create new vnpayment url
+                string paymentUrl = _vnPayService.CreateDepositePaymentURL(HttpContext, depositAmountDto, _vnPayProperties, returnUrl);
+
+                DepositAmountDtoWithPaymentUrl depositAmountDtoWithPaymentUrl = new DepositAmountDtoWithPaymentUrl
+                {
+                    DepositAmountDto = depositAmountDto,
+                    PaymentUrl = paymentUrl
+                };
+                return Ok(depositAmountDtoWithPaymentUrl);
             }
             catch (Exception ex)
             {
                 return BadRequest(new ApiResponse(404));
             }
-
-
-            return Ok(depositAmountDto);
         }
 
         //[Authorize(policy: "Customer")]

@@ -55,6 +55,7 @@ namespace API.Services
             depositAmount.ReasId = reasId;
             depositAmount.Amount = ((Int64)(realEstate.ReasPrice * DEPOSIT_PERCENT));
             depositAmount.Status = (int)UserDepositEnum.Pending;
+            depositAmount.CreateDepositDate = DateTime.Now;
 
 
             await _depositAmountRepository.CreateAsync(depositAmount);

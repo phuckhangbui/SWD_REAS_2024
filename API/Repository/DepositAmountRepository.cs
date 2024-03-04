@@ -4,7 +4,6 @@ using API.Entity;
 using API.Helper;
 using API.Interface.Repository;
 using API.Param;
-using API.Validate;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +62,8 @@ namespace API.Repository
                 DepositId = x.DepositId,
                 Amount = x.Amount,
                 AccountSignId = x.AccountSignId,
-                DepositDate = x.DepositDate,
+                DepositDate = (DateTime)x.DepositDate,
+                CreateDepositDate = x.CreateDepositDate,
                 ReasId = x.ReasId,
                 RuleId = x.RuleId,
                 Status = getNameStaus.GetDepositAmountStatusName(x.Status),
@@ -91,7 +91,8 @@ namespace API.Repository
                 DepositId = x.DepositId,
                 Amount = x.Amount,
                 AccountSignId = x.AccountSignId,
-                DepositDate = x.DepositDate,
+                DepositDate = (DateTime)x.DepositDate,
+                CreateDepositDate = x.CreateDepositDate,
                 ReasId = x.ReasId,
                 RuleId = x.RuleId,
                 Status = getNameStaus.GetDepositAmountStatusName(x.Status),
