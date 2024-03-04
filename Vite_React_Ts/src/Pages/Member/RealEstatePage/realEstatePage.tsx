@@ -18,8 +18,8 @@ const RealEstatePage = () => {
     realEstate[] | undefined
   >([]);
   const [searchParams, setSearchParams] = useState<searchRealEstate | null>({
-    pageNumber: 0,
-    pageSize: 0,
+    pageNumber: 1,
+    pageSize: 10,
     reasName: "",
     reasPriceFrom: 0,
     reasPriceTo: 0,
