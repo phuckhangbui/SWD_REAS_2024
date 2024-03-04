@@ -4,7 +4,6 @@ using API.Entity;
 using API.Helper;
 using API.Interface.Repository;
 using API.Param;
-using API.Validate;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;

@@ -1,8 +1,6 @@
-﻿using API.Helper;
-
-namespace API.DTOs
+﻿namespace API.DTOs
 {
-    public class NewsDto : PaginationParams
+    public class NewsAdminDto
     {
         public int NewsId { get; set; }
         public string NewsTitle { get; set; }
