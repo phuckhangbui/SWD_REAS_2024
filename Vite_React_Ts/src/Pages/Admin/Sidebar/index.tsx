@@ -50,7 +50,11 @@ const items: MenuItem[] = [
     getItem("News", "9"),
     getItem("Add News", "10"),
   ]),
-  getItem("Logout", 11),
+  getItem("Term", "sub5", <GlobalOutlined />, [
+    getItem("Term", "11"),
+    getItem("Add Term", "12"),
+  ]),
+  getItem("Logout", "13"),
 ];
 
 const Sidebar: React.FC = () => {
@@ -94,7 +98,13 @@ const Sidebar: React.FC = () => {
       case "10":
         navigate("/admin/news/create");
         break;
-        case"11":
+        case "11":
+        navigate("/admin/term");
+        break;
+        case "12":
+        navigate("/admin/term/create");
+        break;
+        case"13":
         logout();
         navigate("/");
         break

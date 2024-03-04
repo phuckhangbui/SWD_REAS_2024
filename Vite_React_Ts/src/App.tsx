@@ -16,6 +16,8 @@ import AdminAddStaff from "../src/Pages/Admin/AdminCreateStaff/AdminCreateStaff"
 import PendingList from "../src/Pages/Admin/AdminRealEstatePending";
 import AllList from "../src/Pages/Admin/AdminRealEstateAll"
 import NewsList from "../src/Pages/Admin/AdminNews"
+import AdminRule from "../src/Pages/Admin/AdminRule"
+import AddRule from "../src/Pages/Admin/AdminAddRule"
 import AdminCreateNews from "../src/Pages/Admin/AdminCreateNews"
 import AuctionComplete from "../src/Pages/Admin/AdminAuctionComplete";
 import AuctionDetail from "./Pages/Admin/AdminAuctionDetail";
@@ -92,6 +94,8 @@ function App() {
               <Route path="real-estate/all" element={<AllList/>}/>
               <Route path="news" element={<NewsList/>}/>
               <Route path="news/create" element={<AdminCreateNews/>}/>
+              <Route path="term" element={<AdminRule/>}/>
+              <Route path="term/create" element={<AddRule/>}/>
               <Route path="*" element={<PageNotFound />} />
             </Route>
           {/* )} */}
