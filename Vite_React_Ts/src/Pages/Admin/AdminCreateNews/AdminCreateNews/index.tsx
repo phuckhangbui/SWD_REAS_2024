@@ -1,5 +1,5 @@
 import { Descriptions, Button, Input, notification } from "antd";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { addNews } from "../../../../api/news";
 import { useContext } from "react";
 import { UserContext } from "../../../../context/userContext";
@@ -19,6 +19,22 @@ const AdminAddNews: React.FC = () => {
     thumbnailUri: "",
   });
   const [uploadedImage, setUploadedImage] = useState<string>("");
+  const [publicId, setPublicId] = useState<string>("");
+  const [uwConfig] = useState<CloudinaryConfig>({
+    cloudName: "dqpsvl3nu",
+    uploadPreset: "i0yxovxe",
+    // cropping: true,
+    // showAdvancedOptions: true,
+    // sources: [ "local", "url"],
+    // multiple: false,
+    folder: "News",
+    // tags: ["users", "profile"],
+    // context: {alt: "user_uploaded"},
+    // clientAllowedFormats: ["images"],
+    // maxImageFileSize: 2000000,
+    // maxImageWidth: 2000,
+    // theme: "purple",
+  });
   const { token } = useContext(UserContext);
 
   const fetchCreateNews = async (News: newscreate) => {
@@ -32,32 +48,6 @@ const AdminAddNews: React.FC = () => {
       console.error("Error fetching add news:", error);
     }
   };
-
-  const [publicId, setPublicId] = useState<string>("");
-  const [cloudName] = useState<string>("dqpsvl3nu");
-  const [uploadPreset] = useState<string>("i0yxovxe");
-
-  const [uwConfig] = useState<CloudinaryConfig>({
-    cloudName,
-    uploadPreset,
-    // cropping: true,
-    // showAdvancedOptions: true,
-    // sources: [ "local", "url"],
-    // multiple: false,
-    folder: "News",
-    // tags: ["users", "profile"],
-    // context: {alt: "user_uploaded"},
-    // clientAllowedFormats: ["images"],
-    // maxImageFileSize: 2000000,
-    // maxImageWidth: 2000,
-    // theme: "purple",
-  });
-
-  const cld = new Cloudinary({
-    cloud: {
-      cloudName,
-    },
-  });
 
   const openNotificationWithIcon = (
     type: "success" | "error",
@@ -81,12 +71,14 @@ const AdminAddNews: React.FC = () => {
         );
       }
     }
-
   };
 
   const handleImageUpload = (imageUrl: string) => {
     setUploadedImage(imageUrl);
-    handleChange("thumbnailUri", imageUrl);
+    setNewsData((prevData) => ({
+      ...prevData,
+      thumbnailUri: imageUrl,
+    }));
   };
 
   const handleChange = (fieldName: keyof newscreate, value: string) => {
@@ -96,76 +88,78 @@ const AdminAddNews: React.FC = () => {
     }));
   };
   const renderBorderedItems = () => {
-  const items = [
-    {
-      key: "1",
-      label: "Thumnail",
-      children: "",
-      span: 3,
-      render: (url: string) => (
-        <div>
+    const items = [
+      {
+        key: "1",
+        label: "Thumbnail",
+        children: "",
+        span: 3,
+        render: (url: string) => (
+          <div>
             <img
               className="h-96 w-full object-cover object-center"
               src={uploadedImage}
               alt="Uploaded"
               style={{ maxWidth: "200px", maxHeight: "200px" }}
             />
-          <CloudinaryUploadWidget
-            uwConfig={uwConfig}
-            setPublicId={setPublicId as SetPublicIdFunction}
-            setUploadedUrl={handleImageUpload}
-          />
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: "Title",
-      children: (
-        <div>
+            <CloudinaryUploadWidget
+              uwConfig={uwConfig}
+              setPublicId={setPublicId}
+              setUploadedUrl={handleImageUpload}
+            />
+          </div>
+        ),
+      },
+      {
+        key: "2",
+        label: "Title",
+        children: (
+          <div>
+            <Input
+              placeholder="Enter title"
+              onChange={(e) => handleChange("newsTitle", e.target.value)}
+            />
+          </div>
+        ),
+        span: 3,
+      },
+      {
+        key: "3",
+        label: "Summary",
+        children: (
           <Input
-            placeholder="Enter title"
-            onChange={(e) => handleChange("newsTitle", e.target.value)}
+            placeholder="Enter summary"
+            onChange={(e) => handleChange("newsSumary", e.target.value)}
           />
-        </div>
-      ),
-      span: 3,
-    },
-    {
-      key: "3",
-      label: "Summary",
-      children: (
-        <Input
-          placeholder="Enter summary"
-          onChange={(e) => handleChange("newsSumary", e.target.value)}
-        />
-      ),
-      span: 3,
-    },
-    {
-      key: "4",
-      label: "Content",
-      children: (
-        <CKEditor
-          editor={ClassicEditor}
-          onChange={(event, editor) => {
-            const data = editor.getData();
-            handleChange("newsContent", data);
-          }}
-        />
-      ),
-      span: 3,
-    },
-  ];
-  return items.map((item) => (
-    <Descriptions.Item key={item.key} label={item.label} span={item.span}>
-      {item.render ? item.render(item.children) : item.children}
-    </Descriptions.Item>
-  ));
-};
+        ),
+        span: 3,
+      },
+      {
+        key: "4",
+        label: "Content",
+        children: (
+          <CKEditor
+            editor={ClassicEditor}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              handleChange("newsContent", data);
+            }}
+          />
+        ),
+        span: 3,
+      },
+    ];
+    return items.map((item) => (
+      <Descriptions.Item key={item.key} label={item.label} span={item.span}>
+        {item.render ? item.render(item.children) : item.children}
+      </Descriptions.Item>
+    ));
+  };
   return (
     <>
-      <Descriptions bordered title="Add News">{renderBorderedItems()}</Descriptions>
+      <Descriptions bordered title="Add News">
+        {renderBorderedItems()}
+      </Descriptions>
       <br />
       <div
         style={{
@@ -174,9 +168,7 @@ const AdminAddNews: React.FC = () => {
           alignItems: "center",
         }}
       >
-        <Button onClick={createNews}>
-          Create News
-        </Button>
+        <Button onClick={createNews}>Create News</Button>
       </div>
     </>
   );
