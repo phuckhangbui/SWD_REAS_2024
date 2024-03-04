@@ -1,12 +1,12 @@
 import React, { useState, useContext } from "react";
 import {
   DesktopOutlined,
-  FileOutlined,
   PieChartOutlined,
-  TeamOutlined,
+  HomeOutlined,
   UserOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  GlobalOutlined
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Button, Col, Layout, Menu, Row, theme } from "antd";
@@ -42,12 +42,14 @@ const items: MenuItem[] = [
     getItem("Members", "5"),
     getItem("Create New Staff", "6"),
   ]),
-  getItem("Real Estate", "sub3", <TeamOutlined />, [
+  getItem("Real Estate", "sub3", <HomeOutlined />, [
     getItem("All Real Estate", "7"),
     getItem("Pending Real Estate", "8"),
   ]),
-  getItem("Reporting and Statistics", "9", <FileOutlined />),
-  getItem("System setting", "10", <FileOutlined />),
+  getItem("News", "sub4", <GlobalOutlined />, [
+    getItem("News", "9"),
+    getItem("Add News", "10"),
+  ]),
   getItem("Logout", 11),
 ];
 
@@ -87,10 +89,10 @@ const Sidebar: React.FC = () => {
         navigate("/admin/real-estate/pending");
         break;
       case "9":
-        navigate("/admin/reporting-statistics");
+        navigate("/admin/news");
         break;
       case "10":
-        navigate("/admin/system-setting");
+        navigate("/admin/news/create");
         break;
         case"11":
         logout();

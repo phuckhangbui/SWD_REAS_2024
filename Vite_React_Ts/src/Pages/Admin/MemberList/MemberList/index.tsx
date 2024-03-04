@@ -12,11 +12,9 @@ const AdminMemberList: React.FC = () => {
   const [search, setSearch] = useState<searchMember>({ KeyWord: "" });
   const [memberData, setMemberData] = useState<Member[]>(); // State để lưu trữ dữ liệu nhân viên
   const [memberDetailData, setMemberDetailData] = useState<memberDetail>();
-  const [message, setMessage] = useState<Message>();
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [accountMemberId, setAccountId] = useState<Number>();
   const [statusMember, setStatusAccount] = useState<Number>();
-  const [messageString, getMessageString] = useState<string>();
   const { token } = useContext(UserContext);
 
   const formatDate = (dateString: Date): string => {
@@ -192,36 +190,31 @@ const AdminMemberList: React.FC = () => {
     ));
   };
 
-    const [contextHolder] = notification.useNotification();
-    const openNotificationWithIcon = (type: 'success' | 'error') => {
-        notification[type]({
-          message: 'Notification Title',
-          description:
-            messageString,
-        });
-      };
+
 
   const handleBackToList = () => {
   setShowDetail(false); // Ẩn bảng chi tiết và hiện lại danh sách
   fetchMemberList(); // Gọi lại hàm fetchMemberList khi quay lại danh sách
 };
 
-const handleChangeStatus = async () => {
-  try {
-    const response = await fetchChangeStatus(accountMemberId, statusMember);
-    if (response !== undefined) { // Kiểm tra xem response có được trả về hay không
-      setMessage(response);
-      if (response.statusCode == "MSG17") {
-        getMessageString(response.message);
-      } else {
-        getMessageString("Something went wrong when executing operation. Please try again!");
-      }
-      openNotificationWithIcon(response.statusCode == "MSG17" ? 'success' : 'error');
-      await fetchMemberDetail(accountMemberId);
+const getMessage = async () => {
+  const response = await fetchChangeStatus(accountMemberId, statusMember);
+  if (response !== undefined && response) {
+    // Kiểm tra xem response có được trả về hay không
+    if (response.statusCode === "MSG17") {
+      openNotificationWithIcon("success", response.message);
+    } else {
+      openNotificationWithIcon("error", "Something went wrong when executing operation. Please try again!");
     }
-  } catch (error) {
-    console.error("Error handling status change:", error);
+    await fetchMemberDetail(accountMemberId);
   }
+};
+
+const openNotificationWithIcon = (type: 'success' | 'error', description: string) => {
+  notification[type]({
+    message: "Notification Title",
+    description: description,
+  });
 };
 
   return (
@@ -231,7 +224,7 @@ const handleChangeStatus = async () => {
           <Button onClick={handleBackToList}><FontAwesomeIcon icon={faArrowLeft} style={{color: "#74C0FC",}} /></Button>
           <br/><br/>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button onClick={handleChangeStatus} >Change Status</Button>
+          <Button onClick={getMessage} >Change Status</Button>
           </div>
           <br />
           <Descriptions bordered title="Detail of Member">{renderBorderedItems()}</Descriptions>
