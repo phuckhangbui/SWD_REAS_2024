@@ -2,9 +2,9 @@
 {
     public class IPN
     {
-        public static string ProcessIPN(Dictionary<string, string> vnpayData, string vnp_HashSecret)
+        public static IpnResponseDto ProcessIPN(Dictionary<string, string> vnpayData, string vnp_HashSecret)
         {
-            string returnContent = string.Empty;
+            IpnResponseDto ipnResponseDto = new IpnResponseDto();
             VnPayLibrary vnpay = new VnPayLibrary();
 
             foreach (var kvp in vnpayData)
@@ -64,31 +64,36 @@
 
                             //Thêm code Thực hiện cập nhật vào Database 
                             //Update Database
+                            ipnResponseDto.RspCode = "00";
+                            ipnResponseDto.Message = "Confirm Success";
 
-                            returnContent = "{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}";
                         }
                         else
                         {
-                            returnContent = "{\"RspCode\":\"02\",\"Message\":\"Order already confirmed\"}";
+                            ipnResponseDto.RspCode = "02";
+                            ipnResponseDto.Message = "Order already confirmed";
                         }
                     }
                     else
                     {
-                        returnContent = "{\"RspCode\":\"04\",\"Message\":\"invalid amount\"}";
+                        ipnResponseDto.RspCode = "04";
+                        ipnResponseDto.Message = "invalid amount";
                     }
                 }
                 else
                 {
-                    returnContent = "{\"RspCode\":\"01\",\"Message\":\"Order not found\"}";
+                    ipnResponseDto.RspCode = "01";
+                    ipnResponseDto.Message = "transaction not found";
                 }
             }
             else
             {
                 //log.InfoFormat("Invalid signature, InputData={0}", vnp_SecureHash);
-                returnContent = "{\"RspCode\":\"97\",\"Message\":\"Invalid signature\"}";
+                ipnResponseDto.RspCode = "97";
+                ipnResponseDto.Message = "Invalid signature";
             }
 
-            return returnContent;
+            return ipnResponseDto;
         }
 
 

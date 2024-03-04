@@ -6,7 +6,7 @@ using API.Param;
 
 namespace API.Interface.Service
 {
-    public interface IRuleService : IBaseService<Rule>
+    public interface IRuleService
     {
         IAccountRepository AccountRepository { get; }
         Task<PageList<Rule>> GetAllRule();

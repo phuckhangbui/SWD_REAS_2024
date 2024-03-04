@@ -71,24 +71,24 @@ namespace API.Repository
             moneyTransactionParam.PageSize);
         }
 
-        public async System.Threading.Tasks.Task CreateMoneyTransactionAndMoneyTransactionDetail(MoneyTransaction moneyTransaction, MoneyTransactionDetail moneyTransactionDetail)
-        {
-            try
-            {
-                //_dataContext.MoneyTransaction.Add(moneyTransaction);
-                //_dataContext.SaveChanges();
-                moneyTransactionDetail.MoneyTransaction = moneyTransaction;
+        //public async System.Threading.Tasks.Task CreateMoneyTransactionAndMoneyTransactionDetail(MoneyTransaction moneyTransaction, MoneyTransactionDetail moneyTransactionDetail)
+        //{
+        //    try
+        //    {
+        //        //_dataContext.MoneyTransaction.Add(moneyTransaction);
+        //        //_dataContext.SaveChanges();
+        //        moneyTransactionDetail.MoneyTransaction = moneyTransaction;
 
 
-                _dataContext.MoneyTransactionDetail.Add(moneyTransactionDetail);
-                _dataContext.SaveChanges();
+        //        _dataContext.MoneyTransactionDetail.Add(moneyTransactionDetail);
+        //        _dataContext.SaveChanges();
 
 
-            }
-            catch (Exception ex)
-            {
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-            }
-        }
+        //    }
+        //}
     }
 }

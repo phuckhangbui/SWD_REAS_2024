@@ -45,7 +45,8 @@ namespace API.Controllers
         {
             try
             {
-                var transactionDetail = await _moneyTransactionService.GetMoneyTransactionDetail(transactionId);
+                //var transactionDetail = await _moneyTransactionService.GetMoneyTransactionDetail(transactionId);
+                var transactionDetail = "";
 
                 return Ok(transactionDetail);
             }

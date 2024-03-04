@@ -1,12 +1,12 @@
-﻿using API.DTOs;
-using API.Entity;
-using API.Param;
+﻿//using API.DTOs;
+//using API.Entity;
+//using API.Param;
 
-namespace API.Interface.Repository
-{
-    public interface IMoneyTransactionDetailRepository : IBaseRepository<MoneyTransactionDetail>
-    {
-        Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idTransaction);
-        Task<MoneyTransactionDetailDto> GetMoneyTransactionDetailAsync(int transactionId);
-    }
-}
+//namespace API.Interface.Repository
+//{
+//    public interface IMoneyTransactionDetailRepository : IBaseRepository<MoneyTransactionDetail>
+//    {
+//        Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idTransaction);
+//        Task<MoneyTransactionDetailDto> GetMoneyTransactionDetailAsync(int transactionId);
+//    }
+//}

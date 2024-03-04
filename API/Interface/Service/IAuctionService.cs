@@ -1,12 +1,11 @@
 ﻿using API.DTOs;
-using API.Entity;
 using API.Helper;
 using API.Param;
 
 
 namespace API.Interface.Service
 {
-    public interface IAuctionService : IBaseService<Auction>
+    public interface IAuctionService
     {
         Task<PageList<AuctionDto>> GetRealEstates(AuctionParam auctionParam);
         Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam);
