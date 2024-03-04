@@ -15,9 +15,9 @@ import AdminMemberList from "../src/Pages/Admin/MemberList/MemberList/index";
 import AdminAddStaff from "../src/Pages/Admin/AdminCreateStaff/AdminCreateStaff";
 import PendingList from "../src/Pages/Admin/AdminRealEstatePending";
 import AllList from "../src/Pages/Admin/AdminRealEstateAll"
-import StaffList from "./Pages/Admin/StaffList";
-import MemberList from "./Pages/Admin/MemberList";
-import AuctionComplete from "./Pages/Admin/AdminAuctionComplete";
+import NewsList from "../src/Pages/Admin/AdminNews"
+import AdminCreateNews from "../src/Pages/Admin/AdminCreateNews"
+import AuctionComplete from "../src/Pages/Admin/AdminAuctionComplete";
 import AuctionDetail from "./Pages/Admin/AdminAuctionDetail";
 import HomePage from "./Pages/Member/HomePage/homePage";
 import RealEstatePage from "./Pages/Member/RealEstatePage/realEstatePage";
@@ -90,6 +90,8 @@ function App() {
               <Route path="user/create" element={<AdminAddStaff/>}/>
               <Route path="real-estate/pending" element={<PendingList/>}/>
               <Route path="real-estate/all" element={<AllList/>}/>
+              <Route path="news" element={<NewsList/>}/>
+              <Route path="news/create" element={<AdminCreateNews/>}/>
               <Route path="*" element={<PageNotFound />} />
             </Route>
           {/* )} */}

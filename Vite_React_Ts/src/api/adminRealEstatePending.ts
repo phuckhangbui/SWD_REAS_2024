@@ -71,7 +71,7 @@ export const changeStatusRealPending = async (reasId: Number | undefined, reasSt
           reasId, reasStatus, messageString
         }
       const fetchData = await axios.post<Message>(
-        `${baseUrl}/api/admin/real-estate/pending/change/`,
+        `${baseUrl}/api/admin/real-estate/change/`,
         param,
         {
           headers: {

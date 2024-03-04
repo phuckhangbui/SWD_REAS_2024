@@ -24,21 +24,6 @@ namespace API.Services
 
         public IAccountRepository AccountRepository => _accountRepository;
 
-        public async Task<bool> BlockRealEstate(int reasId)
-        {
-            ReasStatusParam reasStatus = new ReasStatusParam();
-            reasStatus.reasId = reasId;
-            reasStatus.reasStatus = (int)RealEstateEnum.Block;
-            reasStatus.messageString = "";
-
-            bool check = await _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);
-            if (check)
-            {
-                return true;
-            }
-            else { return false; }
-        }
-
         public async Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstateExceptOnGoingByAdmin()
         {
             var reals = await _realEstateRepository.GetAllRealEstateExceptOnGoing();
@@ -73,21 +58,6 @@ namespace API.Services
         {
             var realEstateDetailDto = await _realEstateDetailRepository.GetRealEstateDetailByAdminOrStaff(reasId);
             return realEstateDetailDto;
-        }
-
-        public async Task<bool> UnblockRealEstate(int reasId)
-        {
-            ReasStatusParam reasStatus = new ReasStatusParam();
-            reasStatus.reasId = reasId;
-            reasStatus.reasStatus = (int)RealEstateEnum.Selling;
-            reasStatus.messageString = "";
-
-            bool check = await _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);
-            if (check)
-            {
-                return true;
-            }
-            else { return false; }
         }
 
         public async Task<bool> UpdateStatusRealEstateByAdmin(ReasStatusParam reasStatusParam)

@@ -3,7 +3,6 @@ using API.DTOs;
 using API.Entity;
 using API.Interface.Repository;
 using API.Param;
-using API.Validate;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
