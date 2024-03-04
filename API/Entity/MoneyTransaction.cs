@@ -3,6 +3,9 @@ namespace API.Entity;
 public class MoneyTransaction
 {
     public int TransactionId { get; set; }
+    public int Status { get; set; }
+    public string? TransactionNo { get; set; }
+    public string TxnRef { get; set; }
     public MoneyTransactionType Type { get; set; }
     public int TypeId { get; set; }
     public Account AccountSend { get; set; }

@@ -106,6 +106,10 @@ namespace API.Controllers
                 int statusFinish = (int)AuctionEnum.Finish;
                 bool result = await _auctionService.ToggleAuctionStatus(auctionDetailDto.AuctionId.ToString(), statusFinish.ToString());
 
+                //update status of the remain looser user
+
+
+
                 if (result)
                 {
                     //send email
