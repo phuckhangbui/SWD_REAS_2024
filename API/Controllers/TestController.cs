@@ -17,8 +17,8 @@ namespace API.Controllers
             _vnPayProperties = vnPayProperties.Value;
         }
 
-        [HttpGet("vnpayUrl")]
-        public async Task<ActionResult<string>> TestCreatePayment()
+        [HttpGet("vnpayUrl/{TnxRef}")]
+        public async Task<ActionResult<string>> TestCreatePayment(string TnxRef)
         {
             VnPayPaymentUrlDto vnPayPaymentUrlDto = new VnPayPaymentUrlDto();
             vnPayPaymentUrlDto.Url = _vnPayProperties.Url;
@@ -31,8 +31,8 @@ namespace API.Controllers
             vnPayPaymentUrlDto.ExpireDate = DateTime.Now.AddMinutes(10);
             vnPayPaymentUrlDto.Locale = "vn";
             vnPayPaymentUrlDto.OrderInfo = "test vnpay";
-            vnPayPaymentUrlDto.ReturnUrl = "http://localhost:99989";
-            vnPayPaymentUrlDto.TxnRef = "12345678";
+            vnPayPaymentUrlDto.ReturnUrl = "https://localhost:44383/test";
+            vnPayPaymentUrlDto.TxnRef = TnxRef;
 
             string paymentUrl = CreateUrl.CreatePaymentUrl(vnPayPaymentUrlDto, HttpContext);
             return Ok(paymentUrl);

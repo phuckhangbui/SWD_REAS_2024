@@ -23,7 +23,7 @@ namespace API.Helper.VnPay
             vnpay.AddRequestData("vnp_BankCode", "VNBANK");
             vnpay.AddRequestData("vnp_CreateDate", vnp.CreateDate.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", "VND");
-            vnpay.AddRequestData("vnp_IpAddr", "127.0.0.1");
+            vnpay.AddRequestData("vnp_IpAddr", "https://localhost:44383");
             vnpay.AddRequestData("vnp_Locale", vnp.Locale);
 
             vnpay.AddRequestData("vnp_OrderInfo", vnp.OrderInfo);
