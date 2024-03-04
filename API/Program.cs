@@ -1,10 +1,11 @@
-using API.Extensions;
-using Microsoft.OpenApi.Models;
 using API.Data;
+using API.Extensions;
+using API.Helper.VnPay;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using API.Interface.Service;
 using API.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,9 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+
+builder.Services.Configure<VnPayProperties>(builder.Configuration.GetSection("VnPay"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -67,6 +71,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 

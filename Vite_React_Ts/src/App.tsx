@@ -15,7 +15,9 @@ import AdminMemberList from "../src/Pages/Admin/MemberList/MemberList/index";
 import AdminAddStaff from "../src/Pages/Admin/AdminCreateStaff/AdminCreateStaff";
 import PendingList from "../src/Pages/Admin/AdminRealEstatePending";
 import AllList from "../src/Pages/Admin/AdminRealEstateAll"
-import AuctionComplete from "../src/Pages/Admin/AdminAuctionComplete";
+import StaffList from "./Pages/Admin/StaffList";
+import MemberList from "./Pages/Admin/MemberList";
+import AuctionComplete from "./Pages/Admin/AdminAuctionComplete";
 import AuctionDetail from "./Pages/Admin/AdminAuctionDetail";
 import HomePage from "./Pages/Member/HomePage/homePage";
 import RealEstatePage from "./Pages/Member/RealEstatePage/realEstatePage";

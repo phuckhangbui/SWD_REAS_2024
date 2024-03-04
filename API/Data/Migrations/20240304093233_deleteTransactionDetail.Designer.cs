@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240304093233_deleteTransactionDetail")]
+    partial class deleteTransactionDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -307,7 +310,8 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionId"));
 
-                    b.Property<int>("AccountReceiveId")
+                    b.Property<int?>("AccountReceiveId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int>("AccountSendId")
@@ -316,13 +320,13 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("DateExecution")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DepositId")
+                    b.Property<int>("DepositId")
                         .HasColumnType("int");
 
                     b.Property<double>("Money")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ReasId")
+                    b.Property<int>("ReasId")
                         .HasColumnType("int");
 
                     b.Property<int>("TransactionStatus")
@@ -338,12 +342,10 @@ namespace API.Data.Migrations
                     b.HasIndex("AccountSendId");
 
                     b.HasIndex("DepositId")
-                        .IsUnique()
-                        .HasFilter("[DepositId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("ReasId")
-                        .IsUnique()
-                        .HasFilter("[ReasId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("TypeId")
                         .IsUnique();
@@ -783,13 +785,13 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Entity.MoneyTransaction", b =>
                 {
                     b.HasOne("API.Entity.Account", "AccountReceive")
-                        .WithMany("MoneyTransactionsReceived")
+                        .WithMany()
                         .HasForeignKey("AccountReceiveId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("API.Entity.Account", "AccountSend")
-                        .WithMany("MoneyTransactionsSent")
+                        .WithMany("MoneyTransactions")
                         .HasForeignKey("AccountSendId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -797,12 +799,14 @@ namespace API.Data.Migrations
                     b.HasOne("API.Entity.DepositAmount", "DepositAmount")
                         .WithOne()
                         .HasForeignKey("API.Entity.MoneyTransaction", "DepositId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("API.Entity.RealEstate", "RealEstate")
                         .WithOne()
                         .HasForeignKey("API.Entity.MoneyTransaction", "ReasId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("API.Entity.MoneyTransactionType", "Type")
                         .WithOne()
@@ -904,9 +908,7 @@ namespace API.Data.Migrations
 
                     b.Navigation("MessagesSent");
 
-                    b.Navigation("MoneyTransactionsReceived");
-
-                    b.Navigation("MoneyTransactionsSent");
+                    b.Navigation("MoneyTransactions");
 
                     b.Navigation("NewsCreated");
 
