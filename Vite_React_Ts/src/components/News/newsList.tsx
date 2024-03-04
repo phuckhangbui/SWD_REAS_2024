@@ -51,7 +51,7 @@ const NewsList = ({ newsList }: NewsListProp) => {
       <div>
         <div className="mt-4 grid lg:grid-cols-2 md:grid-cols-2 md:gap-3 sm:grid-cols-1">
           {news &&
-            news.slice(0, 4).map((news) => (
+            news.map((news) => (
               <div key={news.newsId} onClick={() => toggleModal(news.newsId)}>
                 <NewsCard news={news} />
               </div>

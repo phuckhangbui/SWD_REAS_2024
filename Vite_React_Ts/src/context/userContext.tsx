@@ -5,7 +5,7 @@ interface UserProviderProps {
 }
 
 interface UserContextType {
-  user: loginUser | undefined;
+  userRole: number | undefined;
   token: string | undefined;
   login: (user: loginUser, token: string) => void;
   logout: () => void;
@@ -13,7 +13,7 @@ interface UserContextType {
 }
 
 export const UserContext = createContext<UserContextType>({
-  user: undefined,
+  userRole: undefined,
   token: undefined,
   login: () => {},
   logout: () => {},
@@ -21,30 +21,40 @@ export const UserContext = createContext<UserContextType>({
 });
 
 const UserProvider = ({ children }: UserProviderProps) => {
-  const [user, setUser] = useState<loginUser | undefined>(undefined);
+  const [userRole, setUserRole] = useState<number | undefined>(undefined);
   const [token, setToken] = useState<string | undefined>(undefined);
 
   const login = (user: loginUser, token: string) => {
     const stringUser = JSON.stringify(user);
     localStorage.setItem("user", stringUser);
     localStorage.setItem("token", token);
-    setUser(user);
+    setUserRole(user?.roleId);
     setToken(token);
   };
 
   useEffect(() => {
-    const storageToken = localStorage.getItem("token");
-    const storageUser = localStorage.getItem("user");
-    const parseStorageUser = JSON.parse(storageUser as string);
-
-    if (storageToken && storageUser) {
-      setUser(parseStorageUser);
-      setToken(storageToken);
+    try {
+      const getLocalData = async () => {
+        const storageToken = localStorage.getItem("token");
+        const storageUser = localStorage.getItem("user");
+        const parseStorageUser = JSON.parse(storageUser as string);
+        if (storageToken && storageUser) {
+          setUserRole(parseStorageUser?.roleId);
+          setToken(storageToken);
+        }
+      };
+      getLocalData();
+    } catch (error) {
+      console.log(error);
     }
   }, []);
 
+  // useEffect(() => {
+  //   console.log("User Role: ", userRole);
+  // }, [userRole]);
+
   const logout = () => {
-    setUser(undefined);
+    setUserRole(undefined);
     setToken(undefined);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -60,7 +70,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, token, login, logout, isAuth }}>
+    <UserContext.Provider value={{ userRole, token, login, logout, isAuth }}>
       {children}
     </UserContext.Provider>
   );
