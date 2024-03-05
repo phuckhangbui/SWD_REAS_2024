@@ -28,7 +28,16 @@ namespace API.Helper
             CreateMap<MoneyTransaction, MoneyTransactionDto>();
             CreateMap<DepositAmount, DepositAmountDto>();
             CreateMap<AuctionAccounting, AuctionAccountingDto>();
-            CreateMap<MoneyTransaction, MoneyTransactionDetailDto>();
+            CreateMap<MoneyTransaction, MoneyTransactionDetailDto>()
+                .ForMember(dest => dest.AccountSendName, opt => opt.MapFrom(src => src.AccountSend.AccountName))
+                .ForMember(dest => dest.AccountReceiveName, opt => opt.MapFrom(src => src.AccountReceive.AccountName))
+                .ForMember(dest => dest.ReasName, opt => opt.MapFrom(src => src.RealEstate.ReasName));
+            CreateMap<DepositAmount, DepositDto>()
+                .ForMember(dest => dest.ReasName, opt => opt.MapFrom(src => src.RealEstate.ReasName))
+                .ForMember(dest => dest.AccountSignName, opt => opt.MapFrom(src => src.AccountSign.AccountName));
+            CreateMap<DepositAmount, DepositDetailDto>()
+                .ForMember(dest => dest.ReasName, opt => opt.MapFrom(src => src.RealEstate.ReasName))
+                .ForMember(dest => dest.AccountSignName, opt => opt.MapFrom(src => src.AccountSign.AccountName));
         }
     }
 

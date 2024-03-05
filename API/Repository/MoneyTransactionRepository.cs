@@ -51,7 +51,12 @@ namespace API.Repository
 
         public async Task<MoneyTransactionDetailDto> GetMoneyTransactionDetailAsync(int transactionId)
         {
-            var moneyTransaction =  await _dataContext.MoneyTransaction.FindAsync(transactionId);
+            var moneyTransaction = await _dataContext.MoneyTransaction
+                .Include(m => m.AccountReceive)
+                .Include(m => m.AccountSend)
+                .Include(m => m.RealEstate)
+                .FirstAsync(m => m.TransactionId == transactionId);
+
             return _mapper.Map<MoneyTransactionDetailDto>(moneyTransaction);
         }
 
