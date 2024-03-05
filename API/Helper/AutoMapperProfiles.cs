@@ -28,7 +28,7 @@ namespace API.Helper
             CreateMap<MoneyTransaction, MoneyTransactionDto>();
             CreateMap<DepositAmount, DepositAmountDto>();
             CreateMap<AuctionAccounting, AuctionAccountingDto>();
-
+            CreateMap<MoneyTransaction, MoneyTransactionDetailDto>();
         }
     }
 

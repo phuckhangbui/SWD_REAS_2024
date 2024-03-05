@@ -1,5 +1,4 @@
 ﻿using API.DTOs;
-using API.Enums;
 using API.Errors;
 using API.Extension;
 using API.Helper;
@@ -104,7 +103,7 @@ namespace API.Controllers
                 });
             }
 
-            if (realEsateDetail.ReasStatus != (int)RealEstateStatus.Selling)
+            if (realEsateDetail.ReasStatus != (int)RealEstateEnum.Selling)
             {
                 return Ok(new
                 {

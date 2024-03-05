@@ -1,10 +1,10 @@
 ﻿using API.DTOs;
 using API.Entity;
+using API.Exceptions;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
 using API.Param;
-using API.Param.Enums;
 
 namespace API.Services
 {
@@ -17,17 +17,17 @@ namespace API.Services
             _moneyTransactionRepository = moneyTransactionRepository;
         }
 
-        //public async Task<MoneyTransactionDetailDto> GetMoneyTransactionDetail(int transactionId)
-        //{
-        //    //var transactionDetail = await _moneyTransactionDetailRepository.GetMoneyTransactionDetailAsync(transactionId);
-        //    var transactionDetail;
-        //    if (transactionDetail == null)
-        //    {
-        //        throw new BaseNotFoundException($"Transaction detail with ID {transactionId} not found.");
-        //    }
+        public async Task<MoneyTransactionDetailDto> GetMoneyTransactionDetail(int transactionId)
+        {
+            var transactionDetail = await _moneyTransactionRepository.GetMoneyTransactionDetailAsync(transactionId);
 
-        //    return transactionDetail;
-        //}
+            if (transactionDetail == null)
+            {
+                throw new BaseNotFoundException($"Transaction detail with ID {transactionId} not found.");
+            }
+
+            return transactionDetail;
+        }
 
         public Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionParam moneyTransactionParam)
         {

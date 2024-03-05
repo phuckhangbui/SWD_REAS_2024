@@ -49,11 +49,17 @@ namespace API.Repository
             return await _dataContext.MoneyTransaction.MaxAsync(x => x.TransactionId);
         }
 
+        public async Task<MoneyTransactionDetailDto> GetMoneyTransactionDetailAsync(int transactionId)
+        {
+            var moneyTransaction =  await _dataContext.MoneyTransaction.FindAsync(transactionId);
+            return _mapper.Map<MoneyTransactionDetailDto>(moneyTransaction);
+        }
+
         public async Task<PageList<MoneyTransactionDto>> GetMoneyTransactionsAsync(MoneyTransactionParam moneyTransactionParam)
         {
             var query = _dataContext.MoneyTransaction.AsQueryable();
 
-            if (moneyTransactionParam.TransactionStatus != 0)
+            if (moneyTransactionParam.TransactionStatus != -1)
             {
                 query = query.Where(m => m.TransactionStatus == moneyTransactionParam.TransactionStatus);
             }
@@ -63,12 +69,17 @@ namespace API.Repository
                 query = query.Where(m => m.TypeId == moneyTransactionParam.TypeId);
             }
 
+            if (moneyTransactionParam.DateExecutionFrom != default && moneyTransactionParam.DateExecutionTo != default)
+            {
+                query = query.Where(m => m.DateExecution >= moneyTransactionParam.DateExecutionFrom && m.DateExecution <= moneyTransactionParam.DateExecutionTo);
+            }
+
             query = query.OrderByDescending(r => r.DateExecution);
 
             return await PageList<MoneyTransactionDto>.CreateAsync(
-            query.AsNoTracking().ProjectTo<MoneyTransactionDto>(_mapper.ConfigurationProvider),
-            moneyTransactionParam.PageNumber,
-            moneyTransactionParam.PageSize);
+                query.AsNoTracking().ProjectTo<MoneyTransactionDto>(_mapper.ConfigurationProvider),
+                moneyTransactionParam.PageNumber,
+                moneyTransactionParam.PageSize);
         }
 
         //public async System.Threading.Tasks.Task CreateMoneyTransactionAndMoneyTransactionDetail(MoneyTransaction moneyTransaction, MoneyTransactionDetail moneyTransactionDetail)
