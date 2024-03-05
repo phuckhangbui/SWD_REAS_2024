@@ -43,6 +43,7 @@ namespace API.Extensions
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IMoneyTransactionService, MoneyTransactionService>();
             services.AddScoped<IDepositAmountService, DepositAmountService>();
+            services.AddScoped<IVnPayService, VnPayService>();
 
             services.AddScoped<IAuctionAccountingService, AuctionAccountingService>();
 

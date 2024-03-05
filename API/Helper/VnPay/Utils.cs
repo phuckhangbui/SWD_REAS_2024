@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,7 +9,23 @@ namespace API.Helper.VnPay
     public class Utils
     {
 
+        public static DateTime ParseDateString(string dateString)
+        {
+            // Specify the format of the date and time string
+            string format = "yyyyMMddHHmmss";
 
+            // Parse the string to a DateTime object
+            DateTime dateTime;
+            if (DateTime.TryParseExact(dateString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return dateTime;
+            }
+            else
+            {
+                // Handle parsing failure
+                throw new ArgumentException("Invalid date and time format");
+            }
+        }
 
         public static String HmacSHA512(string key, String inputData)
         {

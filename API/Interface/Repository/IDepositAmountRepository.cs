@@ -13,5 +13,6 @@ namespace API.Interface.Repository
 
         List<DepositAmount> GetDepositAmounts(int accountSignId, int reasId);
         DepositAmount GetDepositAmount(int accountSignId, int reasId);
+        DepositAmount GetDepositAmount(int depositId);
     }
 }

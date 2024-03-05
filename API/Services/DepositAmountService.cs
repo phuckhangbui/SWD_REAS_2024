@@ -65,10 +65,10 @@ namespace API.Services
             return depositAmountDto;
         }
 
-        public async Task<DepositAmountDto> UpdateStatusToDeposited(int customerId, int reasId, DateTime paymentTime)
+        public async Task<DepositAmountDto> UpdateStatusToDeposited(int depositId, DateTime paymentTime)
         {
             DepositAmountDto depositAmountDto = new DepositAmountDto();
-            DepositAmount depositAmount = _depositAmountRepository.GetDepositAmount(customerId, reasId);
+            DepositAmount depositAmount = _depositAmountRepository.GetDepositAmount(depositId);
             if (depositAmount == null)
             {
                 return null;
@@ -84,9 +84,16 @@ namespace API.Services
             return depositAmountDto;
         }
 
-        public DepositAmount GetDepositAmount(int customerId, int reasId)
+        public DepositAmountDto GetDepositAmount(int customerId, int reasId)
         {
-            return _depositAmountRepository.GetDepositAmount(customerId, reasId);
+            var depositAmount = _depositAmountRepository.GetDepositAmount(customerId, reasId);
+            var depositAmountDto = _mapper.Map<DepositAmount, DepositAmountDto>(depositAmount);
+            return depositAmountDto;
+        }
+
+        public DepositAmount GetDepositAmount(int depositId)
+        {
+            return _depositAmountRepository.GetDepositAmount(depositId);
         }
     }
 }

@@ -9,5 +9,6 @@ namespace API.Interface.Service
         Task<PageList<RealEstateDto>> ListRealEstate();
         Task<PageList<RealEstateDto>> SearchRealEstateForMember(SearchRealEstateParam searchRealEstateDto);
         Task<RealEstateDetailDto> ViewRealEstateDetail(int id);
+
     }
 }

@@ -66,7 +66,8 @@ namespace API.Repository
                 CreateDepositDate = x.CreateDepositDate,
                 ReasId = x.ReasId,
                 RuleId = x.RuleId,
-                Status = getNameStaus.GetDepositAmountStatusName(x.Status),
+                Status = x.Status,
+                DisplayStatus = getNameStaus.GetDepositAmountStatusName(x.Status),
             });
             depositAmountByAccount = depositAmountByAccount.OrderByDescending(x => x.DepositDate);
             return await PageList<DepositAmountDto>.CreateAsync(
@@ -95,7 +96,8 @@ namespace API.Repository
                 CreateDepositDate = x.CreateDepositDate,
                 ReasId = x.ReasId,
                 RuleId = x.RuleId,
-                Status = getNameStaus.GetDepositAmountStatusName(x.Status),
+                Status = x.Status,
+                DisplayStatus = getNameStaus.GetDepositAmountStatusName(x.Status),
             });
 
             depositAmountBySearch = depositAmountBySearch.OrderByDescending(x => x.DepositDate);
@@ -108,6 +110,16 @@ namespace API.Repository
 
         public List<DepositAmount> GetDepositAmounts(int accountSignId, int reasId) => _context.DepositAmount.Where(d => d.AccountSignId == accountSignId && d.ReasId == reasId).ToList();
 
-        public DepositAmount GetDepositAmount(int accountSignId, int reasId) => _context.DepositAmount.FirstOrDefault(d => d.AccountSignId == accountSignId && d.ReasId == reasId);
+        public DepositAmount GetDepositAmount(int accountSignId, int reasId)
+        {
+            return _context.DepositAmount
+                .FirstOrDefault(d => d.AccountSignId == accountSignId && d.ReasId == reasId);
+        }
+
+
+        public DepositAmount GetDepositAmount(int depositId)
+        {
+            return _context.DepositAmount.FirstOrDefault(d => d.DepositId == depositId);
+        }
     }
 }

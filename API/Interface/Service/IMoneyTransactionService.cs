@@ -8,6 +8,8 @@ namespace API.Interface.Service
     {
         Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionParam moneyTransactionParam);
         //Task<MoneyTransactionDetailDto> GetMoneyTransactionDetail(int transactionId);
-        Task<MoneyTransaction> CreateMoneyTransactionFromDepositPayment(DepositPaymentDto paymentDto);
+        //Task<MoneyTransaction> CreateMoneyTransactionFromDepositPayment(DepositPaymentDto paymentDto);
+
+        Task<bool> CreateMoneyTransaction(MoneyTransaction moneyTransaction);
     }
 }
