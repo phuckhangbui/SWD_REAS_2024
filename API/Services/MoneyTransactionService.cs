@@ -34,30 +34,35 @@ namespace API.Services
             return _moneyTransactionRepository.GetMoneyTransactionsAsync(moneyTransactionParam);
         }
 
-        public async Task<MoneyTransaction> CreateMoneyTransactionFromDepositPayment(DepositPaymentDto paymentDto)
+        public async System.Threading.Tasks.Task<bool> CreateMoneyTransaction(MoneyTransaction moneyTransaction)
         {
-            MoneyTransaction moneyTransaction = new MoneyTransaction();
-
-            moneyTransaction.TypeId = 1;
-            moneyTransaction.AccountSendId = paymentDto.CustomerId;
-            moneyTransaction.TransactionStatus = (int)TransactionEnum.Received;
-            moneyTransaction.Money = paymentDto.Money;
-            moneyTransaction.DateExecution = paymentDto.PaymentTime;
-
-
-            //MoneyTransactionDetail moneyTransactionDetail = new MoneyTransactionDetail();
-            //moneyTransactionDetail.ReasId = paymentDto.ReasId;
-            //moneyTransactionDetail.TotalAmmount = paymentDto.Money;
-            //moneyTransactionDetail.PaidAmount = paymentDto.Money;
-            //moneyTransactionDetail.RemainingAmount = 0;
-            //moneyTransactionDetail.DateExecution = paymentDto.PaymentTime;
-            //moneyTransactionDetail.AccountReceiveId = null;
-            //moneyTransactionDetail.AuctionId = null;
-            ////moneyTransactionDetail.MoneyTransactionDetailId = null;
-
-            //await _moneyTransactionRepository.CreateMoneyTransactionAndMoneyTransactionDetail(moneyTransaction, moneyTransactionDetail);
-
-            return moneyTransaction;
+            return await _moneyTransactionRepository.CreateAsync(moneyTransaction);
         }
+
+        //public async Task<MoneyTransaction> CreateMoneyTransactionFromDepositPayment(DepositPaymentDto paymentDto)
+        //{
+        //    MoneyTransaction moneyTransaction = new MoneyTransaction();
+
+        //    moneyTransaction.TypeId = 1;
+        //    moneyTransaction.AccountSendId = paymentDto.CustomerId;
+        //    moneyTransaction.TransactionStatus = (int)TransactionEnum.Received;
+        //    moneyTransaction.Money = paymentDto.Money;
+        //    moneyTransaction.DateExecution = paymentDto.PaymentTime;
+
+
+        //    //MoneyTransactionDetail moneyTransactionDetail = new MoneyTransactionDetail();
+        //    //moneyTransactionDetail.ReasId = paymentDto.ReasId;
+        //    //moneyTransactionDetail.TotalAmmount = paymentDto.Money;
+        //    //moneyTransactionDetail.PaidAmount = paymentDto.Money;
+        //    //moneyTransactionDetail.RemainingAmount = 0;
+        //    //moneyTransactionDetail.DateExecution = paymentDto.PaymentTime;
+        //    //moneyTransactionDetail.AccountReceiveId = null;
+        //    //moneyTransactionDetail.AuctionId = null;
+        //    ////moneyTransactionDetail.MoneyTransactionDetailId = null;
+
+        //    //await _moneyTransactionRepository.CreateMoneyTransactionAndMoneyTransactionDetail(moneyTransaction, moneyTransactionDetail);
+
+        //    return moneyTransaction;
+        //}
     }
 }

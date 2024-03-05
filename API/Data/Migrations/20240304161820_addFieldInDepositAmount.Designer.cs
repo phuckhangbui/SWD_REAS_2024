@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240304161820_addFieldInDepositAmount")]
+    partial class addFieldInDepositAmount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,10 +313,10 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionId"));
 
-                    b.Property<int?>("AccountReceiveId")
+                    b.Property<int>("AccountReceiveId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AccountSendId")
+                    b.Property<int>("AccountSendId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateExecution")
@@ -326,6 +329,9 @@ namespace API.Data.Migrations
                         .HasColumnType("float");
 
                     b.Property<int?>("ReasId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("TransactionNo")
@@ -795,12 +801,14 @@ namespace API.Data.Migrations
                     b.HasOne("API.Entity.Account", "AccountReceive")
                         .WithMany("MoneyTransactionsReceived")
                         .HasForeignKey("AccountReceiveId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("API.Entity.Account", "AccountSend")
                         .WithMany("MoneyTransactionsSent")
                         .HasForeignKey("AccountSendId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("API.Entity.DepositAmount", "DepositAmount")
                         .WithOne()

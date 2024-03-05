@@ -11,8 +11,9 @@ namespace API.Interface.Service
 
         Task<DepositAmountDto> CreateDepositAmount(int customerId, int reasId);
 
-        Task<DepositAmountDto> UpdateStatusToDeposited(int customerId, int reasId, DateTime paymentTime);
+        Task<DepositAmountDto> UpdateStatusToDeposited(int depositId, DateTime paymentTime);
 
-        DepositAmount GetDepositAmount(int customerId, int reasId);
+        DepositAmountDto GetDepositAmount(int customerId, int reasId);
+        DepositAmount GetDepositAmount(int depositId);
     }
 }
