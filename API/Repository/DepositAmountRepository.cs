@@ -138,7 +138,13 @@ namespace API.Repository
                     account => account.AccountId,
                     depositAmount => depositAmount.AccountSignId,
                     (account, depositAmount) => new { Account = account, DepositAmount = depositAmount })
-                .Where(joinResult => joinResult.DepositAmount.ReasId == reasId && joinResult.DepositAmount.Status == (int)UserDepositEnum.Deposited)
+                .Join(_context.RealEstate,
+                    joinResult => joinResult.DepositAmount.ReasId,
+                    realEstate => realEstate.ReasId,
+                    (joinResult, realEstate) => new { Account = joinResult.Account, DepositAmount = joinResult.DepositAmount, RealEstate = realEstate })
+                .Where(joinResult => joinResult.DepositAmount.ReasId == reasId &&
+                                     joinResult.DepositAmount.Status == (int)UserDepositEnum.Deposited &&
+                                     joinResult.RealEstate.ReasStatus == (int)RealEstateEnum.Selling)
                 .Select(joinResult => new AccountMemberDto
                 {
                     AccountId = joinResult.Account.AccountId,
