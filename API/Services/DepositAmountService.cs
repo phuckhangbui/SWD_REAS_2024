@@ -1,6 +1,6 @@
 ﻿using API.DTOs;
 using API.Entity;
-using API.Enums;
+using API.Exceptions;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
@@ -25,7 +25,7 @@ namespace API.Services
 
         readonly float DEPOSIT_PERCENT = 0.05f;
 
-        public async Task<PageList<DepositAmountDto>> GetDepositAmounts(DepositAmountParam depositAmountParam)
+        public async Task<PageList<DepositDto>> GetDepositAmounts(DepositAmountParam depositAmountParam)
         {
             return await _depositAmountRepository.GetDepositAmountsAsync(depositAmountParam);
         }
@@ -35,7 +35,7 @@ namespace API.Services
             DepositAmountDto depositAmountDto = new DepositAmountDto();
             RealEstate realEstate = _realEstateRepository.GetRealEstate(reasId);
 
-            if (realEstate.ReasStatus != (int)RealEstateStatus.Selling)
+            if (realEstate.ReasStatus != (int)RealEstateEnum.Selling)
             {
                 return null;
             }
@@ -94,6 +94,30 @@ namespace API.Services
         public DepositAmount GetDepositAmount(int depositId)
         {
             return _depositAmountRepository.GetDepositAmount(depositId);
+        }
+
+        public DepositDetailDto GetDepositDetail(int depositId)
+        {
+            var depositDetail = _depositAmountRepository.GetDepositDetailAsync(depositId);
+
+            if (depositDetail == null)
+            {
+                throw new BaseNotFoundException($"Depisit detail with ID {depositId} not found.");
+            }
+
+            return depositDetail;
+        }
+
+        public async Task<PageList<AccountDepositedDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId)
+        {
+            var realEstate = _realEstateRepository.GetRealEstate(reasId);
+
+            if (realEstate == null)
+            {
+                throw new BaseNotFoundException($"Real estate with ID {reasId} not found.");
+            }
+
+            return await _depositAmountRepository.GetAccountsHadDeposited(paginationParams, reasId);
         }
     }
 }

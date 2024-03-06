@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entity;
+using API.Exceptions;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
+using API.Param;
 
 namespace API.Services
 {
@@ -15,21 +17,21 @@ namespace API.Services
             _moneyTransactionRepository = moneyTransactionRepository;
         }
 
-        //public async Task<MoneyTransactionDetailDto> GetMoneyTransactionDetail(int transactionId)
-        //{
-        //    //var transactionDetail = await _moneyTransactionDetailRepository.GetMoneyTransactionDetailAsync(transactionId);
-        //    var transactionDetail;
-        //    if (transactionDetail == null)
-        //    {
-        //        throw new BaseNotFoundException($"Transaction detail with ID {transactionId} not found.");
-        //    }
-
-        //    return transactionDetail;
-        //}
-
-        public Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionParam moneyTransactionParam)
+        public async Task<MoneyTransactionDetailDto> GetMoneyTransactionDetail(int transactionId)
         {
-            return _moneyTransactionRepository.GetMoneyTransactionsAsync(moneyTransactionParam);
+            var transactionDetail = await _moneyTransactionRepository.GetMoneyTransactionDetailAsync(transactionId);
+
+            if (transactionDetail == null)
+            {
+                throw new BaseNotFoundException($"Transaction detail with ID {transactionId} not found.");
+            }
+
+            return transactionDetail;
+        }
+
+        public Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionRequest moneyTransactionRequest)
+        {
+            return _moneyTransactionRepository.GetMoneyTransactionsAsync(moneyTransactionRequest);
         }
 
         public async System.Threading.Tasks.Task<bool> CreateMoneyTransaction(MoneyTransaction moneyTransaction)

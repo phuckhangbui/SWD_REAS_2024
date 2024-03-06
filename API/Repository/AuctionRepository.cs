@@ -82,5 +82,48 @@ namespace API.Repository
         {
             return _context.Auction.Find(auctionId);
         }
+
+        public async Task<PageList<AuctionDto>> GetAuctionHistoryForOwnerAsync(AuctionHistoryParam auctionAccountingParam)
+        {
+            var query = _context.AuctionsAccounting
+                .Where(aa => aa.AccountOwnerId == auctionAccountingParam.AccountId 
+                        && aa.Auction.Status == (int)AuctionEnum.Finish 
+                        || aa.Auction.Status == (int)AuctionEnum.Cancel)
+                .Select(aa => aa.Auction)
+                .AsQueryable();
+
+            var pageList = await PageList<Auction>.CreateAsync(query, auctionAccountingParam.PageNumber, auctionAccountingParam.PageSize);
+
+            var auctionDtos = _mapper.Map<List<AuctionDto>>(pageList);
+
+            return new PageList<AuctionDto>(auctionDtos, pageList.TotalCount, pageList.CurrentPage, pageList.PageSize);
+        }
+
+        public async Task<PageList<AuctionDto>> GetAuctionHistoryForAttenderAsync(AuctionHistoryParam auctionAccountingParam)
+        {
+            var query = _context.DepositAmount
+                .Where(d => d.AccountSignId == auctionAccountingParam.AccountId)
+                .Join(
+                    _context.RealEstate,
+                    deposit => deposit.ReasId,
+                    realEstate => realEstate.ReasId,
+                    (deposit, realEstate) => new { Deposit = deposit, RealEstate = realEstate }
+                )
+                .Join(
+                    _context.Auction,
+                    depositRealEstate => depositRealEstate.RealEstate.ReasId,
+                    auction => auction.ReasId,
+                    (depositRealEstate, auction) => auction
+                )
+                .Where(a => a.Status == (int)AuctionEnum.Finish)
+                .Distinct()
+                .AsQueryable();
+
+            var pageList = await PageList<Auction>.CreateAsync(query, auctionAccountingParam.PageNumber, auctionAccountingParam.PageSize);
+
+            var auctionDtos = _mapper.Map<List<AuctionDto>>(pageList);
+
+            return new PageList<AuctionDto>(auctionDtos, pageList.TotalCount, pageList.CurrentPage, pageList.PageSize);
+        }
     }
 }

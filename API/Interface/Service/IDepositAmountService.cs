@@ -7,7 +7,7 @@ namespace API.Interface.Service
 {
     public interface IDepositAmountService
     {
-        Task<PageList<DepositAmountDto>> GetDepositAmounts(DepositAmountParam depositAmountParam);
+        Task<PageList<DepositDto>> GetDepositAmounts(DepositAmountParam depositAmountParam);
 
         Task<DepositAmountDto> CreateDepositAmount(int customerId, int reasId);
 
@@ -15,5 +15,7 @@ namespace API.Interface.Service
 
         DepositAmountDto GetDepositAmount(int customerId, int reasId);
         DepositAmount GetDepositAmount(int depositId);
+        DepositDetailDto GetDepositDetail(int depositId);
+        Task<PageList<AccountDepositedDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId);
     }
 }

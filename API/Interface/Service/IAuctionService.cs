@@ -10,5 +10,7 @@ namespace API.Interface.Service
         Task<PageList<AuctionDto>> GetRealEstates(AuctionParam auctionParam);
         Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam);
         Task<bool> ToggleAuctionStatus(string auctionId, string statusCode);
+        Task<PageList<AuctionDto>> GetAuctionHisotoryForOwner(AuctionHistoryParam auctionAccountingParam);
+        Task<PageList<AuctionDto>> GetAuctionHisotoryForAttender(AuctionHistoryParam auctionAccountingParam);
     }
 }

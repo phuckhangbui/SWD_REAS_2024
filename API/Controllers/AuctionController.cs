@@ -1,7 +1,7 @@
 using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Errors;
+using API.Exceptions;
 using API.Extension;
 using API.Helper;
 using API.Helper.VnPay;
@@ -136,6 +136,70 @@ namespace API.Controllers
             return Ok(auctionAccountingDto);
         }
 
+        [HttpGet("/owner/auction-history")]
+        public async Task<IActionResult> GetOwnerAuctionHistory([FromQuery] AuctionHistoryParam auctionHisotoryParam)
+        {
+            try
+            {
+                var auctionHistory = await _auctionService.GetAuctionHisotoryForOwner(auctionHisotoryParam);
+
+                Response.AddPaginationHeader(new PaginationHeader(auctionHistory.CurrentPage, auctionHistory.PageSize,
+                auctionHistory.TotalCount, auctionHistory.TotalPages));
+
+                return Ok(auctionHistory);
+            }
+            catch (BaseNotFoundException ex)
+            {
+                return BadRequest(new ApiResponse(404, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(500, ex.Message));
+            }
+        }
+
+        [HttpGet("/owner/auction-history/{auctionId}")]
+        public async Task<IActionResult> GetOwnerAuctionAccouting(int auctionId)
+        {
+            try
+            {
+                var auctionAccouting = await _auctionAccountingService.GetAuctionAccounting(auctionId);
+
+                return Ok(auctionAccouting);
+            }
+            catch (BaseNotFoundException ex)
+            {
+                return BadRequest(new ApiResponse(404, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(500, ex.Message));
+            }
+        }
+
+        [HttpGet("/attender/auction-history")]
+        public async Task<IActionResult> GetAttenderAuctionHistory([FromQuery] AuctionHistoryParam auctionHisotoryParam)
+        {
+            try
+            {
+                var auctionHistory = await _auctionService.GetAuctionHisotoryForAttender(auctionHisotoryParam);
+
+                Response.AddPaginationHeader(new PaginationHeader(auctionHistory.CurrentPage, auctionHistory.PageSize,
+                auctionHistory.TotalCount, auctionHistory.TotalPages));
+
+                return Ok(auctionHistory);
+            }
+            catch (BaseNotFoundException ex)
+            {
+                return BadRequest(new ApiResponse(404, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(500, ex.Message));
+            }
+        }
+
+        [Authorize(policy: "Customer")]
         [Authorize(policy: "Member")]
         [HttpGet("register")]
         public async Task<ActionResult<DepositAmountDtoWithPaymentUrl>> RegisterAuction([FromQuery] string customerId, string reasId, string returnUrl)
@@ -155,7 +219,7 @@ namespace API.Controllers
                     return BadRequest(new ApiResponse(400));
                 }
 
-                if (realEstate.ReasStatus != (int)RealEstateStatus.Selling)
+                if (realEstate.ReasStatus != (int)RealEstateEnum.Selling)
                 {
                     return BadRequest(new ApiResponse(400));
 
@@ -237,6 +301,5 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse(400));
             }
         }
-
     }
 }
