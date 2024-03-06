@@ -1,4 +1,4 @@
 interface RuleAdd{
-    Content: string
-    Title: string
+    content: string
+    title: string
 }

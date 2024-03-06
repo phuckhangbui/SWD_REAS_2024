@@ -1,276 +1,221 @@
-import React, { Key, useContext, useEffect, useState } from "react";
-import {
-  Form,
-  FormInstance,
-  Input,
-  InputNumber,
-  Select,
-  Table,
-  Typography,
-} from "antd";
-import { AnyObject } from "antd/es/_util/type";
-import { NumberFormat } from "../../../../utils/numbetFormat";
-import { Avatar, Input as TailwindInput } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import {Input} from "@material-tailwind/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { Table, TableProps, Tag , Button, Descriptions} from "antd";
+import { useState, useEffect } from "react";
+import {
+  getAuctionAllAdmin,
+  getAuctionAllAdminById,
+} from "../../../../api/adminAuction";
+import { useContext } from "react";
+import { UserContext } from "../../../../context/userContext";
+import { NumberFormat } from "../../../../utils/numbetFormat";
 
-const EditableContext = React.createContext<FormInstance<any> | null>(null);
+const AuctionAllList: React.FC = () => {
+  const { token } = useContext(UserContext);
+  const [search, setSearch] = useState("");
+  const [auctionData, setAuctionData] = useState<AuctionAdmin[]>();
+  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDetailAllAdmin>();
+  const [auctionID, setAuctionID] = useState<number>();
+  const [showDetail, setShowDetail] = useState<boolean>(false);
 
-interface DataType {
-  key: number;
-  realEstate: string;
-  remainingTime: string;
-  currentBid: number;
-  owner: string;
-  img: string;
-  auctionType: string;
-  bidIncrement: number;
-}
+  const formatDate = (dateString: Date): string => {
+    const dateObject = new Date(dateString);
+    return `${dateObject.getFullYear()}-${(
+      "0" +
+      (dateObject.getMonth() + 1)
+    ).slice(-2)}-${("0" + dateObject.getDate()).slice(-2)} ${(
+      "0" + dateObject.getHours()
+    ).slice(-2)}:${("0" + dateObject.getMinutes()).slice(-2)}:${(
+      "0" + dateObject.getSeconds()
+    ).slice(-2)}`;
+  };
 
-interface EditableRowProps {
-  index: number;
-}
+  const statusColorMap: { [key: string]: string } = {
+    NotYet: "gray",
+    OnGoing: "yellow",
+    Finish: "blue",
+    Cancel: "volcano",
+  };
 
-const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
-  const [form] = Form.useForm();
-  return (
-    <Form form={form} component={false}>
-      <EditableContext.Provider value={form}>
-        <tr {...props} />
-      </EditableContext.Provider>
-    </Form>
-  );
-};
-
-interface EditableCellProps {
-  title: React.ReactNode;
-  editable: boolean;
-  children: React.ReactNode;
-  dataIndex: keyof DataType;
-  record: DataType;
-  handleSave: (record: DataType) => void;
-}
-
-const EditableCell: React.FC<EditableCellProps> = ({
-  title,
-  editable,
-  children,
-  dataIndex,
-  record,
-  handleSave,
-  ...restProps
-}) => {
-  const [editing, setEditing] = useState(false);
-  // const inputRef = useRef<InputRef>(null);
-  const form = useContext(EditableContext)!;
+  const fetchAuctionList = async () => {
+    try {
+      if (token) {
+        let data: AuctionAdmin[] | undefined;
+        data = await getAuctionAllAdmin(token);
+        setAuctionData(data);
+      }
+    } catch (error) {
+      console.error("Error fetching auction list:", error);
+    }
+  };
 
   useEffect(() => {
-    if (editing) {
-      // inputRef.current!.focus();
-    }
-  }, [editing]);
+    fetchAuctionList();
+  }, [token]);
 
-  const toggleEdit = () => {
-    setEditing(!editing);
-    form.setFieldsValue({ [dataIndex]: record[dataIndex] });
-  };
-
-  const save = async () => {
+  const fetchAuctionDetail = async (auctionId: Number | undefined) => {
     try {
-      const values = await form.validateFields();
-
-      toggleEdit();
-      handleSave({ ...record, ...values });
-    } catch (errInfo) {
-      console.log("Save failed:", errInfo);
+      if (token) {
+        let data: AuctionDetailAllAdmin | undefined;
+        data = await getAuctionAllAdminById(auctionId, token);
+        setAuctionDetailData(data);
+        setAuctionID(auctionID);
+        setShowDetail(true);
+      }
+    } catch (error) {
+      console.error("Error fetching auction detail:", error);
     }
   };
 
-  let childNode = children;
-
-  if (editable) {
-    switch (dataIndex) {
-      case "bidIncrement":
-        childNode = editing ? (
-          <Form.Item
-            style={{ margin: 0 }}
-            name={dataIndex}
-            rules={[
-              {
-                required: true,
-                message: `${title} is required.`,
-              },
-            ]}
-          >
-            <InputNumber onPressEnter={save} onBlur={save} />
-          </Form.Item>
-        ) : (
-          <div
-            className="editable-cell-value-wrap"
-            style={{ paddingRight: 24 }}
-            onClick={toggleEdit}
-          >
-            {children}
-          </div>
-        );
-        break;
-      default:
-        childNode = editing ? (
-          <Form.Item
-            style={{ margin: 0 }}
-            name={dataIndex}
-            rules={[
-              {
-                required: true,
-                message: `${title} is required.`,
-              },
-            ]}
-          >
-            <Input onPressEnter={save} onBlur={save} />
-          </Form.Item>
-        ) : (
-          <div
-            className="editable-cell-value-wrap"
-            style={{ paddingRight: 24 }}
-            onClick={toggleEdit}
-          >
-            {children}
-          </div>
-        );
-        break;
-    }
-  }
-
-  return <td {...restProps}>{childNode}</td>;
-};
-
-type EditableTableProps = Parameters<typeof Table>[0];
-
-type ColumnTypes = Exclude<EditableTableProps["columns"], undefined>;
-
-const OngoingList: React.FC = () => {
-  const [form] = Form.useForm();
-  const [dataSource, setDataSource] = useState<DataType[]>([]);
-  const [search, setSearch] = useState("");
-  const [type, setType] = useState("");
-  for (let i = 1; i < 100; i++) {
-    dataSource.push({
-      key: i,
-      realEstate: `Property ${i}`,
-      remainingTime: "1 hours",
-      currentBid: 1000000000 + i,
-      owner: `User No. ${i}`,
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-      auctionType: "department",
-      bidIncrement: 10000000 + i,
-    });
-  }
-  const handleSave = (row: DataType) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      ...row,
-    });
-    setDataSource(newData);
+  const viewDetail = (AuctionId: number) => {
+    fetchAuctionDetail(AuctionId);
   };
 
-  const handleChange = (value: string) => {
-    setType(value);
-  };
-
-  const defaultColumns: (ColumnTypes[number] & {
-    editable?: boolean;
-    dataIndex: string;
-  })[] = [
+  const columns: TableProps<AuctionAdmin>["columns"] = [
     {
-      title: "Id",
-      dataIndex: "key",
+      title: "No",
+      width: "5%",
+      render: (text: any, record: any, index: number) => index + 1,
     },
     {
-      title: "Real Estate",
-      dataIndex: "realEstate",
+      title: "Reas Name",
+      dataIndex: "reasName",
+      width: "20%",
     },
     {
-      title: "Remaining Time",
-      dataIndex: "remainingTime",
+      title: "Floor Bid",
+      dataIndex: "floorBid",
+      width: "15%",
     },
     {
-      title: "Current Bid",
-      dataIndex: "currentBid",
-      render: (_: any, record: AnyObject) => NumberFormat(record.currentBid),
-      sorter: (a, b) => a.currentBid - b.currentBid,
+      title: "Date Start",
+      dataIndex: "dateStart",
+      render: (date_Created: Date) => formatDate(date_Created),
+      width: "15%",
     },
     {
-      title: "Owner",
-      dataIndex: "owner",
-      render: (_: any, record: AnyObject) => (
-        <div className="flex items-center gap-3">
-          <Avatar src={record.img} alt={record.owner} size="sm" />
-          <div className="flex flex-col">
-            <Typography color="blue-gray" className="font-normal">
-              {record.owner}
-            </Typography>
-          </div>
-        </div>
-      ),
-      sorter: (a, b) => a.owner.localeCompare(b.owner),
+      title: "Date End",
+      dataIndex: "dateEnd",
+      render: (date_End: Date) => formatDate(date_End),
+      width: "15%",
     },
     {
-      title: "Auction Type",
-      dataIndex: "auctionType",
-      filters: [
-        { value: "residential", text: "Residential" },
-        { value: "commercial", text: "Commercial" },
-        { value: "land", text: "Land" },
-        { value: "investment", text: "Investment" },
-        { value: "farmland", text: "Farmland" },
-        { value: "specialPurpose", text: "Special Purpose" },
-        { value: "department", text: "Department" },
-      ],
-      onFilter: (value: boolean | Key, record: AnyObject) =>
-        record.auctionType.indexOf(String(value)) === 0,
+      title: "Status",
+      dataIndex: "status",
+      width: "10%",
+      render: (reas_Status: string) => {
+        const color = statusColorMap[reas_Status] || "gray"; // Mặc định là màu xám nếu không có trong ánh xạ
+        return (
+          <Tag color={color} key={reas_Status}>
+            {reas_Status.toUpperCase()}
+          </Tag>
+        );
+      },
     },
     {
-      title: "Bid Increment",
-      dataIndex: "bidIncrement",
-      render: (_: any, record: AnyObject) => NumberFormat(record.bidIncrement),
-      editable: true,
-      sorter: (a, b) => a.bidIncrement - b.bidIncrement,
-    },
-    {
+      title: "",
       dataIndex: "operation",
-      render: (_: any) => <a>View details</a>,
+      render: (_: any, record: AuctionAdmin) => (
+        <a onClick={() => viewDetail(record.auctionId)}>View details</a>
+      ),
+      width: "10%",
     },
   ];
 
-  const components = {
-    body: {
-      row: EditableRow,
-      cell: EditableCell,
-    },
+  const renderBorderedItems = () => {
+    const items = [
+      {
+        key: "1",
+        label: "Reas Name",
+        children: auctionDetailData?.reasName || "",
+        span: 3,
+      },
+      {
+        key: "2",
+        label: "Account Create",
+        children: auctionDetailData?.accountCreateName || "",
+      },
+      {
+        key: "3",
+        label: "Account Owner",
+        children: auctionDetailData?.accountOwnerName || "",
+      },
+      {
+        key: "4",
+        label: "Email Owner",
+        children: auctionDetailData?.accountOwnerEmail || "",
+      },
+      {
+        key: "5",
+        label: "Phone Owner",
+        children: auctionDetailData?.accountOwnerPhone || "",
+      },
+      {
+        key: "6",
+        label: "Floor Bid",
+        children: auctionDetailData?.floorBid || "",
+        render: (floorBid: string | number) => typeof floorBid === 'number' ? NumberFormat(floorBid) : floorBid
+      },
+      {
+        key: "7",
+        label: "Account Status",
+        children: auctionDetailData?.status || "",
+        render: (reas_Status: string) => {
+          const color = statusColorMap[reas_Status] || "gray"; // Mặc định là màu xám nếu không có trong ánh xạ
+          return (
+            <Tag color={color} key={reas_Status}>
+              {reas_Status.toUpperCase()}
+            </Tag>
+          );
+        },
+      },
+      {
+        key: "8",
+        label: "Date Start",
+        children: auctionDetailData
+          ? formatDate(auctionDetailData.dateStart)
+          : "",
+      },
+    ];
+    return items.map((item) => (
+      <Descriptions.Item key={item.key} label={item.label}>
+        {item.render ? item.render(item.children) : item.children}
+      </Descriptions.Item>
+    ));
   };
 
-  const columns = defaultColumns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record: DataType) => ({
-        record,
-        editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-        handleSave,
-      }),
-    };
-  });
+
+  const handleBackToList = () => {
+    setShowDetail(false); // Ẩn bảng chi tiết và hiện lại danh sách
+    fetchAuctionList(); // Gọi lại hàm fetchMemberList khi quay lại danh sách
+  };
+
+
+  // Generate random dates within a range of 10 years from today
+
+  // Generate 100 random CompletedAuction items
+
+
   return (
     <>
+     {showDetail ? (
+        <div>
+          <Button onClick={handleBackToList}>
+            <FontAwesomeIcon icon={faArrowLeft} style={{ color: "#74C0FC" }} />
+          </Button>
+          <br />
+          <br />
+          <Descriptions bordered title="Detail of Auction">
+            {renderBorderedItems()}
+          </Descriptions>
+        </div>
+      ) : (
+        <div>
       <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
         <div className="w-full md:w-72 flex flex-row justify-start">
-          <Select
+          {/* <Select
             defaultValue="Residential"
             onChange={handleChange}
             options={[
@@ -282,12 +227,12 @@ const OngoingList: React.FC = () => {
               { value: "specialPurpose", label: "Special Purpose" },
               { value: "department", label: "Department" },
             ]}
-          />
+          /> */}
         </div>
 
         <div className="w-full md:w-72 flex flex-row justify-end">
           <div className="flex flex-row space-between space-x-2">
-            <TailwindInput
+            <Input
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
               crossOrigin={undefined}
@@ -296,27 +241,21 @@ const OngoingList: React.FC = () => {
           </div>
         </div>
       </div>
-      <Form form={form} component={false}>
-        <Table
-          components={components}
-          rowClassName={() => "editable-row"}
-          bordered
-          dataSource={dataSource.filter((reas) => {
-            const isMatchingSearch =
-              search.toLowerCase() === "" ||
-              reas.realEstate.toLowerCase().includes(search);
+      <Table
+        columns={columns}
+        dataSource={auctionData?.filter((reas : AuctionAdmin) => {
+          const isMatchingSearch =
+            search.toLowerCase() === "" ||
+            reas.reasName.toLowerCase().includes(search);
 
-            const filterType =
-              type.toLocaleLowerCase() === "" ||
-              reas.auctionType.toLocaleLowerCase().includes(type);
-
-            return isMatchingSearch && filterType;
-          })}
-          columns={columns as ColumnTypes}
-        />
-      </Form>
+          return isMatchingSearch;
+        })}
+        bordered
+      />
+      </div>
+      )}
     </>
   );
-};
+}
 
-export default OngoingList;
+export default AuctionAllList;

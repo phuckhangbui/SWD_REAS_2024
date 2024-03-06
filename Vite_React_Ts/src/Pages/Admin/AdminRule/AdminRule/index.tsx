@@ -48,20 +48,20 @@ const AdminRuleList: React.FC = () => {
 
   useEffect(() => {
     if (ruleDetailData) {
-      setInitialContent(ruleDetailData.Content || "");
+      setInitialContent(ruleDetailData.content || "");
     }
   }, [ruleDetailData]);
 
   const fetchRuleDetail = async (
-    newsId: Number | undefined,
+    ruleId: Number | undefined,
     token: string | undefined
   ) => {
     try {
       if (token) {
         let data: Rule | undefined;
-        data = await getRuleAdminById(ruleID, token);
+        data = await getRuleAdminById(ruleId, token);
         setRuleDetailData(data);
-        setRuleId(newsId);
+        setRuleId(ruleId);
         setShowDetail(true);
       }
     } catch (error) {
@@ -85,19 +85,19 @@ const AdminRuleList: React.FC = () => {
     fetchRuleList();
   }, [token]);
 
-  const viewDetail = (RuleId: Number) => {
+  const viewDetail = (RuleId: number) => {
     fetchRuleDetail(RuleId, token);
   };
 
   const columns: TableProps<Rules>["columns"] = [
     {
       title: "Tilte",
-      dataIndex: "Title",
+      dataIndex: "title",
       width: "50%",
     },
     {
       title: "Date Create",
-      dataIndex: "DateCreated",
+      dataIndex: "dateCreated",
       width: "15%",
       render: (date_Created: Date) => formatDate(date_Created),
     },
@@ -105,7 +105,7 @@ const AdminRuleList: React.FC = () => {
       title: "Actions",
       dataIndex: "operation",
       render: (_: any, rule: Rules) => (
-        <a onClick={() => viewDetail(rule.RuleId)}>View details</a>
+        <a onClick={() => viewDetail(rule.ruleId)}>View details</a>
       ),
       width: "15%",
     },
@@ -116,13 +116,13 @@ const AdminRuleList: React.FC = () => {
       {
         key: "1",
         label: "Title",
-        children: ruleDetailData?.Title || "",
+        children: ruleDetailData?.title || "",
         span: 2,
       },
       {
         key: "2",
         label: "DateCreate",
-        children: ruleDetailData ? formatDate(ruleDetailData.DateCreated) : "",
+        children: ruleDetailData ? formatDate(ruleDetailData.dateCreated) : "",
         span: 1
       },
       {
@@ -164,7 +164,7 @@ const AdminRuleList: React.FC = () => {
 
     const updatedRuleData1: RuleUpdate = {
       idRule: ruleID,
-      Content: newsContent1,
+      content: newsContent1,
     };
     getMessage(updatedRuleData1);
   };

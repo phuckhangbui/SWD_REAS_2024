@@ -8,8 +8,8 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AdminAddRule: React.FC = () => {
   const [ruleData, setRuleData] = useState<RuleAdd>({
-    Content: "",
-    Title: ""
+    content: "",
+    title: ""
   });
   const { token } = useContext(UserContext);
 
@@ -67,7 +67,7 @@ const AdminAddRule: React.FC = () => {
         <div>
           <Input
             placeholder="Enter title"
-            onChange={(e) => handleChange("Title", e.target.value)}
+            onChange={(e) => handleChange("title", e.target.value)}
           />
         </div>
       ),
@@ -81,7 +81,7 @@ const AdminAddRule: React.FC = () => {
           editor={ClassicEditor}
           onChange={(event, editor) => {
             const data = editor.getData();
-            handleChange("Content", data);
+            handleChange("content", data);
           }}
         />
       ),
@@ -106,7 +106,7 @@ const AdminAddRule: React.FC = () => {
         }}
       >
         <Button onClick={createRule}>
-          Create News
+          Create Term
         </Button>
       </div>
     </>

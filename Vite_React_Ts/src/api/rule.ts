@@ -19,11 +19,11 @@ export const getRuleHome = async (token: string) => {
 
 
 export const addRule = async ({
-  Content,Title
+  content,title
 }:RuleAdd, token: string) => {
   try {
       const param ={
-        Content,Title
+        content,title
       }
     const fetchData = await axios.post<Message>(
       `${baseUrl}/api/admin/rule/add`,
@@ -43,11 +43,11 @@ export const addRule = async ({
 };
 
 export const ruleUpdate = async ({
-    Content,idRule
+    content,idRule
   }:RuleUpdate, token: string) => {
     try {
         const param ={
-          Content,idRule
+          content,idRule
         }
       const fetchData = await axios.post<Message>(
         `${baseUrl}/api/admin/rule/update`,

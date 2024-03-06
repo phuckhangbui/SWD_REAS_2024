@@ -1,7 +1,7 @@
 interface Rule{
-    RuleId: number
-    Content: string
-    Title: string
-    DateCreated: Date
-    DateUpdated: Date
+    ruleId: number
+    content: string
+    title: string
+    dateCreated: Date
+    dateUpdated: Date
 }

@@ -1,4 +1,4 @@
 interface RuleUpdate{
     idRule: Number | undefined,
-    Content: string
+    content: string
 }

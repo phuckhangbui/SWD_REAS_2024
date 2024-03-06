@@ -1,5 +1,5 @@
 interface Rules{
-    RuleId: number
-    Title: string
-    DateCreated: Date
+    ruleId: number
+    title: string
+    dateCreated: Date
 }
