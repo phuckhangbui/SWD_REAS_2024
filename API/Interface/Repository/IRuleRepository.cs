@@ -1,5 +1,5 @@
-﻿using API.Entity;
-using API.Helper;
+﻿using API.DTOs;
+using API.Entity;
 using API.Param;
 
 namespace API.Interface.Repository
@@ -8,7 +8,8 @@ namespace API.Interface.Repository
     {
         Task<Rule> GetRuleWhenUserSignInAuction();
         Task<bool> CreateNewRule(RuleCreateParam ruleCreate);
-        Task<PageList<Rule>> GetAllRule();
+        Task<IEnumerable<RuleDto>> GetAllRule();
+        Task<Rule> GetDetailRule(int id);
         Task<bool> UpdateRuleByContentChange(RuleChangeContentParam ruleChangeContent);
     }
 }

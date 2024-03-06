@@ -5,13 +5,10 @@ using API.Helper;
 using API.Interface.Repository;
 using API.Param;
 using API.Param.Enums;
-using API.Services;
 using API.ThirdServices;
-using API.Validate;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace API.Repository
 {
@@ -28,7 +25,23 @@ namespace API.Repository
 
         public async Task<bool> UpdateRealEstateStatusAsync(ReasStatusParam reasStatusDto)
         {
-            var realEstate = await _context.RealEstate.Where(r => r.ReasId == reasStatusDto.reasId).FirstOrDefaultAsync();
+            var realEstate = await _context.RealEstate.Where(r => r.ReasId == reasStatusDto.reasId).Select(x => new RealEstate
+            {
+                AccountOwnerName = x.AccountOwnerName,
+                AccountOwnerId = x.AccountOwnerId,
+                ReasName = x.ReasName,
+                ReasId = x.ReasId,
+                DateCreated = x.DateCreated,
+                DateEnd = x.DateEnd,
+                DateStart = x.DateStart,
+                Message = x.Message,
+                ReasAddress = x.ReasAddress,
+                ReasArea = x.ReasArea,
+                ReasDescription = x.ReasDescription,
+                ReasPrice = Convert.ToDouble(x.ReasPrice),
+                Type_Reas = x.Type_Reas,
+                ReasStatus = x.ReasStatus,
+            }).FirstOrDefaultAsync();
             var accountOwner = await _context.Account.Where(x => x.AccountId == realEstate.AccountOwnerId).FirstOrDefaultAsync();
             if (realEstate != null)
             {
@@ -39,6 +52,10 @@ namespace API.Repository
                 else if (reasStatusDto.reasStatus == 1)
                 {
                     SendMailWhenApproveRealEstate.SendEmailWhenApproveRealEstate(accountOwner.AccountEmail, accountOwner.AccountName);
+                    // send notification here
+
+                    // then in the notification, forward user to the payment page
+
                 }
                 realEstate.ReasStatus = reasStatusDto.reasStatus;
                 realEstate.Message = reasStatusDto.messageString;
@@ -69,7 +86,8 @@ namespace API.Repository
         {
             var statusName = new GetStatusName();
             var page = new PaginationParams();
-            var query = _context.RealEstate.Where(a => a.ReasStatus == (int)RealEstateEnum.In_progress).Select(x => new ManageRealEstateDto
+
+            var query = _context.RealEstate.Where(a => a.ReasStatus == (int)RealEstateStatus.InProgress).Select(x => new ManageRealEstateDto
             {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
@@ -88,7 +106,8 @@ namespace API.Repository
         {
             var statusName = new GetStatusName();
             var page = new PaginationParams();
-            var query = _context.RealEstate.Where(a => a.ReasStatus != (int)RealEstateEnum.In_progress).Select(x => new ManageRealEstateDto
+
+            var query = _context.RealEstate.Where(a => a.ReasStatus != (int)RealEstateStatus.InProgress).Select(x => new ManageRealEstateDto
             {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
@@ -159,8 +178,9 @@ namespace API.Repository
         {
             var statusName = new GetStatusName();
             var page = new PaginationParams();
-            var query = _context.RealEstate.Where(x =>
-                ((new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Auctioning, (int)RealEstateEnum.Re_up }.Contains(x.ReasStatus) && searchRealEstateDto.ReasStatus == -1)
+            var query = _context.RealEstate.AsQueryable();
+            query = (IQueryable<RealEstate>)query.Where(x =>
+                ((new[] { (int)RealEstateStatus.Selling, (int)RealEstateStatus.Auctioning, (int)RealEstateStatus.ReUp }.Contains(x.ReasStatus) && searchRealEstateDto.ReasStatus == -1)
                 || searchRealEstateDto.ReasStatus == x.ReasStatus) &&
                 (searchRealEstateDto.ReasName == null || x.ReasName.Contains(searchRealEstateDto.ReasName)) &&
                 ((searchRealEstateDto.ReasPriceFrom == 0 && searchRealEstateDto.ReasPriceTo == 0) ||
@@ -189,7 +209,7 @@ namespace API.Repository
         {
             var statusName = new GetStatusName();
             PaginationParams page = new PaginationParams();
-            var query = _context.RealEstate.Where(x => new[] { (int)RealEstateEnum.Selling, (int)RealEstateEnum.Re_up, (int)RealEstateEnum.Auctioning }.Contains(x.ReasStatus)).Select(x => new RealEstateDto
+            var query = _context.RealEstate.Where(x => new[] { (int)RealEstateStatus.Selling, (int)RealEstateStatus.ReUp, (int)RealEstateStatus.Auctioning }.Contains(x.ReasStatus)).Select(x => new RealEstateDto
             {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
@@ -211,7 +231,9 @@ namespace API.Repository
         {
             var statusName = new GetStatusName();
             var page = new PaginationParams();
-            var query = _context.RealEstate.OrderByDescending(a => a.DateStart).Where(x => (x.ReasStatus == (int)RealEstateEnum.In_progress) &&
+
+            var query = _context.RealEstate.OrderByDescending(a => a.DateStart).Where(x => ((x.ReasStatus == (int)RealEstateStatus.InProgress && searchRealEstateDto.reasStatus.Contains(x.ReasStatus))
+                || searchRealEstateDto.reasStatus == null) &&
                 (searchRealEstateDto.reasName == null || x.ReasName.Contains(searchRealEstateDto.reasName)) &&
                 ((searchRealEstateDto.reasPriceFrom == 0 && searchRealEstateDto.reasPriceTo == 0) ||
                 (x.ReasPrice >= searchRealEstateDto.reasPriceFrom &&
@@ -233,8 +255,9 @@ namespace API.Repository
         public async Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstateExceptOnGoingBySearch(SearchRealEsateAdminParam searchRealEstateDto)
         {
             var statusName = new GetStatusName();
-            var query = _context.RealEstate.OrderByDescending(a => a.DateStart).Where(x => ((x.ReasStatus != (int)RealEstateEnum.In_progress && searchRealEstateDto.reasStatus == -1)
-                || searchRealEstateDto.reasStatus == x.ReasStatus) &&
+
+            var query = _context.RealEstate.OrderByDescending(a => a.DateStart).Where(x => ((x.ReasStatus != (int)RealEstateStatus.InProgress && searchRealEstateDto.reasStatus.Contains(x.ReasStatus))
+                || searchRealEstateDto.reasStatus == null) &&
                 (searchRealEstateDto.reasName == null || x.ReasName.Contains(searchRealEstateDto.reasName)) &&
                 ((searchRealEstateDto.reasPriceFrom == 0 && searchRealEstateDto.reasPriceTo == 0) ||
                 (x.ReasPrice >= searchRealEstateDto.reasPriceFrom &&

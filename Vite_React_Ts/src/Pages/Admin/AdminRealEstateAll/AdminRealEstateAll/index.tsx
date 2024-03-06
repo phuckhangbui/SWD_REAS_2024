@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faVolcano } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {
   Table,
   TableProps,
@@ -11,6 +11,8 @@ import {
   InputNumber,
   Select,
   Modal,
+  Form,
+  Checkbox,
 } from "antd";
 import { useState, useEffect } from "react";
 import {
@@ -28,16 +30,17 @@ const AdminRealEstateAllList: React.FC = () => {
     reasName: "",
     reasPriceFrom: 0,
     reasPriceTo: 0,
-    reasStatus: -1,
+    reasStatus: [],
   });
   const [RealData, setRealData] = useState<ManageRealEstate[]>(); // State để lưu trữ dữ liệu nhân viên
   const [realDetailData, setRealDetailData] =
     useState<ManageRealEstateDetail>();
   const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [message, setMessage] = useState<Message>();
   const [ReasId, setReasId] = useState<Number>();
-  const [messageString, getMessageString] = useState<string>();
   const [messageBlock, getMessageBlock] = useState<string>();
+  const [checkedStatus, setCheckedStatus] = useState<number[]>([
+    1, 2, 3, 4, 5, 6, 7, 8, 9,
+  ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { token } = useContext(UserContext);
   const [showFirstDescription, setShowFirstDescription] = useState(true);
@@ -76,16 +79,81 @@ const AdminRealEstateAllList: React.FC = () => {
   };
 
   const statusColorMap: { [key: string]: string } = {
-    InProgress: "green",
+    In_progress: "green",
     Approved: "green",
     Selling: "orange",
     Cancel: "red",
     Auctioning: "lightgreen",
     Sold: "brown",
     Rollback: "brown",
-    ReUp: "blue",
+    Re_up: "blue",
     DeclineAfterAuction: "darkred",
     Block: "lightcoral",
+  };
+
+  const statusStringMap: { [key: number]: string } = {
+    0: "In_progress",
+    1: "Approved",
+    2: "Selling",
+    3: "Cancel",
+    4: "Auctioning",
+    5: "Sold",
+    6: "Rollback",
+    7: "Re_up",
+    8: "Decline After Auction",
+    9: "Block",
+  };
+
+  const options = [
+    {
+      label: "Approved",
+      value: 1,
+    },
+    {
+      label: "Selling",
+      value: 2,
+    },
+    {
+      label: "Cancel",
+      value: 3,
+    },
+    {
+      label: "Auctioning",
+      value: 4,
+    },
+    {
+      label: "Sold",
+      value: 5,
+    },
+    {
+      label: "Rollback",
+      value: 6,
+    },
+    {
+      label: "ReUp",
+      value: 7,
+    },
+    {
+      label: "Decline After Auction",
+      value: 8,
+    },
+    {
+      label: "Block",
+      value: 9,
+    },
+  ];
+
+  const statusAllColorMap: { [key: number]: string } = {
+    0: "green",
+    1: "green",
+    2: "orange",
+    3: "red",
+    4: "lightgreen",
+    5: "brown",
+    6: "brown",
+    7: "blue",
+    8: "darkred",
+    9: "lightcoral",
   };
 
   const formatDate = (dateString: Date): string => {
@@ -130,14 +198,15 @@ const AdminRealEstateAllList: React.FC = () => {
     }
   };
 
-  const fetchReasList = async (searchvalue : any) => {
+  const fetchReasList = async (searchvalue: searchManageRealEstate) => {
     try {
       if (token) {
         let data: ManageRealEstate[] | undefined;
         if (
           searchvalue.reasName == "" &&
           searchvalue.reasPriceFrom == 0 &&
-          searchvalue.reasPriceTo == 0
+          searchvalue.reasPriceTo == 0 &&
+          searchvalue.reasStatus !== checkedStatus
         ) {
           data = await getRealEstateAll(token);
           //data = await searchManageRealEstate(search, token);
@@ -172,39 +241,83 @@ const AdminRealEstateAllList: React.FC = () => {
       <Option value="minus">-</Option>
     </Select>
   );
-  const FormSearch = ({ }) => {
-    const [name, setName] = useState("");
-    const [priceFrom, setPriceFrom] = useState(0);
-    const [priceTo, setPriceTo] = useState(0);
-  
-    const handleSearch = () => {
+  const FormSearch = () => {
+    const [form] = Form.useForm(); // Add this line to use form instance
+
+    const onFinish = () => {
+      const values = form.getFieldsValue(); // Get all form field values
       setSearch({
-        reasName: name,
-        reasPriceFrom: priceFrom,
-        reasPriceTo: priceTo,
-        reasStatus: -1, // Assuming default value for reasStatus
+        reasName: values.reasName !== undefined ? values.reasName : "",
+        reasPriceFrom:
+          values.reasPriceFrom !== undefined ? values.reasPriceFrom : 0,
+        reasPriceTo: values.reasPriceTo !== undefined ? values.reasPriceTo : 0,
+        reasStatus: checkedStatus,
       });
+      form.setFieldsValue({ reasStatus: values.reasStatus });
+      console.log(values);
     };
-  
     return (
-      <div>
-        <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-        <InputNumber
-          addonBefore={selectBefore}
-          addonAfter="$"
-          defaultValue={priceFrom}
-          style={{ width: 400 }}
-          onChange={(value) => setPriceFrom(value || 0)}
-        />
-        <InputNumber
-          addonBefore={selectBefore}
-          addonAfter="$"
-          defaultValue={priceTo}
-          style={{ width: 400 }}
-          onChange={(value) => setPriceTo(value || 0)}
-        />
-        <Button onClick={handleSearch}>Search</Button>
-      </div>
+      <Form
+        form={form} // Assign form instance
+        name="basic"
+        labelCol={{
+          span: 4,
+        }}
+        wrapperCol={{
+          span: 16,
+        }}
+        style={{
+          maxWidth: 1200,
+          marginTop: 5,
+        }}
+        onFinish={onFinish} // Assign onFinish handler
+        initialValues={search}
+      >
+        <Form.Item label="Name Reas: " name="reasName">
+          <Input style={{ width: 500 }} />
+        </Form.Item>
+
+        <Form.Item label="Price From" name="reasPriceFrom">
+          <InputNumber
+            addonBefore={selectBefore}
+            addonAfter="$"
+            defaultValue={0}
+            style={{ width: 400 }}
+          />
+        </Form.Item>
+
+        <Form.Item label="Price To" name="reasPriceTo">
+          <InputNumber
+            addonBefore={selectBefore}
+            addonAfter="$"
+            defaultValue={0}
+            style={{ width: 400 }}
+          />
+        </Form.Item>
+        <Form.Item label="Status" name="reasStatus">
+          <div
+            style={{ display: "flex", justifyContent: "center", width: 900 }}
+          >
+            <Checkbox.Group
+              options={options}
+              value={checkedStatus}
+              onChange={setCheckedStatus}
+            />
+          </div>
+        </Form.Item>
+        <Form.Item
+          wrapperCol={{
+            offset: 8,
+            span: 16,
+          }}
+        >
+          <div
+            style={{ display: "flex", justifyContent: "flex-end", width: 900 }}
+          >
+            <Button htmlType="submit">Search</Button>
+          </div>
+        </Form.Item>
+      </Form>
     );
   };
 
@@ -298,13 +411,18 @@ const AdminRealEstateAllList: React.FC = () => {
         key: "6",
         label: "Status",
         children: realDetailData?.reasStatus,
-        render: (reas_Status: Number | undefined) => {
-          let color = reas_Status == 0 ? "yellow" : "volcano";
-          return (
-            <Tag color={color} key={reas_Status?.toString()}>
-              {"In_progress"}
-            </Tag>
-          );
+        render: (reas_Status: number | undefined) => {
+          if (reas_Status !== undefined) {
+            const statusNumber: number = reas_Status; // Không cần kiểm tra lại vì chắc chắn rằng reas_Status không phải là undefined
+            const color = statusAllColorMap[statusNumber] || "gray";
+            return (
+              <Tag color={color} key={statusStringMap[statusNumber]}>
+                {statusStringMap[statusNumber]}
+              </Tag>
+            );
+          } else {
+            return null; // hoặc một phần tử JSX tùy thuộc vào trường hợp cụ thể của bạn
+          }
         },
       },
       {
@@ -337,7 +455,7 @@ const AdminRealEstateAllList: React.FC = () => {
     ];
     return items.map((item) => (
       <Descriptions.Item key={item.key} label={item.label}>
-        {item.render ? item.render(item.children) : item.children}
+        {item.render ? item.render(item.children?.valueOf()) : item.children}
       </Descriptions.Item>
     ));
   };
@@ -414,11 +532,13 @@ const AdminRealEstateAllList: React.FC = () => {
     ));
   };
 
-  const [contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type: "success" | "error") => {
+  const openNotificationWithIcon = (
+    type: "success" | "error",
+    description: string
+  ) => {
     notification[type]({
       message: "Notification Title",
-      description: message?.message,
+      description: description,
     });
   };
 
@@ -431,17 +551,14 @@ const AdminRealEstateAllList: React.FC = () => {
       const response = await fetchChangeStatus(ReasId, 2, "");
       if (response !== undefined) {
         // Kiểm tra xem response có được trả về hay không
-        setMessage(response);
-        if (response.statusCode == "MSG03") {
-          getMessageString(response.message);
+        if (response.statusCode === "MSG03") {
+          openNotificationWithIcon("success", response.message);
         } else {
-          getMessageString(
+          openNotificationWithIcon(
+            "error",
             "Something went wrong when executing operation. Please try again!"
           );
         }
-        openNotificationWithIcon(
-          response.statusCode == "MSG03" ? "success" : "error"
-        );
         setShowDetail(false);
         await fetchReasList(search);
       }
@@ -454,18 +571,14 @@ const AdminRealEstateAllList: React.FC = () => {
     try {
       const response = await fetchChangeStatus(ReasId, 9, messageBlock);
       if (response !== undefined) {
-        // Kiểm tra xem response có được trả về hay không
-        setMessage(response);
-        if (response.statusCode == "MSG03") {
-          getMessageString(response.message);
+        if (response.statusCode === "MSG03") {
+          openNotificationWithIcon("success", response.message);
         } else {
-          getMessageString(
+          openNotificationWithIcon(
+            "error",
             "Something went wrong when executing operation. Please try again!"
           );
         }
-        openNotificationWithIcon(
-          response.statusCode == "MSG03" ? "success" : "error"
-        );
         setShowDetail(false);
         await fetchReasList(search);
       }
@@ -484,27 +597,28 @@ const AdminRealEstateAllList: React.FC = () => {
           <br />
           <br />
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            {realDetailData?.reasStatus !== 9 && ( // Kiểm tra nếu status không phải "Cancel"
+            {realDetailData?.reasStatus === 9 && (
               <Button onClick={handleChangeStatusActive}>Active</Button>
             )}
-            {realDetailData?.reasStatus === 9 && ( // Kiểm tra nếu status là "Cancel"
-              <Button onClick={handleChangeStatusBlock}>Reject</Button>
+            {realDetailData?.reasStatus === 2 && (
+              <div>
+                <Button
+                  onClick={showModal}
+                  style={{ marginLeft: "20px", backgroundColor: "red" }}
+                >
+                  Block
+                </Button>
+                <Modal
+                  title="Message Block"
+                  open={isModalOpen}
+                  onOk={handleOk}
+                  onCancel={handleCancel}
+                  okButtonProps={{ style: { color: "black" } }}
+                >
+                  <TextArea onChange={(e) => getMessageBlock(e.target.value)} />
+                </Modal>
+              </div>
             )}
-            <Button
-              onClick={showModal}
-              style={{ marginLeft: "20px", backgroundColor: "red" }}
-            >
-              Reject
-            </Button>
-            <Modal
-              title="Message Block"
-              open={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-              okButtonProps={{ style: { color: "black" } }}
-            >
-              <TextArea onChange={(e) => getMessageBlock(e.target.value)} />
-            </Modal>
           </div>
           <br />
           <div>
@@ -550,10 +664,11 @@ const AdminRealEstateAllList: React.FC = () => {
       ) : (
         <div>
           {/* Bảng danh sách */}
+          <h4>
+            <strong>Real Estate List</strong>
+          </h4>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="w-full md:w-72 flex flex-row justify-start">
-              <FormSearch />
-            </div>
+            <FormSearch />
           </div>
           <Table columns={columns} dataSource={RealData} bordered />
         </div>

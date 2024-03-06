@@ -1,22 +1,21 @@
-﻿using API.Entity;
+﻿using API.DTOs;
+using API.Entity;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
-using API.Interfaces;
 using API.Param;
-using AutoMapper;
 
 namespace API.Services
 {
-    public class RuleService : BaseService<Rule>, IRuleService
+    public class RuleService : IRuleService
     {
         private readonly IRuleRepository _rule_repository;
         private readonly IAccountRepository _account_repository;
 
-        public RuleService(IAccountRepository accountRepository, IRealEstateRepository realEstateRepository, IRealEstateDetailRepository realEstateDetailRepository, IRealEstatePhotoRepository realEstatePhotoRepository, INewsRepository newsRepository, IMoneyTransactionRepository moneyTransactionRepository, IMoneyTransactionDetailRepository moneyTransactionDetailRepository, IRuleRepository ruleRepository, ITypeReasRepository typeReasRepository, IAuctionRepository auctionRepository, IDepositAmountRepository depositAmountRepository, IMapper mapper, IPhotoService photoService, ITokenService tokenService) : base(accountRepository, realEstateRepository, realEstateDetailRepository, realEstatePhotoRepository, newsRepository, moneyTransactionRepository, moneyTransactionDetailRepository, ruleRepository, typeReasRepository, auctionRepository, depositAmountRepository, mapper, photoService, tokenService)
+        public RuleService(IRuleRepository rule_repository, IAccountRepository account_repository)
         {
-            _rule_repository = ruleRepository;
-            _account_repository = accountRepository;
+            _rule_repository = rule_repository;
+            _account_repository = account_repository;
         }
 
         public IAccountRepository AccountRepository => _account_repository;
@@ -28,12 +27,19 @@ namespace API.Services
                 bool rule = await _rule_repository.CreateNewRule(ruleCreate);
                 if (rule) return true;
                 else return false;
-            }catch (Exception ex) { return false; }
+            }
+            catch (Exception ex) { return false; }
         }
 
-        public async Task<PageList<Rule>> GetAllRule()
+        public async Task<IEnumerable<RuleDto>> GetAllRule()
         {
             var rule = await _rule_repository.GetAllRule();
+            return rule;
+        }
+
+        public async Task<Rule> GetDetailRule(int id)
+        {
+            var rule = await _rule_repository.GetDetailRule(id);
             return rule;
         }
 

@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entity;
+using API.Helper;
 using API.Interface.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,7 @@ namespace API.Repository
             {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
-                ReasPrice = x.ReasPrice,
+                ReasPrice = Convert.ToDouble(x.ReasPrice),
                 ReasArea = x.ReasArea,
                 ReasAddress = x.ReasAddress,
                 ReasDescription = x.ReasDescription,
@@ -47,7 +48,7 @@ namespace API.Repository
             {
                 ReasId = x.ReasId,
                 ReasName = x.ReasName,
-                ReasPrice = x.ReasPrice,
+                ReasPrice = Convert.ToDouble(x.ReasPrice),
                 ReasArea = x.ReasArea,
                 ReasAddress = x.ReasAddress,
                 ReasDescription = x.ReasDescription,

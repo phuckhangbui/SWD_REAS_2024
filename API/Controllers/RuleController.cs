@@ -1,7 +1,5 @@
 ﻿using API.Entity;
 using API.Errors;
-using API.Extension;
-using API.Helper;
 using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
@@ -19,24 +17,21 @@ namespace API.Controllers
         }
 
         [HttpGet(BaseUri + "rule")]
-        public async Task<ActionResult<Rule>> GetAllRule([FromQuery] PaginationParams paginationParams)
+        public async Task<ActionResult<Rule>> GetAllRule()
         {
             int idAdmin = GetIdAdmin(_ruleService.AccountRepository);
             if (idAdmin != 0)
             {
                 var rule = await _ruleService.GetAllRule();
-                Response.AddPaginationHeader(new PaginationHeader(rule.CurrentPage, rule.PageSize,
-                rule.TotalCount, rule.TotalPages));
-                if (rule.PageSize == 0)
-                {
-                    var apiResponseMessage = new ApiResponseMessage("MSG01");
-                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
-                }
-                else
+                if (rule != null)
                 {
                     if (!ModelState.IsValid)
                         return BadRequest(ModelState);
                     return Ok(rule);
+                }
+                else
+                {
+                    return null;
                 }
             }
             else
@@ -44,6 +39,32 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse(401));
             }
         }
+
+        [HttpGet(BaseUri + "rule/detail/{id}")]
+        public async Task<ActionResult<Rule>> GetDetailRule(int id)
+        {
+            int idAdmin = GetIdAdmin(_ruleService.AccountRepository);
+            if (idAdmin != 0)
+            {
+                var rule = await _ruleService.GetDetailRule(id);
+                if (rule != null)
+                {
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    return Ok(rule);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(401));
+            }
+        }
+
+
 
         [HttpPost(BaseUri + "rule/add")]
         public async Task<ActionResult<ApiResponseMessage>> CreateNewRule(RuleCreateParam ruleCreate)

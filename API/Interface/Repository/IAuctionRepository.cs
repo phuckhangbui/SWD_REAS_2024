@@ -10,11 +10,17 @@ namespace API.Interface.Repository
     {
         Task<PageList<AuctionDto>> GetAuctionsAsync(AuctionParam auctionParam);
 
-        Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam);
+        Task<IEnumerable<AuctionDto>> GetAuctionsNotYetAndOnGoing();
+        Task<AuctionDetailOnGoing> GetAuctionDetailOnGoing(int id);
+        Task<AuctionDetailFinish> GetAuctionDetailFinish(int id);
+        Task<IEnumerable<AuctionDto>> GetAuctionsFinish();
 
+        Task<IEnumerable<ReasForAuctionDto>> GetAuctionsReasForCreate();
+        Task<IEnumerable<DepositAmountUserDto>> GetAllUserForDeposit(int id);
         Task<bool> EditAuctionStatus(string autionId, string statusCode);
-
+        Task<bool> CreateAuction(AuctionCreateParam auctionCreateParam);
         Auction GetAuction(int auctionId);
+        Task<PageList<AuctionDto>> GetAuctionHistoryForAttenderAsync(AuctionHistoryParam auctionAccountingParam);
+        Task<PageList<AuctionDto>> GetAuctionHistoryForOwnerAsync(AuctionHistoryParam auctionAccountingParam);
     }
-
 }

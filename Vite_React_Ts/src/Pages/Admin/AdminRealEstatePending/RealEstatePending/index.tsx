@@ -1,6 +1,5 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faVolcano } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {
   Table,
   TableProps,
@@ -30,16 +29,14 @@ const AdminRealEstatePendingList: React.FC = () => {
     reasName: "",
     reasPriceFrom: 0,
     reasPriceTo: 0,
-    reasStatus: 1,
+    reasStatus: [1],
   });
   const [RealData, setRealData] = useState<ManageRealEstate[]>(); // State để lưu trữ dữ liệu nhân viên
   const [realDetailData, setRealDetailData] =
     useState<ManageRealEstateDetail>();
   const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [message, setMessage] = useState<Message>();
   const [ReasId, setReasId] = useState<Number>();
   const [statusReal, setStatusReal] = useState<Number>();
-  const [messageString, getMessageString] = useState<string>();
   const [messageReject, getMessageReject] = useState<string>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { token } = useContext(UserContext);
@@ -128,13 +125,13 @@ const AdminRealEstatePendingList: React.FC = () => {
       if (token) {
         let data: ManageRealEstate[] | undefined;
         if (
-          search.reasName !== "" &&
-          search.reasPriceFrom !== 0 &&
-          search.reasPriceTo !== 0
+          search.reasName == "" &&
+          search.reasPriceFrom == 0 &&
+          search.reasPriceTo == 0
         ) {
-          data = await searchManageRealEstate(search, token);
-        } else {
           data = await getRealEstatePending(token);
+        } else {
+          data = await searchManageRealEstate(search, token);
         }
         setRealData(data);
       }
@@ -172,9 +169,10 @@ const AdminRealEstatePendingList: React.FC = () => {
         reasName: values.reasName !== undefined ? values.reasName : "",
     reasPriceFrom: values.reasPriceFrom !== undefined ? values.reasPriceFrom : 0,
     reasPriceTo: values.reasPriceTo !== undefined ? values.reasPriceTo : 0,
-    reasStatus: 1,
+    reasStatus: [1],
       });
     };
+
 
     return (
       <Form
@@ -187,13 +185,14 @@ const AdminRealEstatePendingList: React.FC = () => {
           span: 16,
         }}
         style={{
-          maxWidth: 800,
+          maxWidth: 1200,
           marginTop: 10,
         }}
         onFinish={onFinish} // Assign onFinish handler
+        initialValues={search}
       >
         <Form.Item label="Name Reas: " name="reasName">
-          <Input style={{ width: 500 }} />
+          <Input style={{ width: 500 }}/>
         </Form.Item>
 
         <Form.Item label="Price From" name="reasPriceFrom">
@@ -220,7 +219,11 @@ const AdminRealEstatePendingList: React.FC = () => {
             span: 16,
           }}
         >
-          <Button htmlType="submit">Search</Button>
+          <div
+            style={{ display: "flex", justifyContent: "flex-end", width: 900 }}
+          >
+            <Button htmlType="submit">Search</Button>
+          </div>
         </Form.Item>
       </Form>
     );
@@ -432,11 +435,13 @@ const AdminRealEstatePendingList: React.FC = () => {
     ));
   };
 
-  const [contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type: "success" | "error") => {
+  const openNotificationWithIcon = (
+    type: "success" | "error",
+    description: string
+  ) => {
     notification[type]({
       message: "Notification Title",
-      description: message?.message,
+      description: description,
     });
   };
 
@@ -449,17 +454,14 @@ const AdminRealEstatePendingList: React.FC = () => {
       const response = await fetchChangeStatus(ReasId, statusReal, "");
       if (response !== undefined) {
         // Kiểm tra xem response có được trả về hay không
-        setMessage(response);
-        if (response.statusCode == "MSG03") {
-          getMessageString(response.message);
+        if (response.statusCode === "MSG03") {
+          openNotificationWithIcon("success", response.message);
         } else {
-          getMessageString(
+          openNotificationWithIcon(
+            "error",
             "Something went wrong when executing operation. Please try again!"
           );
         }
-        openNotificationWithIcon(
-          response.statusCode == "MSG03" ? "success" : "error"
-        );
         setShowDetail(false);
         await fetchReasList();
       }
@@ -472,18 +474,14 @@ const AdminRealEstatePendingList: React.FC = () => {
     try {
       const response = await fetchChangeStatus(ReasId, 3, messageReject);
       if (response !== undefined) {
-        // Kiểm tra xem response có được trả về hay không
-        setMessage(response);
-        if (response.statusCode == "MSG03") {
-          getMessageString(response.message);
+        if (response.statusCode === "MSG03") {
+          openNotificationWithIcon("success", response.message);
         } else {
-          getMessageString(
+          openNotificationWithIcon(
+            "error",
             "Something went wrong when executing operation. Please try again!"
           );
         }
-        openNotificationWithIcon(
-          response.statusCode == "MSG03" ? "success" : "error"
-        );
         setShowDetail(false);
         await fetchReasList();
       }
@@ -564,6 +562,7 @@ const AdminRealEstatePendingList: React.FC = () => {
       ) : (
         <div>
           {/* Bảng danh sách */}
+          <h4><strong>Real Estate Pending List</strong></h4>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="w-full md:w-72 flex flex-row justify-start">
               <FormSearch />

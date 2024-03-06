@@ -5,8 +5,6 @@ import { useContext } from "react";
 import { UserContext } from "../../../../context/userContext";
 
 const AdminAddStaff: React.FC = () => {
-  const [message, setMessage] = useState<Message>();
-  const [messageString, getMessageString] = useState<string>();
   const [phoneNumberError, setPhoneNumberError] = useState<boolean>(false);
   const [citizenIdentificationError, setCitizenIdentificationError] =
     useState<boolean>(false);
@@ -27,37 +25,28 @@ const AdminAddStaff: React.FC = () => {
       if (token) {
         let data: Message | undefined;
         data = await addNewStaff(NewStaff, token);
-        setMessage(data);
         return data;
       }
     } catch (error) {
       console.error("Error fetching add staff:", error);
     }
   };
-
-  const [contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type: "success" | "error") => {
+  
+  const openNotificationWithIcon = (type: 'success' | 'error', description: string) => {
     notification[type]({
       message: "Notification Title",
-      description: message?.message,
+      description: description,
     });
   };
 
   const createNewStaff = async () => {
-    try {
       const response = await fetchCreateStaff(staffData);
-      setMessage(response); // Gán giá trị message tại đây
-      if (response != undefined && response.statusCode == "MSG04") {
-        getMessageString(response.message);
-      } else if (response == undefined) {
-        getMessageString("Something wrong when execute operation. Try again!");
-      } else {
-        getMessageString(response?.message);
-      }
-      openNotificationWithIcon(response?.statusCode == "MSG04" ? "success" : "error");
-    } catch (error) {
-      console.error("Error creating new staff:", error);
-      // Xử lý lỗi ở đây nếu cần
+      if (response != undefined && response) {
+        if (response.statusCode == "MSG04") {
+          openNotificationWithIcon("success", response.message);
+        } else {
+          openNotificationWithIcon("error", "Something went wrong when executing operation. Please try again!");
+        }
     }
   };
 
