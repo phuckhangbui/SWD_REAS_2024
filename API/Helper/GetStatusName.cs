@@ -1,4 +1,5 @@
-﻿using API.Param.Enums;
+﻿using API.Enums;
+using API.Param.Enums;
 
 namespace API.Helper
 {
@@ -6,7 +7,7 @@ namespace API.Helper
     {
         public string GetRealEstateStatusName(int status)
         {
-            RealEstateEnum realEstateStatus = (RealEstateEnum)status;
+            RealEstateStatus realEstateStatus = (RealEstateStatus)status;
             string statusName = realEstateStatus.ToString();
             return statusName;
         }

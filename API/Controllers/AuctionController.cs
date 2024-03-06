@@ -85,7 +85,7 @@ namespace API.Controllers
             try
             {
                 bool check = await _auctionService.ToggleAuctionStatus(auctionId, statusCode);
-                if (check) return new ApiResponseMessage("MSG03");
+                if (check) return Ok(new ApiResponseMessage("MSG03"));
                 else return BadRequest(new ApiResponse(401, "Have an error when excute operation."));
             }
             catch (Exception ex)
@@ -93,7 +93,6 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse(400, "No AuctionId matched"));
             }
 
-            return Ok();
         }
 
 
