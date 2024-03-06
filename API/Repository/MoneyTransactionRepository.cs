@@ -55,36 +55,47 @@ namespace API.Repository
                 .Include(m => m.AccountReceive)
                 .Include(m => m.AccountSend)
                 .Include(m => m.RealEstate)
+                .Include(m => m.Type)
                 .FirstAsync(m => m.TransactionId == transactionId);
 
             return _mapper.Map<MoneyTransactionDetailDto>(moneyTransaction);
         }
 
-        public async Task<PageList<MoneyTransactionDto>> GetMoneyTransactionsAsync(MoneyTransactionParam moneyTransactionParam)
+        public async Task<PageList<MoneyTransactionDto>> GetMoneyTransactionsAsync(MoneyTransactionRequest moneyTransactionRequest)
         {
+            PaginationParams paginationParams = new PaginationParams();
             var query = _dataContext.MoneyTransaction.AsQueryable();
 
-            if (moneyTransactionParam.TransactionStatus != -1)
-            {
-                query = query.Where(m => m.TransactionStatus == moneyTransactionParam.TransactionStatus);
-            }
+            query = query.Include(m => m.Type);
+            DateTime dateExecutionFrom;
+            DateTime dateExecutionTo;
 
-            if (moneyTransactionParam.TypeId != 0)
+            if (!string.IsNullOrEmpty(moneyTransactionRequest.DateExecutionFrom))
             {
-                query = query.Where(m => m.TypeId == moneyTransactionParam.TypeId);
+                dateExecutionFrom = DateTime.Parse(moneyTransactionRequest.DateExecutionFrom);
+                query = query.Where(m => m.DateExecution >= dateExecutionFrom);
             }
-
-            if (moneyTransactionParam.DateExecutionFrom != default && moneyTransactionParam.DateExecutionTo != default)
+            else if (!string.IsNullOrEmpty(moneyTransactionRequest.DateExecutionTo))
             {
-                query = query.Where(m => m.DateExecution >= moneyTransactionParam.DateExecutionFrom && m.DateExecution <= moneyTransactionParam.DateExecutionTo);
+                dateExecutionTo = DateTime.Parse(moneyTransactionRequest.DateExecutionTo);
+                query = query.Where(m => m.DateExecution <= dateExecutionTo);
+            }
+            else if (!string.IsNullOrEmpty(moneyTransactionRequest.DateExecutionFrom) &&
+                    !string.IsNullOrEmpty(moneyTransactionRequest.DateExecutionTo))
+            {
+                dateExecutionFrom = DateTime.Parse(moneyTransactionRequest.DateExecutionFrom);
+                dateExecutionTo = DateTime.Parse(moneyTransactionRequest.DateExecutionTo);
+
+                query = query.Where(m => m.DateExecution >= dateExecutionFrom 
+                    && m.DateExecution <= dateExecutionTo);
             }
 
             query = query.OrderByDescending(r => r.DateExecution);
 
             return await PageList<MoneyTransactionDto>.CreateAsync(
                 query.AsNoTracking().ProjectTo<MoneyTransactionDto>(_mapper.ConfigurationProvider),
-                moneyTransactionParam.PageNumber,
-                moneyTransactionParam.PageSize);
+                paginationParams.PageNumber,
+                paginationParams.PageSize);
         }
 
         //public async System.Threading.Tasks.Task CreateMoneyTransactionAndMoneyTransactionDetail(MoneyTransaction moneyTransaction, MoneyTransactionDetail moneyTransactionDetail)

@@ -23,33 +23,23 @@ namespace API.Repository
 
         public async Task<PageList<DepositDto>> GetDepositAmountsAsync(DepositAmountParam depositAmountParam)
         {
+            PaginationParams paginationParams = new PaginationParams();
             var query = _context.DepositAmount.AsQueryable();
             query = query
                 .Include(a => a.RealEstate)
                 .Include(a => a.AccountSign);
 
-            if (depositAmountParam.AmountTo != 0 && depositAmountParam.AmountFrom != 0)
+            if (!string.IsNullOrEmpty(depositAmountParam.ReasName))
             {
-                query = query.Where(a => a.Amount >= depositAmountParam.AmountFrom && a.Amount <= depositAmountParam.AmountTo);
-            }
-
-            if (depositAmountParam.DepositDateFrom != default && depositAmountParam.DepositDateTo != default)
-            {
-                query = query.Where(a => a.DepositDate >= depositAmountParam.DepositDateFrom
-                                        && a.DepositDate <= depositAmountParam.DepositDateTo);
-            }
-
-            if (depositAmountParam.Status != -1)
-            {
-                query = query.Where(a => a.Status == depositAmountParam.Status);
+                query = query.Where(d => d.RealEstate.ReasName.ToLower().Contains(depositAmountParam.ReasName.ToLower()));
             }
 
             query = query.OrderByDescending(q => q.DepositDate);
 
             return await PageList<DepositDto>.CreateAsync(
                 query.AsNoTracking().ProjectTo<DepositDto>(_mapper.ConfigurationProvider),
-                depositAmountParam.PageNumber,
-                depositAmountParam.PageSize);
+                paginationParams.PageNumber,
+                paginationParams.PageSize);
         }
 
         public async Task<PageList<DepositAmountDto>> GetDepositAmoutForMember(int id)
@@ -131,7 +121,7 @@ namespace API.Repository
             return _mapper.Map<DepositDetailDto>(depositDetail);
         }
 
-        public async Task<PageList<AccountMemberDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId)
+        public async Task<PageList<AccountDepositedDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId)
         {
             var query = _context.Account
                 .Join(_context.DepositAmount,
@@ -141,20 +131,21 @@ namespace API.Repository
                 .Join(_context.RealEstate,
                     joinResult => joinResult.DepositAmount.ReasId,
                     realEstate => realEstate.ReasId,
-                    (joinResult, realEstate) => new { Account = joinResult.Account, DepositAmount = joinResult.DepositAmount, RealEstate = realEstate })
+                    (joinResult, realEstate) => new { joinResult.Account, joinResult.DepositAmount, RealEstate = realEstate })
                 .Where(joinResult => joinResult.DepositAmount.ReasId == reasId &&
                                      joinResult.DepositAmount.Status == (int)UserDepositEnum.Deposited &&
                                      joinResult.RealEstate.ReasStatus == (int)RealEstateEnum.Selling)
-                .Select(joinResult => new AccountMemberDto
+                .Select(joinResult => new AccountDepositedDto
                 {
                     AccountId = joinResult.Account.AccountId,
                     AccountName = joinResult.Account.AccountName,
                     AccountEmail = joinResult.Account.AccountEmail,
+                    PhoneNumber = joinResult.Account.PhoneNumber,
                     Account_Status = joinResult.Account.Account_Status.ToString(),
                     Date_Created = joinResult.Account.Date_Created
                 });
 
-            return await PageList<AccountMemberDto>.CreateAsync(
+            return await PageList<AccountDepositedDto>.CreateAsync(
                 query.AsNoTracking(),
                 paginationParams.PageNumber,
                 paginationParams.PageSize);

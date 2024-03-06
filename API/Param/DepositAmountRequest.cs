@@ -1,6 +1,6 @@
 ﻿namespace API.Param
 {
-    public class DepositAmountRequest
+    public class DepositAmountParam
     {
         public string? ReasName { get; set; }
     }

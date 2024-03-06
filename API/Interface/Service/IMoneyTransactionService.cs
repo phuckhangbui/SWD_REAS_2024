@@ -7,7 +7,7 @@ namespace API.Interface.Service
 {
     public interface IMoneyTransactionService
     {
-        Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionParam moneyTransactionParam);
+        Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionRequest moneyTransactionRequest);
         Task<MoneyTransactionDetailDto> GetMoneyTransactionDetail(int transactionId);
         //Task<MoneyTransaction> CreateMoneyTransactionFromDepositPayment(DepositPaymentDto paymentDto);
 

@@ -14,6 +14,6 @@ namespace API.Interface.Repository
         DepositAmount GetDepositAmount(int accountSignId, int reasId);
         DepositAmount GetDepositAmount(int depositId);
         DepositDetailDto GetDepositDetailAsync(int depositId);
-        Task<PageList<AccountMemberDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId);
+        Task<PageList<AccountDepositedDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId);
     }
 }

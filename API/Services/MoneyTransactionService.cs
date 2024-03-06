@@ -29,9 +29,9 @@ namespace API.Services
             return transactionDetail;
         }
 
-        public Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionParam moneyTransactionParam)
+        public Task<PageList<MoneyTransactionDto>> GetMoneyTransactions(MoneyTransactionRequest moneyTransactionRequest)
         {
-            return _moneyTransactionRepository.GetMoneyTransactionsAsync(moneyTransactionParam);
+            return _moneyTransactionRepository.GetMoneyTransactionsAsync(moneyTransactionRequest);
         }
 
         public async System.Threading.Tasks.Task<bool> CreateMoneyTransaction(MoneyTransaction moneyTransaction)

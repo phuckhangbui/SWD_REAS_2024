@@ -108,7 +108,7 @@ namespace API.Services
             return depositDetail;
         }
 
-        public async Task<PageList<AccountMemberDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId)
+        public async Task<PageList<AccountDepositedDto>> GetAccountsHadDeposited(PaginationParams paginationParams, int reasId)
         {
             var realEstate = _realEstateRepository.GetRealEstate(reasId);
 
