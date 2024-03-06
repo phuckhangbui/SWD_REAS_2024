@@ -10,15 +10,17 @@ import PageNotFound from "./Pages/PageNotFound";
 import { AdminLayout } from "./Pages/Admin/AdminLayout";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import AuctionOngoing from "./Pages/Admin/AdminAuctionOngoing";
+import DepositList from "./Pages/Admin/AdminCreateAuction";
 import AdminStaffList from "../src/Pages/Admin/StaffList/StaffList/index";
 import AdminMemberList from "../src/Pages/Admin/MemberList/MemberList/index";
 import AdminAddStaff from "../src/Pages/Admin/AdminCreateStaff/AdminCreateStaff";
 import PendingList from "../src/Pages/Admin/AdminRealEstatePending";
 import AllList from "../src/Pages/Admin/AdminRealEstateAll"
 import NewsList from "../src/Pages/Admin/AdminNews"
+import AdminRule from "../src/Pages/Admin/AdminRule"
+import AddRule from "../src/Pages/Admin/AdminAddRule"
 import AdminCreateNews from "../src/Pages/Admin/AdminCreateNews"
 import AuctionComplete from "../src/Pages/Admin/AdminAuctionComplete";
-import AuctionDetail from "./Pages/Admin/AdminAuctionDetail";
 import HomePage from "./Pages/Member/HomePage/homePage";
 import RealEstatePage from "./Pages/Member/RealEstatePage/realEstatePage";
 import HelpPage from "./Pages/Member/HelpPage/helpPage";
@@ -84,7 +86,7 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="auction/ongoing" element={<AuctionOngoing />} />
               <Route path="auction/complete" element={<AuctionComplete />} />
-              <Route path="auction/detail/:key" element={<AuctionDetail />} />
+              <Route path= "auction/create" element ={<DepositList/>}/>
               <Route path="user/staff" element={<AdminStaffList />} />
               <Route path="user/member" element={<AdminMemberList />} />
               <Route path="user/create" element={<AdminAddStaff/>}/>
@@ -92,6 +94,8 @@ function App() {
               <Route path="real-estate/all" element={<AllList/>}/>
               <Route path="news" element={<NewsList/>}/>
               <Route path="news/create" element={<AdminCreateNews/>}/>
+              <Route path="term" element={<AdminRule/>}/>
+              <Route path="term/create" element={<AddRule/>}/>
               <Route path="*" element={<PageNotFound />} />
             </Route>
           {/* )} */}

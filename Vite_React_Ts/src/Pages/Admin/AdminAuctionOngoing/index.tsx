@@ -1,9 +1,9 @@
-import OngoingList from "./AutionList/index";
+import AuctionAllList from "./AutionList/index";
 
 const AuctionOngoing: React.FC = () => {
   return (
     <>
-      <OngoingList />
+      <AuctionAllList />
     </>
   );
 };

@@ -79,27 +79,27 @@ const AdminRealEstateAllList: React.FC = () => {
   };
 
   const statusColorMap: { [key: string]: string } = {
-    InProgress: "green",
+    In_progress: "green",
     Approved: "green",
     Selling: "orange",
     Cancel: "red",
     Auctioning: "lightgreen",
     Sold: "brown",
     Rollback: "brown",
-    ReUp: "blue",
+    Re_up: "blue",
     DeclineAfterAuction: "darkred",
     Block: "lightcoral",
   };
 
   const statusStringMap: { [key: number]: string } = {
-    0: "In_Progress",
+    0: "In_progress",
     1: "Approved",
     2: "Selling",
     3: "Cancel",
     4: "Auctioning",
     5: "Sold",
     6: "Rollback",
-    7: "ReUp",
+    7: "Re_up",
     8: "Decline After Auction",
     9: "Block",
   };

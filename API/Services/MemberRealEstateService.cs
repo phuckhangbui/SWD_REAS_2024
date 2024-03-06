@@ -1,5 +1,6 @@
 ﻿using API.DTOs;
 using API.Entity;
+using API.Enums;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
@@ -53,7 +54,7 @@ namespace API.Services
             newRealEstate.Type_Reas = newRealEstateParam.Type_Reas;
             newRealEstate.DateStart = newRealEstateParam.DateStart;
             newRealEstate.DateEnd = newRealEstateParam.DateEnd;
-            newRealEstate.ReasStatus = (int)RealEstateEnum.In_progress;
+            newRealEstate.ReasStatus = (int)RealEstateStatus.In_progress;
             newRealEstate.AccountOwnerName = await _account_repository.GetNameAccountByAccountIdAsync(userMember);
             await _real_estate_repository.CreateAsync(newRealEstate);
             foreach (PhotoFileDto photos in newRealEstateParam.Photos)
@@ -128,7 +129,7 @@ namespace API.Services
         {
             ReasStatusParam reasStatusDto = new ReasStatusParam();
             reasStatusDto.reasId = transactionMoneyCreateParam.IdReas;
-            reasStatusDto.reasStatus = (int)RealEstateEnum.Selling;
+            reasStatusDto.reasStatus = (int)RealEstateStatus.Selling;
             reasStatusDto.messageString = "";
             bool check = await _real_estate_repository.UpdateRealEstateStatusAsync(reasStatusDto);
             if (check)
