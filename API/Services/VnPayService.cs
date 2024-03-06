@@ -26,5 +26,26 @@ namespace API.Services
 
             return paymentUrl;
         }
+
+        public string CreatePostRealEstatePaymentURL(HttpContext context, VnPayProperties vnPayProperties, string returnUrl)
+        {
+            VnPayPaymentUrlDto vnPayPaymentUrlDto = new VnPayPaymentUrlDto();
+            vnPayPaymentUrlDto.Url = vnPayProperties.Url;
+            vnPayPaymentUrlDto.TmnCode = vnPayProperties.TmnCode;
+            vnPayPaymentUrlDto.Version = vnPayProperties.Version;
+            vnPayPaymentUrlDto.HashSecret = vnPayProperties.HashSecret;
+
+            vnPayPaymentUrlDto.Amount = 100000 * 100;
+            vnPayPaymentUrlDto.CreateDate = DateTime.Now;
+            vnPayPaymentUrlDto.ExpireDate = DateTime.Now.AddMinutes(10);
+            vnPayPaymentUrlDto.Locale = "vn";
+            vnPayPaymentUrlDto.OrderInfo = "Real Estate Fee";
+            vnPayPaymentUrlDto.ReturnUrl = returnUrl;
+            vnPayPaymentUrlDto.TxnRef = DateTime.Now.Ticks.ToString();
+
+            string paymentUrl = CreateUrl.CreatePaymentUrl(vnPayPaymentUrlDto, context);
+
+            return paymentUrl;
+        }
     }
 }
