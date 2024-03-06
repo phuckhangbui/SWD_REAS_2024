@@ -24,26 +24,19 @@ const UserProvider = ({ children }: UserProviderProps) => {
   const [userRole, setUserRole] = useState<number | undefined>(undefined);
   const [token, setToken] = useState<string | undefined>(undefined);
 
-  const login = (user: loginUser, token: string) => {
-    const stringUser = JSON.stringify(user);
-    localStorage.setItem("user", stringUser);
-    localStorage.setItem("token", token);
-    setUserRole(user?.roleId);
-    setToken(token);
-  };
-
   useEffect(() => {
     try {
       const getLocalData = async () => {
         const storageToken = localStorage.getItem("token");
         const storageUser = localStorage.getItem("user");
-        const parseStorageUser = JSON.parse(storageUser as string);
         if (storageToken && storageUser) {
-          setUserRole(parseStorageUser?.roleId);
+          const parseStorageUser = JSON.parse(storageUser as string);
+          setUserRole(parseStorageUser.roleId);
           setToken(storageToken);
         }
       };
       getLocalData();
+      // console.log("User Role: ", userRole);
     } catch (error) {
       console.log(error);
     }
@@ -52,6 +45,14 @@ const UserProvider = ({ children }: UserProviderProps) => {
   // useEffect(() => {
   //   console.log("User Role: ", userRole);
   // }, [userRole]);
+
+  const login = (user: loginUser, token: string) => {
+    const stringUser = JSON.stringify(user);
+    localStorage.setItem("user", stringUser);
+    localStorage.setItem("token", token);
+    setUserRole(user?.roleId);
+    setToken(token);
+  };
 
   const logout = () => {
     setUserRole(undefined);

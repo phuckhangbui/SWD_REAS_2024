@@ -1,12 +1,15 @@
 import React, { useState, useContext } from "react";
 import {
   DesktopOutlined,
-  FileOutlined,
   PieChartOutlined,
-  TeamOutlined,
+  HomeOutlined,
   UserOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  GlobalOutlined,
+  DollarOutlined,
+  ExceptionOutlined,
+  SnippetsOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Button, Col, Layout, Menu, Row, theme } from "antd";
@@ -36,24 +39,37 @@ const items: MenuItem[] = [
   getItem("Auction", "sub1", <DesktopOutlined />, [
     getItem("Ongoing", "2"),
     getItem("Completed", "3"),
+    getItem("Create Auction", "4"),
   ]),
   getItem("User", "sub2", <UserOutlined />, [
-    getItem("Staffs", "4"),
-    getItem("Members", "5"),
-    getItem("Create New Staff", "6"),
+    getItem("Staffs", "5"),
+    getItem("Members", "6"),
+    getItem("Create New Staff", "7"),
   ]),
-  getItem("Real Estate", "sub3", <TeamOutlined />, [
-    getItem("All Real Estate", "7"),
-    getItem("Pending Real Estate", "8"),
+  getItem("Real Estate", "sub3", <HomeOutlined />, [
+    getItem("All Real Estates", "8"),
+    getItem("Pending Real Estate", "9"),
   ]),
-  getItem("Reporting and Statistics", "9", <FileOutlined />),
-  getItem("System setting", "10", <FileOutlined />),
-  getItem("Logout", 11),
+  getItem("News", "sub4", <GlobalOutlined />, [
+    getItem("News", "10"),
+    getItem("Add News", "11"),
+  ]),
+  getItem("Rule", "sub5", <ExceptionOutlined />, [
+    getItem("Rules", "12"),
+    getItem("Add Rule", "13"),
+  ]),
+  getItem("Task", "sub6", <SnippetsOutlined />, [
+    getItem("Task", "14"),
+    getItem("Add Task", "15"),
+  ]),
+  getItem("Transaction", "16", <DollarOutlined />),
+  getItem("Deposit", "17", <PieChartOutlined />),
+  getItem("Logout", 18),
 ];
 
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { user, logout } = useContext(UserContext);
+  const { logout } = useContext(UserContext);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -72,30 +88,51 @@ const Sidebar: React.FC = () => {
         navigate("/admin/auction/complete");
         break;
       case "4":
-        navigate("/admin/user/staff");
+        navigate("/admin/auction/create");
         break;
       case "5":
-        navigate("/admin/user/member");
+        navigate("/admin/user/staff");
         break;
       case "6":
-        navigate("/admin/user/create");
+        navigate("/admin/user/member");
         break;
       case "7":
-        navigate("/admin/real-estate/all");
+        navigate("/admin/user/create");
         break;
       case "8":
-        navigate("/admin/real-estate/pending");
+        navigate("/admin/real-estate/all");
         break;
       case "9":
-        navigate("/admin/reporting-statistics");
+        navigate("/admin/real-estate/pending");
         break;
       case "10":
-        navigate("/admin/system-setting");
+        navigate("/admin/news");
         break;
-        case"11":
+      case "11":
+        navigate("/admin/news/create");
+        break;
+      case "12":
+        navigate("/admin/rule");
+        break;
+      case "13":
+        navigate("/admin/rule/create");
+        break;
+      case "14":
+        navigate("/admin/task");
+        break;
+      case "15":
+        navigate("/admin/task/create");
+        break;
+      case "16":
+        navigate("/admin/transaction");
+        break;
+      case "17":
+        navigate("/admin/deposit");
+        break;
+      case "18":
         logout();
         navigate("/");
-        break
+        break;
       default:
         break;
     }

@@ -130,7 +130,7 @@ const AdminRealEstateAllList: React.FC = () => {
     }
   };
 
-  const fetchReasList = async (searchvalue : any) => {
+  const fetchReasList = async (searchvalue: any) => {
     try {
       if (token) {
         let data: ManageRealEstate[] | undefined;
@@ -172,11 +172,11 @@ const AdminRealEstateAllList: React.FC = () => {
       <Option value="minus">-</Option>
     </Select>
   );
-  const FormSearch = ({ }) => {
+  const FormSearch = ({}) => {
     const [name, setName] = useState("");
     const [priceFrom, setPriceFrom] = useState(0);
     const [priceTo, setPriceTo] = useState(0);
-  
+
     const handleSearch = () => {
       setSearch({
         reasName: name,
@@ -185,10 +185,14 @@ const AdminRealEstateAllList: React.FC = () => {
         reasStatus: -1, // Assuming default value for reasStatus
       });
     };
-  
+
     return (
       <div>
-        <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+        <Input
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
         <InputNumber
           addonBefore={selectBefore}
           addonAfter="$"
@@ -503,7 +507,11 @@ const AdminRealEstateAllList: React.FC = () => {
               onCancel={handleCancel}
               okButtonProps={{ style: { color: "black" } }}
             >
-              <TextArea onChange={(e) => getMessageBlock(e.target.value)} />
+              <TextArea
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  getMessageBlock(e.target.value)
+                }
+              />
             </Modal>
           </div>
           <br />
