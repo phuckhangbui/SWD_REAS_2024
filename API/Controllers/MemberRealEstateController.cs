@@ -9,6 +9,7 @@ using API.Param;
 using API.Param.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace API.Controllers
 {
@@ -19,11 +20,11 @@ namespace API.Controllers
         private readonly VnPayProperties _vnPayProperties;
         private readonly IVnPayService _vnPayService;
         private const string BaseUri = "/api/home/";
-        public MemberRealEstateController(IMemberRealEstateService memberRealEstateService, IVnPayService vnPayService, VnPayProperties vnPayProperties)
+        public MemberRealEstateController(IMemberRealEstateService memberRealEstateService, IVnPayService vnPayService, IOptions<VnPayProperties> vnPayProperties)
         {
             _memberRealEstateService = memberRealEstateService;
             _vnPayService = vnPayService;
-            _vnPayProperties = vnPayProperties;
+            _vnPayProperties = vnPayProperties.Value;
         }
 
         [HttpGet(BaseUri + "my_real_estate")]
