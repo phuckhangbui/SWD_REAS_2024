@@ -25,7 +25,7 @@ namespace API.Services
         {
             ReasStatusParam reasStatus = new ReasStatusParam();
             reasStatus.reasId = reasId;
-            reasStatus.reasStatus = (int)RealEstateEnum.Block;
+            reasStatus.reasStatus = (int)RealEstateStatus.Block;
             reasStatus.messageString = "";
 
             bool check = await _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);
@@ -76,7 +76,7 @@ namespace API.Services
         {
             ReasStatusParam reasStatus = new ReasStatusParam();
             reasStatus.reasId = reasId;
-            reasStatus.reasStatus = (int)RealEstateEnum.Selling;
+            reasStatus.reasStatus = (int)RealEstateStatus.Selling;
             reasStatus.messageString = "";
 
             bool check = await _realEstateRepository.UpdateRealEstateStatusAsync(reasStatus);

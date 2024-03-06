@@ -47,7 +47,7 @@ namespace API.Services
             Auction auction = _auctionRepository.GetAuction(auctionDetailDto.AuctionId);
             var realEstate = await _realEstateDetailRepository.GetRealEstateDetail(auction.ReasId);
 
-            if (realEstate.ReasStatus != (int)RealEstateEnum.Auctioning)
+            if (realEstate.ReasStatus != (int)RealEstateStatus.Auctioning)
             {
                 return null;
             }

@@ -1,7 +1,5 @@
 ﻿using API.Errors;
-using API.Extension;
 using API.Helper;
-using API.Interface.Repository;
 using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
@@ -135,7 +133,7 @@ namespace API.Controllers
             {
                 ReasStatusParam reasStatus = new ReasStatusParam();
                 reasStatus.reasId = reasId;
-                reasStatus.reasStatus = (int)RealEstateEnum.Selling;
+                reasStatus.reasStatus = (int)RealEstateStatus.Selling;
                 reasStatus.messageString = "";
 
                 bool check = await _adminRealEstateService.UnblockRealEstate(reasId);

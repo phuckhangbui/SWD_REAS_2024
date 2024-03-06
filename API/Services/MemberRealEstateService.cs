@@ -1,11 +1,11 @@
 ﻿using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
 using API.Interfaces;
 using API.Param;
+using API.Param.Enums;
 using API.Validate;
 
 namespace API.Services

@@ -1,10 +1,10 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entity;
-using API.Enums;
 using API.Helper;
 using API.Interface.Repository;
 using API.Param;
+using API.Param.Enums;
 using API.ThirdServices;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
