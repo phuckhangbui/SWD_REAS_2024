@@ -1,8 +1,15 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Input } from "@material-tailwind/react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { Table, TableProps, Tag , Descriptions, Button, notification} from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  Table,
+  TableProps,
+  Tag,
+  Descriptions,
+  Button,
+  notification,
+} from "antd";
 import { useState, useEffect } from "react";
 import {
   getStaff,
@@ -18,10 +25,8 @@ const AdminStaffList: React.FC = () => {
   const [staffData, setStaffData] = useState<Staff[]>(); // State để lưu trữ dữ liệu nhân viên
   const [staffDetailData, setStaffDetailData] = useState<staffDetail>();
   const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [message, setMessage] = useState<Message>();
   const [accountStaffId, setAccountId] = useState<Number>();
   const [statusStaff, setStatusAccount] = useState<Number>();
-  const [messageString, getMessageString] = useState<string>();
   const { token } = useContext(UserContext);
 
   const formatDate = (dateString: Date): string => {
@@ -36,7 +41,10 @@ const AdminStaffList: React.FC = () => {
     ).slice(-2)}`;
   };
 
-  const fetchChangeStatus = async (Id: Number | undefined, status: Number | undefined) => {
+  const fetchChangeStatus = async (
+    Id: Number | undefined,
+    status: Number | undefined
+  ) => {
     try {
       if (token) {
         let data: Message | undefined;
@@ -55,11 +63,10 @@ const AdminStaffList: React.FC = () => {
         data = await getAccountStaffId(accountId, token);
         setStaffDetailData(data);
         setAccountId(accountId);
-        if(data?.account_Status == "Active"){
-            setStatusAccount(0);
-        }
-        else{
-            setStatusAccount(1);
+        if (data?.account_Status == "Active") {
+          setStatusAccount(0);
+        } else {
+          setStatusAccount(1);
         }
         setShowDetail(true);
       }
@@ -83,7 +90,7 @@ const AdminStaffList: React.FC = () => {
       console.error("Error fetching member list:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchStaffList();
   }, [search, token]);
@@ -209,56 +216,47 @@ const AdminStaffList: React.FC = () => {
     ));
   };
 
-  const [contextHolder] = notification.useNotification();
-    const openNotificationWithIcon = (type: 'success' | 'error') => {
-        notification[type]({
-          message: 'Notification Title',
-          description:
-            message?.message,
-        });
-      };
 
-      const handleBackToList = () => {
-        setShowDetail(false); // Ẩn bảng chi tiết và hiện lại danh sách
-        fetchStaffList(); // Gọi lại hàm fetchMemberList khi quay lại danh sách
-      };
-const getMessage = async() => {
-  const response = await fetchChangeStatus(accountStaffId, statusStaff);
-  if (response !== undefined && response) { // Kiểm tra xem response có được trả về hay không
-    setMessage(response);
-  }
-  await handleChangeStatus();
-};
-      const handleChangeStatus = async () => {
-        try {
-            if(message){
-              if (message.statusCode == "MSG17") {
-                getMessageString(message.message);
-              } else {
-                getMessageString("Something went wrong when executing operation. Please try again!");
-              }
-              openNotificationWithIcon(message.statusCode == "MSG17" ? 'success' : 'error');
-              await fetchStaffDetail(accountStaffId);
-            }
-        } catch (error) {
-          console.error("Error handling status change:", error);
-        }
-      };
-      
-      
-      
+  const handleBackToList = () => {
+    setShowDetail(false); // Ẩn bảng chi tiết và hiện lại danh sách
+    fetchStaffList(); // Gọi lại hàm fetchMemberList khi quay lại danh sách
+  };
+  const getMessage = async () => {
+    const response = await fetchChangeStatus(accountStaffId, statusStaff);
+    if (response !== undefined && response) {
+      // Kiểm tra xem response có được trả về hay không
+      if (response.statusCode === "MSG17") {
+        openNotificationWithIcon("success", response.message);
+      } else {
+        openNotificationWithIcon("error", "Something went wrong when executing operation. Please try again!");
+      }
+      await fetchStaffDetail(accountStaffId);
+    }
+  };
+  
+  const openNotificationWithIcon = (type: 'success' | 'error', description: string) => {
+    notification[type]({
+      message: "Notification Title",
+      description: description,
+    });
+  };
 
   return (
     <>
       {showDetail ? (
         <div>
-          <Button onClick={handleBackToList}><FontAwesomeIcon icon={faArrowLeft} style={{color: "#74C0FC",}}/></Button>
-          <br/><br/>
+          <Button onClick={handleBackToList}>
+            <FontAwesomeIcon icon={faArrowLeft} style={{ color: "#74C0FC" }} />
+          </Button>
+          <br />
+          <br />
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button onClick={getMessage} >Change Status</Button>
+            <Button onClick={getMessage}>Change Status</Button>
           </div>
           <br />
-          <Descriptions bordered title="Detail of Staff">{renderBorderedItems()}</Descriptions>
+          <Descriptions bordered title="Detail of Staff">
+            {renderBorderedItems()}
+          </Descriptions>
         </div>
       ) : (
         <div>

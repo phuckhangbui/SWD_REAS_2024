@@ -1,4 +1,5 @@
-﻿using API.Entity;
+﻿using API.DTOs;
+using API.Entity;
 using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
@@ -30,9 +31,15 @@ namespace API.Services
             catch (Exception ex) { return false; }
         }
 
-        public async Task<PageList<Rule>> GetAllRule()
+        public async Task<IEnumerable<RuleDto>> GetAllRule()
         {
             var rule = await _rule_repository.GetAllRule();
+            return rule;
+        }
+
+        public async Task<Rule> GetDetailRule(int id)
+        {
+            var rule = await _rule_repository.GetDetailRule(id);
             return rule;
         }
 

@@ -9,6 +9,8 @@ using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
 using API.Param.Enums;
+using API.Services;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -50,32 +52,79 @@ namespace API.Controllers
 
 
 
-        //[HttpGet("/auctions")]
-        //public async Task<ActionResult<List<Auction>>> GetAuctions()
-        //{
-        //    var auctions = await _auctionrepository.GetAllAsync();
-
-        //    Response.AddPaginationHeader(new PaginationHeader(auctions.CurrentPage, auctions.PageSize,
-        //    accounts.TotalCount, accounts.TotalPages));
-        //    return Ok(auctions);
-        //}
-
-
         //for search also
         [Authorize(policy: "AdminAndStaff")]
-        [HttpGet("admin/auctions")]
-        public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions(AuctionParam auctionParam)
+        [HttpGet("auctions/all")]
+        public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctionsNotYetAndOnGoing()
         {
             //consider changing this to HttpPost
 
             //currently do not know search base on which properties
-            var auctions = await _auctionService.GetAuctions(auctionParam);
+            var auctions = await _auctionService.GetAuctionsNotYetAndOnGoing();
 
             //need to test the mapper here
             //currently expect mapper to auto flatten the object, but let see :0
-            Response.AddPaginationHeader(new PaginationHeader(auctions.CurrentPage, auctions.PageSize,
-            auctions.TotalCount, auctions.TotalPages));
-            return Ok(auctions);
+            if(auctions != null)
+            {
+                return Ok(auctions);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [Authorize(policy: "AdminAndStaff")]
+        [HttpGet("auctions/all/detail/{id}")]
+        public async Task<ActionResult<AuctionDetailOnGoing>> GetAuctionsDetailNotYetAndOnGoing(int id)
+        {
+            var auctions = await _auctionService.GetAuctionDetailOnGoing(id);
+
+            if (auctions != null)
+            {
+                return Ok(auctions);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [Authorize(policy: "AdminAndStaff")]
+        [HttpGet("auctions/complete")]
+        public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctionsFinish()
+        {
+            //consider changing this to HttpPost
+
+            //currently do not know search base on which properties
+            var auctions = await _auctionService.GetAuctionsFinish();
+
+            //need to test the mapper here
+            //currently expect mapper to auto flatten the object, but let see :0
+            if (auctions != null)
+            {
+                return Ok(auctions);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [Authorize(policy: "AdminAndStaff")]
+        [HttpGet("auctions/complete/detail/{id}")]
+        public async Task<ActionResult<AuctionDetailFinish>> GetAuctionsDetailFinish(int id)
+        {
+            var auctions = await _auctionService.GetAuctionDetailFinish(id);
+
+            if (auctions != null)
+            {
+                return Ok(auctions);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         [Authorize(policy: "AdminAndStaff")]
@@ -114,7 +163,7 @@ namespace API.Controllers
                 }
 
                 //update auction status
-                int statusFinish = (int)AuctionEnum.Finish;
+                int statusFinish = (int)AuctionStatus.Finish;
                 bool result = await _auctionService.ToggleAuctionStatus(auctionDetailDto.AuctionId.ToString(), statusFinish.ToString());
 
                 //update status of the remain looser user
@@ -301,5 +350,64 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse(400));
             }
         }
+
+
+        [Authorize(policy: "AdminAndStaff")]
+        [HttpGet("realfordeposit")]
+        public async Task<ActionResult<IEnumerable<ReasForAuctionDto>>> GetAuctionsReasForCreate()
+        {
+            //consider changing this to HttpPost
+
+            //currently do not know search base on which properties
+            var real = await _auctionService.GetAuctionsReasForCreate();
+
+            //need to test the mapper here
+            //currently expect mapper to auto flatten the object, but let see :0
+            if (real != null)
+            {
+                return Ok(real);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [Authorize(policy: "AdminAndStaff")]
+        [HttpGet("realfordeposit/{id}")]
+        public async Task<ActionResult<IEnumerable<DepositAmountUserDto>>> GetAllUserForDeposit(int id)
+        {
+            //consider changing this to HttpPost
+
+            //currently do not know search base on which properties
+            var deposit = await _auctionService.GetAllUserForDeposit(id);
+
+            //need to test the mapper here
+            //currently expect mapper to auto flatten the object, but let see :0
+            if (deposit != null)
+            {
+                return Ok(deposit);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [Authorize(policy: "AdminAndStaff")]
+        [HttpPost("deposit/create")]
+        public async Task<ActionResult<ApiResponseMessage>> CreateAuction(AuctionCreateParam auctionCreateParam)
+        {
+            bool check = await _auctionService.CreateAuction(auctionCreateParam);
+            if (check)
+            {
+                return new ApiResponseMessage("MSG05");
+            }
+            else
+            {
+                return BadRequest(new ApiResponse(400, "Have any error when excute operation."));
+            }
+        }
+
     }
 }

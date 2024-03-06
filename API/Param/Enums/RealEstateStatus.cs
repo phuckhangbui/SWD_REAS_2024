@@ -1,6 +1,5 @@
 ﻿namespace API.Param.Enums
 {
-
     public enum RealEstateStatus
     {
         InProgress = 0,
@@ -14,5 +13,4 @@
         DeclineAfterAuction = 8,
         Block = 9
     }
-
 }

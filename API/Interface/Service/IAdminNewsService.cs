@@ -8,10 +8,10 @@ namespace API.Interface.Service
     public interface IAdminNewsService
     {
         IAccountRepository AccountRepository { get; }
-        Task<PageList<NewsDto>> GetAllNewsByAdmin();
+        Task<IEnumerable<NewsAdminDto>> GetAllNewsByAdmin();
         Task<NewsDetailDto> GetNewsDetailByAdmin(int id);
-        Task<PageList<NewsDto>> SearchNewsByAdmin(SearchNewsParam searchNews);
+        Task<IEnumerable<NewsAdminDto>> SearchNewsByAdmin(SearchNewsAdminParam searchNews);
         Task<bool> AddNewNews(NewsCreate newCreate, int idAdmin);
-        Task<bool> UpdateNewNews(NewsDetailDto newsDetailDto);
+        Task<bool> UpdateNewNews(NewsDetailDto newsDetailDto);  
     }
 }

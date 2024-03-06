@@ -11,8 +11,6 @@ namespace API.Interface.Service
         Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstatesPendingBySearch(SearchRealEsateAdminParam searchRealEstateParam);
         Task<RealEstateDetailDto> GetRealEstatePendingDetail(int reasId);
         Task<RealEstateDetailDto> GetRealEstateAllDetail(int reasId);
-        Task<bool> BlockRealEstate(int reasId);
-        Task<bool> UnblockRealEstate(int reasId);
         Task<IEnumerable<ManageRealEstateDto>> GetRealEstateOnGoingByAdmin();
         Task<IEnumerable<ManageRealEstateDto>> GetAllRealEstateExceptOnGoingByAdmin();
         Task<bool> UpdateStatusRealEstateByAdmin(ReasStatusParam reasStatusParam);
