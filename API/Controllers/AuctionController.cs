@@ -219,7 +219,7 @@ namespace API.Controllers
                     return BadRequest(new ApiResponse(400));
                 }
 
-                if (realEstate.ReasStatus != (int)RealEstateEnum.Selling)
+                if (realEstate.ReasStatus != (int)RealEstateStatus.Selling)
                 {
                     return BadRequest(new ApiResponse(400));
 

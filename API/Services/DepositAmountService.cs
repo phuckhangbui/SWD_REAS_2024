@@ -35,7 +35,7 @@ namespace API.Services
             DepositAmountDto depositAmountDto = new DepositAmountDto();
             RealEstate realEstate = _realEstateRepository.GetRealEstate(reasId);
 
-            if (realEstate.ReasStatus != (int)RealEstateEnum.Selling)
+            if (realEstate.ReasStatus != (int)RealEstateStatus.Selling)
             {
                 return null;
             }

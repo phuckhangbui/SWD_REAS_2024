@@ -103,7 +103,7 @@ namespace API.Controllers
                 });
             }
 
-            if (realEsateDetail.ReasStatus != (int)RealEstateEnum.Selling)
+            if (realEsateDetail.ReasStatus != (int)RealEstateStatus.Selling)
             {
                 return Ok(new
                 {

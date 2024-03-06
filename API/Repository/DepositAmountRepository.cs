@@ -134,7 +134,7 @@ namespace API.Repository
                     (joinResult, realEstate) => new { joinResult.Account, joinResult.DepositAmount, RealEstate = realEstate })
                 .Where(joinResult => joinResult.DepositAmount.ReasId == reasId &&
                                      joinResult.DepositAmount.Status == (int)UserDepositEnum.Deposited &&
-                                     joinResult.RealEstate.ReasStatus == (int)RealEstateEnum.Selling)
+                                     joinResult.RealEstate.ReasStatus == (int)RealEstateStatus.Selling)
                 .Select(joinResult => new AccountDepositedDto
                 {
                     AccountId = joinResult.Account.AccountId,

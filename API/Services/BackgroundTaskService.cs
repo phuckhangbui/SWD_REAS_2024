@@ -33,7 +33,7 @@ namespace API.Services
                     _logger.LogInformation($"Auction id: {auctionId} status updated successfully at {DateTime.Now}.");
 
                     var realEstateToBeUpdated = _realEstateRepository.GetRealEstate(auctionToBeUpdated.ReasId);
-                    realEstateToBeUpdated.ReasStatus = (int)RealEstateEnum.Auctioning;
+                    realEstateToBeUpdated.ReasStatus = (int)RealEstateStatus.Auctioning;
                     await _realEstateRepository.UpdateAsync(realEstateToBeUpdated);
                     _logger.LogInformation($"Real estate id: {realEstateToBeUpdated.ReasId} status updated successfully at {DateTime.Now}.");
                 }

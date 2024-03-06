@@ -1,5 +1,4 @@
 ﻿using API.DTOs;
-using API.Enums;
 using API.Errors;
 using API.Extension;
 using API.Helper;
@@ -7,6 +6,7 @@ using API.Helper.VnPay;
 using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
+using API.Param.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
