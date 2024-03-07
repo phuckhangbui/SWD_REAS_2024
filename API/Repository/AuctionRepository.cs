@@ -253,5 +253,14 @@ namespace API.Repository
                 return false;
             }
         }
+
+        public async Task<AuctionDto> GetAuctionDetailByReasIdAsync(int reasId)
+        {
+            var auction = await _context.Auction
+                .Include(a => a.RealEstate)
+                .SingleOrDefaultAsync(a => a.ReasId == reasId);
+
+            return _mapper.Map<AuctionDto>(auction);
+        }
     }
 }

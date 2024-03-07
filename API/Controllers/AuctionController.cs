@@ -36,6 +36,25 @@ namespace API.Controllers
             _realEstateService = realEstateService;
         }
 
+        [HttpGet("/auctions/{reasId}")]
+        public async Task<IActionResult> GetAuctionDetailByReasId(int reasId)
+        {
+            try
+            {
+                var auctionDetail = await _auctionService.GetAuctionDetailByReasId(reasId);
+
+                return Ok(auctionDetail);
+            }
+            catch (BaseNotFoundException ex)
+            {
+                return NotFound(new ApiResponse(404, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(500, ex.Message));
+            }
+        }
+
         [HttpGet("auctions")]
         public async Task<IActionResult> GetAuctionsForMember([FromQuery] AuctionParam auctionParam)
         {
