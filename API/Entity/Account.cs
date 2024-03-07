@@ -4,11 +4,11 @@ public class Account
 {
     public int AccountId { get; set; }
 
-    public string Username { get; set; }
+    public string? Username { get; set; }
     public string AccountName { get; set; }
-    public byte[] PasswordHash { get; set; }
-    public byte[] PasswordSalt { get; set; }
-    public string AccountEmail { get; set; }
+    public byte[]? PasswordHash { get; set; }
+    public byte[]? PasswordSalt { get; set; }
+    public string? AccountEmail { get; set; }
     public string? PhoneNumber { get; set; }
     public string? Citizen_identification { get; set; }
     public string? Address { get; set; }
@@ -26,8 +26,8 @@ public class Account
     public List<Task> TasksAssigned { get; set; }
     public List<Log> LogWrote { get; set; }
     public List<Auction> Auctions { get; set; }
-    public List<MoneyTransaction> MoneyTransactions { get; set; }
-    public List<MoneyTransactionDetail> MoneyTransactionDetails { get; set; }
+    public List<MoneyTransaction> MoneyTransactionsSent { get; set; }
+    public List<MoneyTransaction> MoneyTransactionsReceived { get; set; }
     public List<Message> MessagesSent { get; set; }
     public List<Message> MessagesReceived { get; set; }
     public List<News> NewsCreated { get; set; }
