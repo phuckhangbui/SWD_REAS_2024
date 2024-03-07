@@ -11,5 +11,6 @@ public class Auction
     public int AccountCreateId { get; set; }
     public string AccountCreateName { get; set; }
     public int Status { get; set; }
+    public long FloorBid { get; set; }
     public AuctionAccounting AuctionAccounting { get; set; }
 }

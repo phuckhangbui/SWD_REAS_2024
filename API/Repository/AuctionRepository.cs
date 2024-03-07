@@ -26,7 +26,7 @@ namespace API.Repository
         {
             var query = _context.Auction.AsQueryable();
 
-            query = query.Where(a => a.Status != (int)AuctionStatus.NotYet);
+            query = query.Where(a => a.Status != (int)AuctionEnum.Not_yet);
             query = query.OrderByDescending(a => a.DateStart);
 
             if (!string.IsNullOrEmpty(auctionParam.Keyword))
@@ -86,8 +86,8 @@ namespace API.Repository
         public async Task<PageList<AuctionDto>> GetAuctionHistoryForOwnerAsync(AuctionHistoryParam auctionAccountingParam)
         {
             var query = _context.AuctionsAccounting
-                .Where(aa => aa.AccountOwnerId == auctionAccountingParam.AccountId 
-                        && aa.Auction.Status == (int)AuctionEnum.Finish 
+                .Where(aa => aa.AccountOwnerId == auctionAccountingParam.AccountId
+                        && aa.Auction.Status == (int)AuctionEnum.Finish
                         || aa.Auction.Status == (int)AuctionEnum.Cancel)
                 .Select(aa => aa.Auction)
                 .AsQueryable();

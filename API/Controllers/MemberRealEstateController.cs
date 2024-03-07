@@ -1,4 +1,5 @@
 ﻿using API.DTOs;
+using API.Entity;
 using API.Errors;
 using API.Extension;
 using API.Helper;
@@ -19,12 +20,15 @@ namespace API.Controllers
         private readonly IMemberRealEstateService _memberRealEstateService;
         private readonly VnPayProperties _vnPayProperties;
         private readonly IVnPayService _vnPayService;
+        private readonly IMoneyTransactionService _moneyTransactionService;
+
         private const string BaseUri = "/api/home/";
-        public MemberRealEstateController(IMemberRealEstateService memberRealEstateService, IVnPayService vnPayService, IOptions<VnPayProperties> vnPayProperties)
+        public MemberRealEstateController(IMemberRealEstateService memberRealEstateService, IVnPayService vnPayService, IOptions<VnPayProperties> vnPayProperties, IMoneyTransactionService moneyTransactionService)
         {
             _memberRealEstateService = memberRealEstateService;
             _vnPayService = vnPayService;
             _vnPayProperties = vnPayProperties.Value;
+            _moneyTransactionService = moneyTransactionService;
         }
 
         [HttpGet(BaseUri + "my_real_estate")]
@@ -153,44 +157,99 @@ namespace API.Controllers
             if (realEstateDetail.ReasStatus != (int)RealEstateStatus.Approved)
             {
                 return BadRequest(new ApiResponse(401, "Not in the payment state"));
-
             }
 
+            //default fee is 100,000 VND
             string paymentUrl = _vnPayService.CreatePostRealEstatePaymentURL(HttpContext, _vnPayProperties, returnUrl);
 
             return Ok(paymentUrl);
         }
 
-
-        [HttpPost(BaseUri + "my_real_estate/payment")]
-        public async Task<ActionResult<ApiResponseMessage>> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam)
+        [HttpGet(BaseUri + "pay/fee/returnUrl/{reasId}")]
+        public async Task<ActionResult> PayRealEstateUploadFee([FromQuery] Dictionary<string, string> vnpayData, int reasId)
         {
-            int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
-            if (userMember != 0)
-            {
-                if (transactionMoneyCreateParam.Money != transactionMoneyCreateParam.MoneyPaid)
-                {
-                    return new ApiResponseMessage("MSG20");
-                }
-                else
-                {
-                    try
-                    {
-                        bool check = await _memberRealEstateService.PaymentAmountToUpRealEstaeAfterApprove(transactionMoneyCreateParam, userMember);
-                        if (check)
-                            return new ApiResponseMessage("MSG19");
-                        else return BadRequest(new ApiResponse(401, "Have any error when excute operation"));
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(new ApiResponse(400, "Have any error when excute operation"));
-                    }
-                }
-            }
-            else
+            int customerId = GetLoginAccountId();
+
+            if (customerId == 0)
             {
                 return BadRequest(new ApiResponse(401));
             }
+
+            var realEstateDetail = await _memberRealEstateService.ViewOwnerRealEstateDetail(reasId);
+
+            if (realEstateDetail.AccountOwnerId != customerId)
+            {
+                return BadRequest(new ApiResponse(401, "Not match real estate with userId"));
+            }
+
+            if (realEstateDetail.ReasStatus != (int)RealEstateStatus.Approved)
+            {
+                return BadRequest(new ApiResponse(401, "Not in the payment state"));
+            }
+
+            string vnp_HashSecret = _vnPayProperties.HashSecret;
+            try
+            {
+                MoneyTransaction transaction = ReturnUrl.ProcessReturnUrl(vnpayData, vnp_HashSecret, TransactionType.Upload_Fee);
+
+                if (transaction != null)
+                {
+                    transaction.AccountSendId = customerId;
+                    transaction.ReasId = reasId;
+
+                    var result = await _moneyTransactionService.CreateMoneyTransaction(transaction);
+                    if (!result)
+                    {
+                        return BadRequest(new ApiResponse(400));
+                    }
+
+                    //update realestate status
+                    realEstateDetail.ReasStatus = (int)RealEstateStatus.Selling;
+                    result = await _memberRealEstateService.UpdateRealEstateStatus(realEstateDetail, "");
+
+                }
+                return Ok(new
+                {
+                    transactionStatus = transaction.TransactionStatus
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400));
+            }
+
         }
+
+
+        //[HttpPost(BaseUri + "my_real_estate/payment")]
+        //public async Task<ActionResult<ApiResponseMessage>> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam)
+        //{
+        //    int userMember = GetIdMember(_memberRealEstateService.AccountRepository);
+        //    if (userMember != 0)
+        //    {
+        //        if (transactionMoneyCreateParam.Money != transactionMoneyCreateParam.MoneyPaid)
+        //        {
+        //            return new ApiResponseMessage("MSG20");
+        //        }
+        //        else
+        //        {
+        //            try
+        //            {
+        //                bool check = await _memberRealEstateService.PaymentAmountToUpRealEstaeAfterApprove(transactionMoneyCreateParam, userMember);
+        //                if (check)
+        //                    return new ApiResponseMessage("MSG19");
+        //                else return BadRequest(new ApiResponse(401, "Have any error when excute operation"));
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                return BadRequest(new ApiResponse(400, "Have any error when excute operation"));
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return BadRequest(new ApiResponse(401));
+        //    }
+        //}
     }
 }

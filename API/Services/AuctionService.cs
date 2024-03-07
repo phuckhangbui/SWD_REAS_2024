@@ -4,7 +4,7 @@ using API.Helper;
 using API.Interface.Repository;
 using API.Interface.Service;
 using API.Param;
-
+using API.Param.Enums;
 
 namespace API.Services
 {
@@ -62,6 +62,13 @@ namespace API.Services
                 else return false;
             }
             catch (Exception ex) { return false; }
+        }
+
+        public async Task<PageList<AuctionDto>> GetNotyetAndOnGoingAuction(AuctionParam auctionParam)
+        {
+            var auctions = await _auctionRepository.GetAuctionsAsync(auctionParam);
+            var notyetAndOngoingAuctions = auctions.Where(a => a.Status == (int)AuctionEnum.Not_yet || a.Status == (int)AuctionEnum.On_going);
+            return auctions;
         }
     }
 }

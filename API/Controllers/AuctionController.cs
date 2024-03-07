@@ -37,28 +37,15 @@ namespace API.Controllers
         }
 
         [HttpGet("auctions")]
-        public async Task<IActionResult> GetRealEstates([FromQuery] AuctionParam auctionParam)
+        public async Task<IActionResult> GetAuctionsForMember([FromQuery] AuctionParam auctionParam)
         {
-            var auctions = await _auctionService.GetRealEstates(auctionParam);
+            var auctions = await _auctionService.GetNotyetAndOnGoingAuction(auctionParam);
 
             Response.AddPaginationHeader(new PaginationHeader(auctions.CurrentPage, auctions.PageSize,
             auctions.TotalCount, auctions.TotalPages));
 
             return Ok(auctions);
         }
-
-
-
-
-        //[HttpGet("/auctions")]
-        //public async Task<ActionResult<List<Auction>>> GetAuctions()
-        //{
-        //    var auctions = await _auctionrepository.GetAllAsync();
-
-        //    Response.AddPaginationHeader(new PaginationHeader(auctions.CurrentPage, auctions.PageSize,
-        //    accounts.TotalCount, accounts.TotalPages));
-        //    return Ok(auctions);
-        //}
 
 
         //for search also
@@ -199,7 +186,6 @@ namespace API.Controllers
             }
         }
 
-        [Authorize(policy: "Customer")]
         [Authorize(policy: "Member")]
         [HttpGet("register")]
         public async Task<ActionResult<DepositAmountDtoWithPaymentUrl>> RegisterAuction([FromQuery] string customerId, string reasId, string returnUrl)
@@ -279,7 +265,7 @@ namespace API.Controllers
 
             try
             {
-                MoneyTransaction transaction = ReturnUrl.ProcessReturnUrlForDepositAuction(vnpayData, vnp_HashSecret);
+                MoneyTransaction transaction = ReturnUrl.ProcessReturnUrl(vnpayData, vnp_HashSecret, TransactionType.Deposit_Auction_Fee);
 
                 if (transaction != null)
                 {

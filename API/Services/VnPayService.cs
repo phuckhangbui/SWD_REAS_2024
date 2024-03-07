@@ -35,7 +35,7 @@ namespace API.Services
             vnPayPaymentUrlDto.Version = vnPayProperties.Version;
             vnPayPaymentUrlDto.HashSecret = vnPayProperties.HashSecret;
 
-            vnPayPaymentUrlDto.Amount = 100000 * 100;
+            vnPayPaymentUrlDto.Amount = 100000;
             vnPayPaymentUrlDto.CreateDate = DateTime.Now;
             vnPayPaymentUrlDto.ExpireDate = DateTime.Now.AddMinutes(10);
             vnPayPaymentUrlDto.Locale = "vn";

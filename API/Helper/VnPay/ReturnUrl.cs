@@ -5,7 +5,7 @@ namespace API.Helper.VnPay
 {
     public class ReturnUrl
     {
-        public static MoneyTransaction ProcessReturnUrlForDepositAuction(Dictionary<string, string> vnpayData, string vnp_HashSecret)
+        public static MoneyTransaction ProcessReturnUrl(Dictionary<string, string> vnpayData, string vnp_HashSecret, TransactionType transactionType)
         {
             MoneyTransaction transaction = new MoneyTransaction();
             VnPayLibrary vnpay = new VnPayLibrary();
@@ -32,7 +32,7 @@ namespace API.Helper.VnPay
                     transaction.TransactionStatus = (int)TransactionStatus.success;
                     transaction.TransactionNo = vnpay.GetResponseData("vnp_TransactionNo");
                     transaction.TxnRef = vnpay.GetResponseData("vnp_TxnRef");
-                    transaction.TypeId = (int)TransactionType.Deposit_Auction_Fee;
+                    transaction.TypeId = (int)transactionType;
                     transaction.Money = Convert.ToDouble(vnpay.GetResponseData("vnp_Amount")) / 100;
                     transaction.DateExecution = Utils.ParseDateString(vnpay.GetResponseData("vnp_PayDate"));
                 }
@@ -44,5 +44,7 @@ namespace API.Helper.VnPay
             }
             return transaction;
         }
+
+
     }
 }
