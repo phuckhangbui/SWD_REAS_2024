@@ -17,6 +17,7 @@ namespace API.Interface.Service
         Task<bool> ToggleAuctionStatus(string auctionId, string statusCode);
         Task<PageList<AuctionDto>> GetAuctionHisotoryForOwner(AuctionHistoryParam auctionAccountingParam);
         Task<PageList<AuctionDto>> GetAuctionHisotoryForAttender(AuctionHistoryParam auctionAccountingParam);
+        Task<PageList<AuctionDto>> GetNotyetAndOnGoingAuction(AuctionParam auctionParam);
         Task<bool> CreateAuction(AuctionCreateParam auctionCreateParam);
     }
 }

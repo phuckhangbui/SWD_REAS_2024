@@ -4,7 +4,6 @@ using API.Entity;
 using API.Helper;
 using API.Interface.Repository;
 using API.Param;
-using API.Param.Enums;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -21,28 +20,28 @@ namespace API.Repository
             _mapper = mapper;
         }
 
-        public async Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idAccount)
-        {
-            MoneyTransaction moneyTransaction = new MoneyTransaction();
-            moneyTransaction.TransactionStatus = (int)TransactionEnum.Received;
-            moneyTransaction.TypeId = 3;
-            moneyTransaction.DateExecution = DateTime.UtcNow;
-            moneyTransaction.AccountSendId = idAccount;
-            moneyTransaction.Money = transactionMoneyCreateDto.MoneyPaid;
-            try
-            {
-                bool check = await CreateAsync(moneyTransaction);
-                if (check)
-                {
-                    return true;
-                }
-                else return false;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+        //public async Task<bool> CreateNewMoneyTransaction(TransactionMoneyCreateParam transactionMoneyCreateDto, int idAccount)
+        //{
+        //    MoneyTransaction moneyTransaction = new MoneyTransaction();
+        //    moneyTransaction.TransactionStatus = (int)TransactionEnum.Received;
+        //    moneyTransaction.TypeId = 3;
+        //    moneyTransaction.DateExecution = DateTime.UtcNow;
+        //    moneyTransaction.AccountSendId = idAccount;
+        //    moneyTransaction.Money = transactionMoneyCreateDto.MoneyPaid;
+        //    try
+        //    {
+        //        bool check = await CreateAsync(moneyTransaction);
+        //        if (check)
+        //        {
+        //            return true;
+        //        }
+        //        else return false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return false;
+        //    }
+        //}
 
         public async Task<int> GetIdTransactionWhenCreateNewTransaction()
         {
@@ -86,7 +85,7 @@ namespace API.Repository
                 dateExecutionFrom = DateTime.Parse(moneyTransactionRequest.DateExecutionFrom);
                 dateExecutionTo = DateTime.Parse(moneyTransactionRequest.DateExecutionTo);
 
-                query = query.Where(m => m.DateExecution >= dateExecutionFrom 
+                query = query.Where(m => m.DateExecution >= dateExecutionFrom
                     && m.DateExecution <= dateExecutionTo);
             }
 

@@ -121,28 +121,28 @@ namespace API.Services
         }
 
 
-        public async Task<bool> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam, int userMember)
-        {
-            ReasStatusParam reasStatusDto = new ReasStatusParam();
-            reasStatusDto.reasId = transactionMoneyCreateParam.IdReas;
-            reasStatusDto.reasStatus = (int)RealEstateStatus.Selling;
-            reasStatusDto.messageString = "";
-            bool check = await _real_estate_repository.UpdateRealEstateStatusAsync(reasStatusDto);
-            if (check)
-            {
-                bool check_trans = await _money_transaction_repository.CreateNewMoneyTransaction(transactionMoneyCreateParam, userMember);
-                if (check_trans)
-                {
-                    int idTransaction = await _money_transaction_repository.GetIdTransactionWhenCreateNewTransaction();
-                    //bool check_trans_detail = await _moneyTransactionDetailRepository.CreateNewMoneyTransaction(transactionMoneyCreateParam, idTransaction);
-                    //if (check_trans_detail) return true;
-                    //else return false;
-                    return true;
-                }
-                else return false;
-            }
-            else return false;
-        }
+        //public async Task<bool> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam, int userMember)
+        //{
+        //    ReasStatusParam reasStatusDto = new ReasStatusParam();
+        //    reasStatusDto.reasId = transactionMoneyCreateParam.IdReas;
+        //    reasStatusDto.reasStatus = (int)RealEstateStatus.Selling;
+        //    reasStatusDto.messageString = "";
+        //    bool check = await _real_estate_repository.UpdateRealEstateStatusAsync(reasStatusDto);
+        //    if (check)
+        //    {
+        //        bool check_trans = await _money_transaction_repository.CreateNewMoneyTransaction(transactionMoneyCreateParam, userMember);
+        //        if (check_trans)
+        //        {
+        //            int idTransaction = await _money_transaction_repository.GetIdTransactionWhenCreateNewTransaction();
+        //            //bool check_trans_detail = await _moneyTransactionDetailRepository.CreateNewMoneyTransaction(transactionMoneyCreateParam, idTransaction);
+        //            //if (check_trans_detail) return true;
+        //            //else return false;
+        //            return true;
+        //        }
+        //        else return false;
+        //    }
+        //    else return false;
+        //}
 
         public async Task<PageList<RealEstateDto>> SearchOwnerRealEstateForMember(SearchRealEstateParam searchRealEstateParam, int userMember)
         {
@@ -164,6 +164,19 @@ namespace API.Services
         {
             var _real_estate_detail = await _real_estate_detail_repository.GetRealEstateDetail(id);
             return _real_estate_detail;
+        }
+
+        public async Task<bool> UpdateRealEstateStatus(RealEstateDetailDto realEstateDetailDto, string message)
+        {
+            ReasStatusParam realEstateStatus = new ReasStatusParam
+            {
+                reasId = realEstateDetailDto.ReasId,
+                reasStatus = realEstateDetailDto.ReasStatus,
+                messageString = message,
+            };
+            bool check = await _real_estate_repository.UpdateRealEstateStatusAsync(realEstateStatus);
+
+            return check;
         }
 
 

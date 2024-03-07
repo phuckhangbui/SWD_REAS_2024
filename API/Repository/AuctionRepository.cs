@@ -101,8 +101,8 @@ namespace API.Repository
         public async Task<PageList<AuctionDto>> GetAuctionHistoryForOwnerAsync(AuctionHistoryParam auctionAccountingParam)
         {
             var query = _context.AuctionsAccounting
-                .Where(aa => aa.AccountOwnerId == auctionAccountingParam.AccountId 
-                        && aa.Auction.Status == (int)AuctionStatus.Finish 
+                .Where(aa => aa.AccountOwnerId == auctionAccountingParam.AccountId
+                        && aa.Auction.Status == (int)AuctionStatus.Finish
                         || aa.Auction.Status == (int)AuctionStatus.Cancel)
                 .Select(aa => aa.Auction)
                 .AsQueryable();
@@ -213,7 +213,7 @@ namespace API.Repository
         public async Task<IEnumerable<DepositAmountUserDto>> GetAllUserForDeposit(int id)
         {
             var getName = new GetStatusName();
-            var deposit = _context.DepositAmount.Where(x => (x.Status == 1 || x.Status == 0)  && x.ReasId == id).Select(x => new DepositAmountUserDto
+            var deposit = _context.DepositAmount.Where(x => (x.Status == 1 || x.Status == 0) && x.ReasId == id).Select(x => new DepositAmountUserDto
             {
                 reasId = x.ReasId,
                 accountSignId = x.AccountSignId,
@@ -248,7 +248,7 @@ namespace API.Repository
                     return false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return false;
             }

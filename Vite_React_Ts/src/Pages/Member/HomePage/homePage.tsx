@@ -24,6 +24,7 @@ const HomePage = () => {
 
       fetchRealEstates();
       fetchNews();
+      
     } catch (error) {
       console.log(error);
     }

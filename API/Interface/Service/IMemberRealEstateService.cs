@@ -13,6 +13,7 @@ namespace API.Interface.Service
         Task<IEnumerable<CreateNewRealEstatePage>> ViewCreateNewRealEstatePage();
         Task<bool> CreateNewRealEstate(NewRealEstateParam newRealEstateParam, int userMember);
         Task<RealEstateDetailDto> ViewOwnerRealEstateDetail(int id);
-        Task<bool> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam, int userMember);
+        //Task<bool> PaymentAmountToUpRealEstaeAfterApprove(TransactionMoneyCreateParam transactionMoneyCreateParam, int userMember);
+        Task<bool> UpdateRealEstateStatus(RealEstateDetailDto realEstateDetailDto, string message);
     }
 }
