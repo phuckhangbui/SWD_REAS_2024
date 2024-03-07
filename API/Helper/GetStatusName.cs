@@ -24,5 +24,19 @@ namespace API.Helper
             string statusName = AccountStatus.ToString();
             return statusName;
         }
+
+        public string GetStatusAuctionName(int status)
+        {
+            AuctionStatus AuctionStatus = (AuctionStatus)status;
+            string statusName = AuctionStatus.ToString();
+            return statusName;
+        }
+
+        public string GetStatusDepositName(int status)
+        {
+            UserDepositEnum DepositStatus = (UserDepositEnum)status;
+            string statusName = DepositStatus.ToString();
+            return statusName;
+        }
     }
 }

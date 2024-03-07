@@ -1,7 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import SearchBar from "../../../components/SearchBar/searchBar";
 
+const priceList = [
+  5000, 6000, 7000, 8000, 10000, 11000, 12000, 15000, 20000, 50000, 100000,
+  200000, 500000, 600000, 1000000,
+];
+
 const AuctionPage = () => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [minPrice, setMinPrice] = useState<number | null>(0);
+  const [maxPrice, setMaxPrice] = useState<number | null>(0);
+  const [minPriceList, setMinPriceList] = useState(priceList);
+  const [maxPriceList, setMaxPriceList] = useState(priceList);
+  const [searchParams, setSearchParams] = useState<searchAuction | null>({
+    keyword: "",
+    timeStart: "",
+    timeEnd: "",
+    pageNumber: 0,
+    pageSize: 0,
+  });
+
+  const toggleDropdown = () => {
+    setDropdownVisible((preDropdownVisible) => !preDropdownVisible);
+  };
+
+  const handleChangeMinPriceList = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedPrice = parseInt(e.target.value);
+    setMinPrice(selectedPrice);
+    const currentMaxPriceList = priceList.filter(
+      (price) => price > selectedPrice
+    );
+    setMaxPriceList(currentMaxPriceList);
+
+    setSearchParams((prevState: searchAuction | null) => ({
+      ...prevState!,
+      reasPriceFrom: selectedPrice.toString(),
+    }));
+  };
+
+  const handleChangeMaxPriceList = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedPrice = parseInt(e.target.value);
+    setMaxPrice(selectedPrice);
+    const currentMinPriceList = priceList.filter(
+      (price) => price < selectedPrice
+    );
+    setMinPriceList(currentMinPriceList);
+
+    setSearchParams((prevState: searchAuction | null) => ({
+      ...prevState!,
+      reasPriceTo: selectedPrice.toString(),
+    }));
+  };
   return (
     <div className="">
       <div className="pt-20">
@@ -18,9 +71,16 @@ const AuctionPage = () => {
                   Find. <span className="text-mainBlue">Auction.</span> Deposit.{" "}
                   <span className="text-secondaryYellow">Own.</span>
                 </div>
-                <SearchBar placeHolder= "Search for the auction you want to see"/>
+                <SearchBar
+                  placeHolder="Search for the auction you want to see"
+                  inputName="autionName"
+                  nameValue={searchParams?.keyword || ""}
+                  onSearchChange={function (value: string): void {
+                    throw new Error("Function not implemented.");
+                  }}
+                />
                 <div className="flex px-3 py-1">
-                  {/* <div className="mt-1 flex items-center justify-end">
+                  <div className="mt-1 flex items-center justify-end">
                     <label htmlFor="status" className="sr-only">
                       Underline select
                     </label>
@@ -48,8 +108,8 @@ const AuctionPage = () => {
                         d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1"
                       />
                     </svg>
-                  </div> */}
-                  {/* <div className="mt-1 w-full flex items-center ">
+                  </div>
+                  <div className="mt-1 w-full flex items-center ">
                     <button
                       id="dropdownBottomButton"
                       className="text-gray-900 bg-white py-1 pl-3 w-full font-medium rounded-r-lg text-sm  text-center inline-flex items-center border-r-2 border-y-2 justify-between pr-1"
@@ -167,7 +227,7 @@ const AuctionPage = () => {
                         </div>
                       </div>
                     )}
-                  </div> */}
+                  </div>
                 </div>
               </div>
             </div>

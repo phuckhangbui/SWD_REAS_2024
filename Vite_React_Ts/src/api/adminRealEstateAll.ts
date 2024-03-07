@@ -31,8 +31,9 @@ export const searchManageRealEstate = async ({
       reasPriceTo,
       reasStatus,
     };
+    const statusParams = reasStatus.map(status => `reasStatus=${status}`).join('&');
     const fetchData = await axios.get<ManageRealEstate[]>(
-      `${baseUrl}/api/admin/real-estate/all/search?reasName=${param.reasName}&reasPriceFrom=${param.reasPriceFrom}&reasPriceTo=${param.reasPriceTo}&reasStatus=${param.reasStatus}`,
+      `${baseUrl}/api/admin/real-estate/all/search?reasName=${param.reasName}&reasPriceFrom=${param.reasPriceFrom}&reasPriceTo=${param.reasPriceTo}&${statusParams}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -71,7 +72,7 @@ export const changeStatusRealAll = async (reasId: Number | undefined, reasStatus
           reasId, reasStatus, messageString
         }
       const fetchData = await axios.post<Message>(
-        `${baseUrl}/api/admin/real-estate/all/change/`,
+        `${baseUrl}/api/admin/real-estate/change/`,
         param,
         {
           headers: {

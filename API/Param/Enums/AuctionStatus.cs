@@ -1,9 +1,9 @@
 ﻿namespace API.Param.Enums
 {
-    public enum AuctionEnum
+    public enum AuctionStatus
     {
-        Not_yet = 0,
-        On_going = 1,
+        NotYet = 0,
+        OnGoing = 1,
         Finish = 2,
         Cancel = 3,
     }

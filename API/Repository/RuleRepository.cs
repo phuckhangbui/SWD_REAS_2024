@@ -1,10 +1,10 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entity;
 using API.Helper;
 using API.Interface.Repository;
 using API.Param;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository
@@ -41,14 +41,19 @@ namespace API.Repository
             
         }
 
-        public async Task<PageList<Rule>> GetAllRule()
+        public async Task<IEnumerable<RuleDto>> GetAllRule()
         {
-            PaginationParams paginationParams = new PaginationParams();
-            var rule = _context.Rule;
-            return await PageList<Rule>.CreateAsync(
-                rule.AsNoTracking().ProjectTo<Rule>(_mapper.ConfigurationProvider),
-                paginationParams.PageNumber,
-                paginationParams.PageSize);
+            var rule = _context.Rule.Select(x => new RuleDto
+            {
+                RuleId = x.RuleId, Title = x.Title, DateCreated = x.DateCreated,
+            });
+            return await rule.ToListAsync();
+        }
+
+        public Task<Rule> GetDetailRule(int id)
+        {
+            var rule = _context.Rule.Where(x => x.RuleId == id).FirstOrDefaultAsync();
+            return rule;
         }
 
         public async Task<Rule> GetRuleWhenUserSignInAuction()
@@ -66,7 +71,7 @@ namespace API.Repository
             if (query != null)
             {
                     query.Content = ruleChangeContent.content;
-                    query.DateUpdated = ruleChangeContent.DateUpdate;
+                    query.DateUpdated = DateTime.UtcNow;
                     try
                     {
                         bool check = await UpdateAsync(query);

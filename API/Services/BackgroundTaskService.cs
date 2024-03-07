@@ -28,7 +28,7 @@ namespace API.Services
 
                 if (auctionToBeUpdated != null)
                 {
-                    auctionToBeUpdated.Status = (int)AuctionEnum.On_going;
+                    auctionToBeUpdated.Status = (int)AuctionStatus.OnGoing;
                     await _auctionRepository.UpdateAsync(auctionToBeUpdated);
                     _logger.LogInformation($"Auction id: {auctionId} status updated successfully at {DateTime.Now}.");
 
@@ -53,7 +53,7 @@ namespace API.Services
                 var auctionsToBeScheduled = await _auctionRepository.GetAllAsync();
 
                 auctionsToBeScheduled = auctionsToBeScheduled
-                    .Where(a => a.Status == (int)AuctionEnum.Not_yet && a.DateStart > currentDateTime).ToList();
+                    .Where(a => a.Status == (int)AuctionStatus.NotYet && a.DateStart > currentDateTime).ToList();
 
                 foreach (var auction in auctionsToBeScheduled)
                 {

@@ -41,10 +41,54 @@ namespace API.Services
             return await _auctionRepository.GetAuctionHistoryForOwnerAsync(auctionAccountingParam);
         }
 
-        public async Task<PageList<AuctionDto>> GetAuctions(AuctionParam auctionParam)
+        public async Task<bool> CreateAuction(AuctionCreateParam auctionCreateParam)
         {
-            var auctions = await _auctionRepository.GetAuctions(auctionParam);
+            bool check = await _auctionRepository.CreateAuction(auctionCreateParam);
+            if (check)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<DepositAmountUserDto>> GetAllUserForDeposit(int id)
+        {
+            var deposit = await _auctionRepository.GetAllUserForDeposit(id);
+            return deposit;
+        }
+
+        public async Task<AuctionDetailFinish> GetAuctionDetailFinish(int id)
+        {
+            var auctiondetail = await _auctionRepository.GetAuctionDetailFinish(id);
+            return auctiondetail;
+        }
+
+        public async Task<AuctionDetailOnGoing> GetAuctionDetailOnGoing(int id)
+        {
+            var auctiondetail = await _auctionRepository.GetAuctionDetailOnGoing(id);
+            return auctiondetail;
+        }
+
+
+        public async Task<IEnumerable<AuctionDto>> GetAuctionsFinish()
+        {
+            var auctions = await _auctionRepository.GetAuctionsFinish();
             return auctions;
+        }
+
+        public async Task<IEnumerable<AuctionDto>> GetAuctionsNotYetAndOnGoing()
+        {
+            var auctions = await _auctionRepository.GetAuctionsNotYetAndOnGoing();
+            return auctions;
+        }
+
+        public async Task<IEnumerable<ReasForAuctionDto>> GetAuctionsReasForCreate()
+        {
+            var real = await _auctionRepository.GetAuctionsReasForCreate();
+            return real;
         }
 
         public async Task<PageList<AuctionDto>> GetRealEstates(AuctionParam auctionParam)
@@ -67,7 +111,7 @@ namespace API.Services
         public async Task<PageList<AuctionDto>> GetNotyetAndOnGoingAuction(AuctionParam auctionParam)
         {
             var auctions = await _auctionRepository.GetAuctionsAsync(auctionParam);
-            var notyetAndOngoingAuctions = auctions.Where(a => a.Status == (int)AuctionEnum.Not_yet || a.Status == (int)AuctionEnum.On_going);
+            var notyetAndOngoingAuctions = auctions.Where(a => int.Parse(a.Status) == (int)AuctionStatus.NotYet || int.Parse(a.Status) == (int)AuctionStatus.OnGoing);
             return auctions;
         }
     }

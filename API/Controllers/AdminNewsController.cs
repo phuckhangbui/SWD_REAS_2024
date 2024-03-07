@@ -1,11 +1,8 @@
 ﻿using API.DTOs;
 using API.Errors;
-using API.Extension;
-using API.Helper;
 using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
-using API.Validate;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -21,25 +18,15 @@ namespace API.Controllers
         }
 
         [HttpGet(BaseUri + "news")]
-        public async Task<IActionResult> GetAllNewsByAdmin([FromQuery] PaginationParams paginationParams)
+        public async Task<IActionResult> GetAllNewsByAdmin()
         {
             int idAdmin = GetIdAdmin(_adminNewsService.AccountRepository);
             if (idAdmin != 0)
             {
                 var listNews = await _adminNewsService.GetAllNewsByAdmin();
-                Response.AddPaginationHeader(new PaginationHeader(listNews.CurrentPage, listNews.PageSize,
-                listNews.TotalCount, listNews.TotalPages));
-                if (listNews.PageSize == 0)
-                {
-                    var apiResponseMessage = new ApiResponseMessage("MSG01");
-                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
-                }
-                else
-                {
                     if (!ModelState.IsValid)
                         return BadRequest(ModelState);
                     return Ok(listNews);
-                }
             }
             else
             {
@@ -69,25 +56,23 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost(BaseUri + "news/search")]
-        public async Task<IActionResult> SearchNewsByAdmin(SearchNewsParam searchNews)
+        [HttpGet(BaseUri + "news/search")]
+        public async Task<IActionResult> SearchNewsByAdmin([FromQuery] SearchNewsAdminParam searchNews)
         {
             int idAdmin = GetIdAdmin(_adminNewsService.AccountRepository);
             if (idAdmin != 0)
             {
                 var reals = await _adminNewsService.SearchNewsByAdmin(searchNews);
-                Response.AddPaginationHeader(new PaginationHeader(reals.CurrentPage, reals.PageSize,
-                reals.TotalCount, reals.TotalPages));
-                if (reals.PageSize == 0)
-                {
-                    var apiResponseMessage = new ApiResponseMessage("MSG01");
-                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
-                }
-                else
+                if (reals != null)
                 {
                     if (!ModelState.IsValid)
                         return BadRequest(ModelState);
                     return Ok(reals);
+                }
+                else
+                {
+                    var apiResponseMessage = new ApiResponseMessage("MSG01");
+                    return Ok(new List<ApiResponseMessage> { apiResponseMessage });
                 }
             }
             else
