@@ -114,5 +114,17 @@ namespace API.Services
             var notyetAndOngoingAuctions = auctions.Where(a => int.Parse(a.Status) == (int)AuctionStatus.NotYet || int.Parse(a.Status) == (int)AuctionStatus.OnGoing);
             return auctions;
         }
+
+        public async Task<AuctionDto> GetAuctionDetailByReasId(int reasId)
+        {
+            var auctionDetail = await _auctionRepository.GetAuctionDetailByReasIdAsync(reasId);
+
+            if (auctionDetail == null)
+            {
+                throw new BaseNotFoundException($"Auction detail with ReasID {reasId} not found.");
+            }
+
+            return auctionDetail;
+        }
     }
 }

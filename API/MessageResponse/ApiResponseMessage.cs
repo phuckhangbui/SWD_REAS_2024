@@ -25,6 +25,8 @@
         public const string MSG21 = "MSG21";
         public const string MSG22 = "MSG22";
         public const string MSG23 = "MSG23";
+        public const string MSG24 = "MSG24";
+        public const string MSG25 = "MSG25";
 
 
         public string StatusCode { get; set; }
@@ -60,6 +62,8 @@
             MSG21 => "Create new news successfully",
             MSG22 => "Username already exist",
             MSG23 => "Email already exist",
+            MSG24 => "Create task successfully.",
+            MSG25 => "Update task successfully.",
             _ => null
         };
     }
