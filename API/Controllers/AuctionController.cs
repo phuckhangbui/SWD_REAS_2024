@@ -9,8 +9,6 @@ using API.Interface.Service;
 using API.MessageResponse;
 using API.Param;
 using API.Param.Enums;
-using API.Services;
-using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -49,29 +47,7 @@ namespace API.Controllers
             return Ok(auctions);
         }
 
-        //for search also
-        [Authorize(policy: "AdminAndStaff")]
-        [HttpGet("auctions/all")]
-        public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctionsNotYetAndOnGoing()
-        {
-            //consider changing this to HttpPost
-
-            //currently do not know search base on which properties
-            var auctions = await _auctionService.GetAuctionsNotYetAndOnGoing();
-
-            //need to test the mapper here
-            //currently expect mapper to auto flatten the object, but let see :0
-            if (auctions != null)
-            {
-                return Ok(auctions);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        [Authorize(policy: "AdminAndStaff")]
+        [Authorize]
         [HttpGet("auctions/all/detail/{id}")]
         public async Task<ActionResult<AuctionDetailOnGoing>> GetAuctionsDetailNotYetAndOnGoing(int id)
         {
@@ -87,18 +63,31 @@ namespace API.Controllers
             }
         }
 
+        //for search also
+        [Authorize(policy: "AdminAndStaff")]
+        [HttpGet("admin/auctions/all")]
+        public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctionsNotYetAndOnGoing()
+        {
+            var auctions = await _auctionService.GetAuctionsNotYetAndOnGoing();
+            if (auctions != null)
+            {
+                return Ok(auctions);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+
 
         [Authorize(policy: "AdminAndStaff")]
-        [HttpGet("auctions/complete")]
+        [HttpGet("admin/auctions/complete")]
         public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctionsFinish()
         {
-            //consider changing this to HttpPost
-
-            //currently do not know search base on which properties
             var auctions = await _auctionService.GetAuctionsFinish();
 
-            //need to test the mapper here
-            //currently expect mapper to auto flatten the object, but let see :0
             if (auctions != null)
             {
                 return Ok(auctions);
@@ -126,7 +115,7 @@ namespace API.Controllers
         }
 
         [Authorize(policy: "AdminAndStaff")]
-        [HttpGet("edit/status")]
+        [HttpGet("admin/edit/status")]
         public async Task<ActionResult<ApiResponseMessage>> ToggleAuctionStatus([FromQuery] string auctionId, string statusCode)
         {
             try
@@ -183,7 +172,8 @@ namespace API.Controllers
             return Ok(auctionAccountingDto);
         }
 
-        [HttpGet("/owner/auction-history")]
+        [Authorize]
+        [HttpGet("owner/auction-history")]
         public async Task<IActionResult> GetOwnerAuctionHistory([FromQuery] AuctionHistoryParam auctionHisotoryParam)
         {
             try
@@ -205,7 +195,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/owner/auction-history/{auctionId}")]
+        [Authorize]
+        [HttpGet("owner/auction-history/{auctionId}")]
         public async Task<IActionResult> GetOwnerAuctionAccouting(int auctionId)
         {
             try
@@ -224,7 +215,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/attender/auction-history")]
+        [Authorize]
+        [HttpGet("attender/auction-history")]
         public async Task<IActionResult> GetAttenderAuctionHistory([FromQuery] AuctionHistoryParam auctionHisotoryParam)
         {
             try
@@ -350,16 +342,11 @@ namespace API.Controllers
 
 
         [Authorize(policy: "AdminAndStaff")]
-        [HttpGet("realfordeposit")]
+        [HttpGet("admin/realfordeposit")]
         public async Task<ActionResult<IEnumerable<ReasForAuctionDto>>> GetAuctionsReasForCreate()
         {
-            //consider changing this to HttpPost
-
-            //currently do not know search base on which properties
             var real = await _auctionService.GetAuctionsReasForCreate();
 
-            //need to test the mapper here
-            //currently expect mapper to auto flatten the object, but let see :0
             if (real != null)
             {
                 return Ok(real);
@@ -371,16 +358,11 @@ namespace API.Controllers
         }
 
         [Authorize(policy: "AdminAndStaff")]
-        [HttpGet("realfordeposit/{id}")]
-        public async Task<ActionResult<IEnumerable<DepositAmountUserDto>>> GetAllUserForDeposit(int id)
+        [HttpGet("admin/realfordeposit/{reasId}")]
+        public async Task<ActionResult<IEnumerable<DepositAmountUserDto>>> GetAllUserForDeposit(int reasId)
         {
-            //consider changing this to HttpPost
+            var deposit = await _auctionService.GetAllUserForDeposit(reasId);
 
-            //currently do not know search base on which properties
-            var deposit = await _auctionService.GetAllUserForDeposit(id);
-
-            //need to test the mapper here
-            //currently expect mapper to auto flatten the object, but let see :0
             if (deposit != null)
             {
                 return Ok(deposit);
@@ -392,7 +374,7 @@ namespace API.Controllers
         }
 
         [Authorize(policy: "AdminAndStaff")]
-        [HttpPost("deposit/create")]
+        [HttpPost("admin/create")]
         public async Task<ActionResult<ApiResponseMessage>> CreateAuction(AuctionCreateParam auctionCreateParam)
         {
             bool check = await _auctionService.CreateAuction(auctionCreateParam);
