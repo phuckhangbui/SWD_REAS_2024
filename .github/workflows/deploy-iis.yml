@@ -1,7 +1,7 @@
 name: .NET API Deploy to IIS
 
 on: 
-	workflow_dispatch: 
+  workflow_dispatch: 
 		
 jobs: 
   build-and-deploy:
@@ -14,23 +14,23 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
         
-		- name: Build with dotnet
-			shell: cmd
-			run: |
-				dotnet build --configuration Release
+    - name: Build with dotnet
+      shell: cmd
+      run: |
+        dotnet build --configuration Release
 
     - name: Dotnet publish
       shell: cmd
-			run: |
-				dotnet publish -c Release -o .\myapp
+      run: |
+	dotnet publish -c Release -o .\myapp
 
     - name: Deploy to IIS
-			shell: cmd
-			run: |
-				iisreset /stop
-				xcopy /s /y .\myapp\* C:\sites\ReasAPI
-				iisreset /start
-        
+      shell: cmd
+      run: |
+	iisreset /stop
+	xcopy /s /y .\myapp\* C:\sites\ReasAPI
+	iisreset /start
+
   
